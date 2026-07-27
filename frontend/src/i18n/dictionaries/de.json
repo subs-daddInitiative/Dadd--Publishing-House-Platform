@@ -1,0 +1,22 @@
+{
+  "common": {
+    "siteName": "Verlagshaus",
+    "skipToContent": "Zum Inhalt springen"
+  },
+  "nav": {
+    "home": "Startseite",
+    "books": "Buchbibliothek",
+    "studies": "Studien",
+    "blog": "Blog",
+    "contact": "Kontakt"
+  },
+  "home": {
+    "heroTitle": "Worte, die bleiben",
+    "heroSubtitle": "Ein Verlagshaus für ernsthafte arabische Literatur, von der Idee bis zur Seite.",
+    "exploreBooks": "Bücher entdecken",
+    "readStudies": "Studien lesen"
+  },
+  "footer": {
+    "rights": "Alle Rechte vorbehalten"
+  }
+}

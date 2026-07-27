@@ -1,0 +1,22 @@
+# dependencies
+**/node_modules/
+
+# env
+**/.env
+**/.env.*.local
+
+# next.js
+frontend/.next/
+frontend/out/
+
+# misc
+.DS_Store
+*.log
+*.tsbuildinfo
+
+# local tooling settings (machine-specific)
+.claude/settings.local.json
+
+# unclassified files at project root (not yet reviewed for inclusion)
+/6a564fb5f8765cb45b6233fb.pdf
+/6a565246f1f33d94432a4cfb.pdf

@@ -1,0 +1,23 @@
+const { env } = require("../config/env");
+
+function notFoundHandler(req, res) {
+  res.status(404).json({
+    success: false,
+    message: "Resource not found",
+  });
+}
+
+function errorHandler(err, req, res, next) {
+  const status = err.status || 500;
+
+  if (env.nodeEnv !== "test") {
+    console.error(err);
+  }
+
+  res.status(status).json({
+    success: false,
+    message: status === 500 ? "Internal server error" : err.message,
+  });
+}
+
+module.exports = { notFoundHandler, errorHandler };

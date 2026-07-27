@@ -1,0 +1,22 @@
+{
+  "common": {
+    "siteName": "Publishing House",
+    "skipToContent": "Skip to content"
+  },
+  "nav": {
+    "home": "Home",
+    "books": "Books Library",
+    "studies": "Studies",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "home": {
+    "heroTitle": "Words That Endure",
+    "heroSubtitle": "A publishing house dedicated to serious Arabic writing, from idea to page.",
+    "exploreBooks": "Explore Books",
+    "readStudies": "Read Studies"
+  },
+  "footer": {
+    "rights": "All rights reserved"
+  }
+}
