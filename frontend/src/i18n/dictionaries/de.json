@@ -12,11 +12,52 @@
   },
   "home": {
     "heroTitle": "Worte, die bleiben",
+    "heroBadge": "Arabisches Verlagshaus",
     "heroSubtitle": "Ein Verlagshaus für ernsthafte arabische Literatur, von der Idee bis zur Seite.",
     "exploreBooks": "Bücher entdecken",
-    "readStudies": "Studien lesen"
+    "readStudies": "Studien lesen",
+    "statsBooks": "Veröffentlichte Bücher",
+    "statsStudies": "Veröffentlichte Studien",
+    "statsBlogs": "Blogartikel",
+    "aboutTitle": "Über uns",
+    "aboutFallback": "Ein Verlagshaus für ernsthafte arabische Literatur, das Bücher und Studien mit Sorgfalt gestaltet.",
+    "announcementsTitle": "Neuigkeiten & Veranstaltungen",
+    "previousSlide": "Zurück",
+    "nextSlide": "Weiter",
+    "contactTitle": "Kontakt aufnehmen",
+    "contactIntro": "Wir freuen uns über Ihre Anfragen zu unseren Publikationen oder möglichen Kooperationen.",
+    "contactInfoTitle": "Kontaktinformationen",
+    "followLabel": "Folgen Sie uns",
+    "callLabel": "Anrufen",
+    "whatsappLabel": "WhatsApp",
+    "contactFormFirstName": "Vorname",
+    "contactFormLastName": "Nachname",
+    "contactFormEmail": "E-Mail",
+    "contactFormPhone": "Telefon (optional)",
+    "contactFormSubject": "Betreff",
+    "contactFormSubjectPlaceholder": "Betreff auswählen",
+    "subjectBooks": "Bücher",
+    "subjectStudies": "Studien",
+    "subjectBlogs": "Blog",
+    "subjectIssues": "Allgemeine Anfrage oder Problem",
+    "contactFormMessage": "Nachricht",
+    "contactFormSubmit": "Senden",
+    "contactFormSubmitting": "Wird gesendet...",
+    "contactFormSuccess": "Ihre Nachricht wurde gesendet. Wir melden uns bald.",
+    "contactFormError": "Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
   },
   "footer": {
     "rights": "Alle Rechte vorbehalten"
+  },
+  "blogPage": {
+    "title": "Ausgewählte Beiträge",
+    "subtitle": "Neue Stimmen und zeitlose Erzählungen.",
+    "viewAll": "Alle ansehen",
+    "empty": "Noch keine Artikel veröffentlicht.",
+    "prev": "Zurück",
+    "next": "Weiter",
+    "by": "Von",
+    "backHome": "Zurück zur Startseite",
+    "moreArticles": "Weitere Artikel"
   }
 }

@@ -12,11 +12,52 @@
   },
   "home": {
     "heroTitle": "Words That Endure",
+    "heroBadge": "Arabic Publishing House",
     "heroSubtitle": "A publishing house dedicated to serious Arabic writing, from idea to page.",
     "exploreBooks": "Explore Books",
-    "readStudies": "Read Studies"
+    "readStudies": "Read Studies",
+    "statsBooks": "Published Books",
+    "statsStudies": "Published Studies",
+    "statsBlogs": "Blog Articles",
+    "aboutTitle": "About Us",
+    "aboutFallback": "A publishing house dedicated to serious Arabic writing, producing books and studies with care and craft.",
+    "announcementsTitle": "News & Events",
+    "previousSlide": "Previous",
+    "nextSlide": "Next",
+    "contactTitle": "Get in Touch",
+    "contactIntro": "We'd love to hear from you about our publications or potential collaborations.",
+    "contactInfoTitle": "Contact Information",
+    "followLabel": "Follow Us",
+    "callLabel": "Call",
+    "whatsappLabel": "WhatsApp",
+    "contactFormFirstName": "First Name",
+    "contactFormLastName": "Last Name",
+    "contactFormEmail": "Email",
+    "contactFormPhone": "Phone (optional)",
+    "contactFormSubject": "Subject",
+    "contactFormSubjectPlaceholder": "Select a subject",
+    "subjectBooks": "Books",
+    "subjectStudies": "Studies",
+    "subjectBlogs": "Blog",
+    "subjectIssues": "General inquiry or issue",
+    "contactFormMessage": "Message",
+    "contactFormSubmit": "Send",
+    "contactFormSubmitting": "Sending...",
+    "contactFormSuccess": "Your message has been sent. We'll be in touch soon.",
+    "contactFormError": "Could not send your message. Please try again."
   },
   "footer": {
     "rights": "All rights reserved"
+  },
+  "blogPage": {
+    "title": "Curated Selections",
+    "subtitle": "New voices and timeless narratives.",
+    "viewAll": "View All",
+    "empty": "No articles published yet.",
+    "prev": "Previous",
+    "next": "Next",
+    "by": "By",
+    "backHome": "Back to Home",
+    "moreArticles": "More Articles"
   }
 }

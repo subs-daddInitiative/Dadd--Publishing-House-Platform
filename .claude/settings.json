@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node database/resetAdminPassword.js \"subs@dadd-initiative.org\")",
+      "Bash(mkdir -p \"g:/Download/SubsTQ/Website Files/Dadd/backend/uploads/blogs\")",
+      "Bash(node -e \"require\\('./src/app.js'\\); console.log\\('app.js loads OK'\\)\")",
+      "Bash(node database/runMigration.js database/migrations/005_add_blog_author_name.sql)",
+      "Bash(node -e \"require\\('./src/app.js'\\); console.log\\('OK'\\)\")",
+      "Bash(npx next *)"
+    ]
+  }
+}

@@ -2,14 +2,17 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { locales, localeDirections, isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
+import { getPublicSettings, backendAssetUrl } from "@/lib/serverApi";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { SyncHtmlAttributes } from "@/components/SyncHtmlAttributes";
 import { notFound } from "next/navigation";
-import "../globals.css";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -54,19 +57,23 @@ export default async function LocaleLayout({
   }
 
   const locale = rawLocale as Locale;
-  const dictionary = await getDictionary(locale);
+  const [dictionary, settings] = await Promise.all([
+    getDictionary(locale),
+    getPublicSettings(),
+  ]);
   const dir = localeDirections[locale];
+  const siteName = settings?.siteName || dictionary.common.siteName;
+  const logoUrl = backendAssetUrl(settings?.logo);
 
   return (
-    <html lang={locale} dir={dir}>
-      <body>
-        <a href="#main-content" className="skip-link">
-          {dictionary.common.skipToContent}
-        </a>
-        <Header locale={locale} dictionary={dictionary} />
-        <main id="main-content">{children}</main>
-        <Footer dictionary={dictionary} />
-      </body>
-    </html>
+    <>
+      <SyncHtmlAttributes lang={locale} dir={dir} />
+      <a href="#main-content" className="skip-link">
+        {dictionary.common.skipToContent}
+      </a>
+      <Header locale={locale} dictionary={dictionary} siteName={siteName} logoUrl={logoUrl} />
+      <main id="main-content">{children}</main>
+      <Footer dictionary={dictionary} siteName={siteName} logoUrl={logoUrl} />
+    </>
   );
 }

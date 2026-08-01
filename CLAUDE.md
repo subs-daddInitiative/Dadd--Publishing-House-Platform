@@ -70,11 +70,11 @@ Version Control
 
 # Project Goals
 
-The platform should look like a premium publishing house rather than a traditional bookstore.
+The platform should look like a premium, cinematic publishing house rather than a traditional bookstore.
 
-The UI should feel modern, elegant, minimal, and typography-focused.
+The UI should feel modern, bold, elegant, and typography-focused — catchy and memorable, not sterile or generic.
 
-Avoid template-looking layouts.
+Avoid template-looking layouts. Avoid anything that looks like a stock SaaS landing page.
 
 The design should emphasize:
 
@@ -83,6 +83,11 @@ The design should emphasize:
 - typography
 - whitespace
 - premium branding
+- motion as a storytelling tool, not decoration
+
+Every page should feel alive: content reveals as the user scrolls, hovers respond, transitions between pages feel intentional. Motion should draw attention to what matters (a new release, a featured study, a call to action) and create a sense of craft and quality.
+
+Animation must always be secondary to security and performance. A beautiful page that leaks data, ships bloated JS, or blocks interaction is a failure regardless of how it looks.
 
 ---
 
@@ -96,7 +101,7 @@ Never hardcode text directly inside components.
 
 Prepare the architecture so new languages can be added later without rewriting pages.
 
-Future support:
+Future support (don't add them while developing we will add them to the whole website after we finish completly with arabic):
 
 - Germany
 - English
@@ -528,19 +533,33 @@ Modern
 
 Premium
 
-Minimal
+Bold and catchy, not minimal-to-the-point-of-boring
 
 Elegant
 
 Readable
 
-Typography-first
+Typography-first — large, expressive type as a core design element, not just body copy
 
 Responsive
 
-Smooth animations
+Rich, purposeful motion throughout the experience:
 
-Do not overuse animations.
+- Scroll-triggered reveals for sections, cards, and text (e.g. fade/slide/stagger-in as content enters the viewport)
+- Subtle parallax on hero imagery and featured content
+- Smooth, animated page transitions between routes
+- Micro-interactions on hover/focus/click for buttons, links, cards, and nav items
+- Animated counters, underlines, or accents to draw attention to key moments (featured book, new release, CTA)
+- Loading and skeleton states should feel designed, not default
+
+Motion rules:
+
+- Every animation must have a clear purpose: guide attention, communicate state, or reinforce hierarchy. Never animate just to animate.
+- Respect `prefers-reduced-motion` — provide a reduced/no-motion fallback for every animation.
+- Animations must not block interaction, delay perceived load time, or hurt Core Web Vitals (especially CLS and INP).
+- Prefer CSS transitions/animations and transform/opacity-based motion over JS-heavy or layout-triggering animations.
+- Keep animation libraries minimal and lightweight; do not add heavy dependencies purely for visual effects.
+- Test all key animations with keyboard-only and screen-reader navigation to ensure they don't break accessibility.
 
 ---
 
@@ -582,7 +601,7 @@ If multiple solutions exist, choose the one that improves long-term maintainabil
 
 Security always has higher priority than convenience.
 
-Performance always has higher priority than visual effects.
+Performance and accessibility always have higher priority than visual effects — animations must be optimized (transform/opacity, reduced-motion support) rather than removed as a first resort.
 
 Scalability should be considered before implementing any feature.
 

@@ -1,6 +1,6 @@
 {
   "common": {
-    "siteName": "دار النشر",
+    "siteName": "دار إتقان للنشر",
     "skipToContent": "الانتقال إلى المحتوى"
   },
   "nav": {
@@ -12,11 +12,52 @@
   },
   "home": {
     "heroTitle": "كلمات تُخلَّد",
+    "heroBadge": "دار نشر عربية",
     "heroSubtitle": "دار نشر تحتفي بالكتابة العربية الجادة، من الفكرة إلى الصفحة.",
     "exploreBooks": "استكشف الكتب",
-    "readStudies": "اقرأ الدراسات"
+    "readStudies": "اقرأ الدراسات",
+    "statsBooks": "كتاب منشور",
+    "statsStudies": "دراسة منشورة",
+    "statsBlogs": "مقالة في المدونة",
+    "aboutTitle": "من نحن",
+    "aboutFallback": "دار نشر مكرَّسة للكلمة العربية الجادة، نعمل على إخراج الكتب والدراسات بعناية واحترافية.",
+    "announcementsTitle": "أخبار وفعاليات",
+    "previousSlide": "السابق",
+    "nextSlide": "التالي",
+    "contactTitle": "تواصل معنا",
+    "contactIntro": "يسعدنا تواصلك معنا لأي استفسار حول إصداراتنا أو التعاون معنا.",
+    "contactInfoTitle": "معلومات التواصل",
+    "followLabel": "تابعونا",
+    "callLabel": "اتصال",
+    "whatsappLabel": "واتساب",
+    "contactFormFirstName": "الاسم الأول",
+    "contactFormLastName": "اسم العائلة",
+    "contactFormEmail": "البريد الإلكتروني",
+    "contactFormPhone": "رقم الهاتف (اختياري)",
+    "contactFormSubject": "الموضوع",
+    "contactFormSubjectPlaceholder": "اختر الموضوع",
+    "subjectBooks": "الكتب",
+    "subjectStudies": "الدراسات",
+    "subjectBlogs": "المدونة",
+    "subjectIssues": "مشكلة أو استفسار عام",
+    "contactFormMessage": "الرسالة",
+    "contactFormSubmit": "إرسال",
+    "contactFormSubmitting": "جارٍ الإرسال...",
+    "contactFormSuccess": "تم إرسال رسالتك بنجاح، سنتواصل معك قريبًا.",
+    "contactFormError": "تعذر إرسال الرسالة، حاول مرة أخرى."
   },
   "footer": {
     "rights": "جميع الحقوق محفوظة"
+  },
+  "blogPage": {
+    "title": "مقالات مختارة",
+    "subtitle": "أصوات جديدة وحكايات لا تشيخ.",
+    "viewAll": "عرض الكل",
+    "empty": "لا توجد مقالات منشورة بعد.",
+    "prev": "السابق",
+    "next": "التالي",
+    "by": "بقلم",
+    "backHome": "العودة للرئيسية",
+    "moreArticles": "المزيد من المقالات"
   }
 }

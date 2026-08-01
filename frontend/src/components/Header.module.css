@@ -15,6 +15,13 @@
   font-weight: 600;
   letter-spacing: 0.02em;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 2.5rem;
+  width: auto;
 }
 
 .nav {
@@ -26,11 +33,38 @@
 }
 
 .navLink {
+  position: relative;
   text-decoration: none;
   color: var(--color-text-muted);
   font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
+.navLink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.35rem;
+  height: 2px;
+  background: var(--color-accent);
+  border-radius: 999px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s ease;
 }
 
 .navLink:hover {
   color: var(--color-text);
+}
+
+.navLink:hover::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navLink,
+  .navLink::after {
+    transition: none;
+  }
 }
