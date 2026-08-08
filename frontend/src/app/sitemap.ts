@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { locales } from "@/i18n/config";
-import { getPublicBlogs } from "@/lib/serverApi";
+import { getPublicBlogs, getPublicStudies } from "@/lib/serverApi";
 
 const routes = ["", "/books", "/studies", "/blog", "/contact"];
 
@@ -12,8 +12,16 @@ async function getAllBlogEntries() {
   return [firstPage, ...pages].flatMap((result) => result.items);
 }
 
+async function getAllStudyEntries() {
+  const firstPage = await getPublicStudies({ page: 1 });
+  const pages = await Promise.all(
+    Array.from({ length: firstPage.totalPages - 1 }, (_, index) => getPublicStudies({ page: index + 2 }))
+  );
+  return [firstPage, ...pages].flatMap((result) => result.items);
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const blogs = await getAllBlogEntries();
+  const [blogs, studies] = await Promise.all([getAllBlogEntries(), getAllStudyEntries()]);
 
   const staticEntries = locales.flatMap((locale) =>
     routes.map((route) => ({
@@ -29,5 +37,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  return [...staticEntries, ...blogEntries];
+  const studyEntries = locales.flatMap((locale) =>
+    studies.map((study) => ({
+      url: `/${locale}/studies/${study.slug}`,
+      lastModified: study.published_at ? new Date(study.published_at) : new Date(),
+    }))
+  );
+
+  return [...staticEntries, ...blogEntries, ...studyEntries];
 }

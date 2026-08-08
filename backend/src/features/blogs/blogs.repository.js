@@ -37,7 +37,7 @@ async function countPublicBlogs() {
 
 async function findPublicBlogBySlug(slug) {
   const [rows] = await pool.query(
-    `SELECT ${PUBLIC_LIST_FIELDS}, b.content, b.updated_at
+    `SELECT ${PUBLIC_LIST_FIELDS}, b.category_id, b.content, b.updated_at
      FROM blogs b
      LEFT JOIN blogs_categories bc ON bc.id = b.category_id
      LEFT JOIN users u ON u.id = b.author_id
@@ -46,6 +46,41 @@ async function findPublicBlogBySlug(slug) {
     [slug]
   );
   return rows[0] || null;
+}
+
+async function findRelatedBlogs(categoryId, excludeId, limit = 3) {
+  let sameCategory = [];
+  if (categoryId) {
+    const [rows] = await pool.query(
+      `SELECT ${PUBLIC_LIST_FIELDS}
+       FROM blogs b
+       LEFT JOIN blogs_categories bc ON bc.id = b.category_id
+       LEFT JOIN users u ON u.id = b.author_id
+       WHERE b.category_id = ? AND b.id != ? AND b.status = 'published' AND b.deleted_at IS NULL
+       ORDER BY b.published_at DESC
+       LIMIT ?`,
+      [categoryId, excludeId, limit]
+    );
+    sameCategory = rows;
+  }
+
+  if (sameCategory.length >= limit) return sameCategory;
+
+  const [latest] = await pool.query(
+    `SELECT ${PUBLIC_LIST_FIELDS}
+     FROM blogs b
+     LEFT JOIN blogs_categories bc ON bc.id = b.category_id
+     LEFT JOIN users u ON u.id = b.author_id
+     WHERE b.id != ? AND b.status = 'published' AND b.deleted_at IS NULL
+     ORDER BY b.published_at DESC
+     LIMIT ?`,
+    [excludeId, limit]
+  );
+
+  const seen = new Set(sameCategory.map((row) => row.id));
+  const padded = latest.filter((row) => !seen.has(row.id));
+
+  return [...sameCategory, ...padded].slice(0, limit);
 }
 
 async function listAdminBlogs() {
@@ -150,6 +185,7 @@ module.exports = {
   listPublicBlogs,
   countPublicBlogs,
   findPublicBlogBySlug,
+  findRelatedBlogs,
   listAdminBlogs,
   findAdminBlogById,
   ensureUniqueSlug,

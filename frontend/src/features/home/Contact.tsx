@@ -1,33 +1,11 @@
 import type { Dictionary } from "@/i18n/getDictionary";
 import type { SocialLink } from "@/lib/serverApi";
 import { Reveal } from "@/components/Reveal";
+import { FloatingShapes } from "@/components/FloatingShapes";
 import { ContactForm } from "./ContactForm";
-import {
-  PhoneIcon,
-  WhatsappIcon,
-  FacebookIcon,
-  InstagramIcon,
-  TiktokIcon,
-  SnapchatIcon,
-  LinkedinIcon,
-} from "./icons";
+import { PhoneIcon, WhatsappIcon } from "./icons";
+import { PLATFORM_LABELS, PLATFORM_ICONS } from "@/components/socialPlatforms";
 import styles from "./home.module.css";
-
-const PLATFORM_LABELS: Record<string, string> = {
-  facebook: "Facebook",
-  instagram: "Instagram",
-  tiktok: "TikTok",
-  snapchat: "Snapchat",
-  linkedin: "LinkedIn",
-};
-
-const PLATFORM_ICONS: Record<string, typeof FacebookIcon> = {
-  facebook: FacebookIcon,
-  instagram: InstagramIcon,
-  tiktok: TiktokIcon,
-  snapchat: SnapchatIcon,
-  linkedin: LinkedinIcon,
-};
 
 type ContactProps = {
   dictionary: Dictionary;
@@ -39,6 +17,7 @@ type ContactProps = {
 export function Contact({ dictionary, callNumber, whatsappNumber, socialLinks }: ContactProps) {
   return (
     <section className={styles.sectionAlt}>
+      <FloatingShapes />
       <div className="container">
         <Reveal className={styles.contactHeader}>
           <h2 className={styles.contactTitle}>{dictionary.home.contactTitle}</h2>

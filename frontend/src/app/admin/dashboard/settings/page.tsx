@@ -1,13 +1,18 @@
-import { getAdminSettings, getAdminBanners, backendAssetUrl } from "@/lib/serverApi";
+import { getAdminSettings, getAdminBanners, getAdminAboutFeatures, backendAssetUrl } from "@/lib/serverApi";
 import { GeneralSettingsForm } from "./GeneralSettingsForm";
 import { LogoUploadForm } from "./LogoUploadForm";
 import { SocialLinksForm } from "./SocialLinksForm";
 import { BannersManager } from "./BannersManager";
+import { AboutFeaturesManager } from "./AboutFeaturesManager";
 
 export const metadata = { title: "الإعدادات" };
 
 export default async function SettingsPage() {
-  const [settings, banners] = await Promise.all([getAdminSettings(), getAdminBanners()]);
+  const [settings, banners, aboutFeatures] = await Promise.all([
+    getAdminSettings(),
+    getAdminBanners(),
+    getAdminAboutFeatures(),
+  ]);
 
   const backendUrl = process.env.BACKEND_URL || "http://localhost:4000";
 
@@ -27,6 +32,8 @@ export default async function SettingsPage() {
       <SocialLinksForm initialLinks={settings?.socialLinks || []} />
 
       <BannersManager banners={banners} backendUrl={backendUrl} />
+
+      <AboutFeaturesManager features={aboutFeatures} />
     </section>
   );
 }

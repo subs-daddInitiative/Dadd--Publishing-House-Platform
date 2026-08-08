@@ -20,12 +20,12 @@ export function BlogsSection({ locale, dictionary, blogs }: BlogsSectionProps) {
   const compact = restBlogs.slice(0, 2);
 
   return (
-    <section className={styles.sectionAlt}>
+    <section className={styles.section}>
       <div className="container">
-        <div className={styles.blogsHeader}>
+        <div className={styles.highlightHeader}>
           <Reveal>
-            <h2 className={styles.blogsTitle}>{dictionary.blogPage.title}</h2>
-            <p className={styles.blogsSubtitle}>{dictionary.blogPage.subtitle}</p>
+            <h2 className={styles.highlightTitle}>{dictionary.blogPage.title}</h2>
+            <p className={styles.highlightSubtitle}>{dictionary.blogPage.subtitle}</p>
           </Reveal>
           <Reveal delay={100}>
             <Link href={`/${locale}/blog`} className={blogStyles.viewAllLink}>

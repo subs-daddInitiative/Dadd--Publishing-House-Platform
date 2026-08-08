@@ -1,0 +1,205 @@
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+
+.button {
+  padding: 0.55rem 1.1rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.buttonSecondary {
+  composes: button;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.buttonDanger {
+  composes: button;
+  background: transparent;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+}
+
+.empty {
+  color: var(--color-text-muted);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: var(--space-2);
+  background: var(--color-surface);
+}
+
+.thumbnail {
+  width: 5rem;
+  height: 3.4rem;
+  object-fit: cover;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+}
+
+.thumbnailFallback {
+  width: 5rem;
+  height: 3.4rem;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.itemBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-weight: 600;
+  margin: 0 0 0.2rem;
+}
+
+.itemMeta {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.statusBadgePublished {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.statusBadgeDraft {
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+/* Form */
+.form {
+  max-width: 42rem;
+}
+
+.field {
+  margin-bottom: var(--space-2);
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.row {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.row .field {
+  flex: 1;
+  min-width: 12rem;
+}
+
+.editorWrap {
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.imagePreview {
+  width: 10rem;
+  height: 6.5rem;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  margin-bottom: var(--space-2);
+}
+
+.currentFileLink {
+  display: inline-block;
+  margin-bottom: var(--space-2);
+  font-size: 0.85rem;
+  color: var(--color-primary);
+}
+
+.status {
+  font-size: 0.85rem;
+  margin-top: var(--space-1);
+}
+
+.statusOk {
+  composes: status;
+  color: var(--color-success);
+}
+
+.statusError {
+  composes: status;
+  color: var(--color-accent);
+}
+
+.formActions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}

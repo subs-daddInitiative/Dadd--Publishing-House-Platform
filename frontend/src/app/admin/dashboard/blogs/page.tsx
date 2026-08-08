@@ -17,9 +17,14 @@ export default async function AdminBlogsPage() {
     <section>
       <div className={styles.pageHeader}>
         <h1>المدونة</h1>
-        <Link href="/admin/dashboard/blogs/new" className={styles.button}>
-          إضافة مقالة
-        </Link>
+        <div className={styles.actions}>
+          <Link href="/admin/dashboard/blogs/categories" className={styles.buttonSecondary}>
+            إدارة التصنيفات
+          </Link>
+          <Link href="/admin/dashboard/blogs/new" className={styles.button}>
+            إضافة مقالة
+          </Link>
+        </div>
       </div>
 
       {blogs.length === 0 ? (

@@ -20,6 +20,8 @@
     "statsStudies": "دراسة منشورة",
     "statsBlogs": "مقالة في المدونة",
     "aboutTitle": "من نحن",
+    "aboutBadge": "رؤيتنا ورسالتنا",
+    "aboutHeading": "نحو نهضة حضارية تنطلق من بناء الإنسان",
     "aboutFallback": "دار نشر مكرَّسة للكلمة العربية الجادة، نعمل على إخراج الكتب والدراسات بعناية واحترافية.",
     "announcementsTitle": "أخبار وفعاليات",
     "previousSlide": "السابق",
@@ -47,7 +49,11 @@
     "contactFormError": "تعذر إرسال الرسالة، حاول مرة أخرى."
   },
   "footer": {
-    "rights": "جميع الحقوق محفوظة"
+    "rights": "جميع الحقوق محفوظة",
+    "tagline": "دار نشر تحتفي بالكتابة العربية الجادة، من الفكرة إلى الصفحة.",
+    "quickLinksTitle": "روابط سريعة",
+    "contactTitle": "تواصل",
+    "followTitle": "تابعونا"
   },
   "blogPage": {
     "title": "مقالات مختارة",
@@ -58,6 +64,25 @@
     "next": "التالي",
     "by": "بقلم",
     "backHome": "العودة للرئيسية",
-    "moreArticles": "المزيد من المقالات"
+    "moreArticles": "المزيد من المقالات",
+    "relatedArticles": "مقالات ذات صلة"
+  },
+  "studiesPage": {
+    "title": "دراسات معمّقة",
+    "subtitle": "أبحاث وتحليلات تستحق وقتك.",
+    "viewAll": "عرض الكل",
+    "empty": "لا توجد دراسات منشورة بعد.",
+    "prev": "السابق",
+    "next": "التالي",
+    "by": "بقلم",
+    "allCategories": "كل التصنيفات",
+    "sortNewest": "الأحدث أولاً",
+    "sortOldest": "الأقدم أولاً",
+    "downloadPdf": "تحميل PDF",
+    "backHome": "العودة للرئيسية",
+    "moreStudies": "المزيد من الدراسات",
+    "relatedStudies": "دراسات ذات صلة",
+    "breadcrumbHome": "الرئيسية",
+    "breadcrumbStudies": "الدراسات"
   }
 }

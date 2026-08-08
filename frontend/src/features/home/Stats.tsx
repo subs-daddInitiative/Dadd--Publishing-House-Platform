@@ -2,6 +2,7 @@ import type { Dictionary } from "@/i18n/getDictionary";
 import type { PublicStats } from "@/lib/serverApi";
 import { Reveal } from "@/components/Reveal";
 import { CountUp } from "@/components/CountUp";
+import { FloatingShapes } from "@/components/FloatingShapes";
 import { BookIcon, StudyIcon, BlogIcon } from "./icons";
 import styles from "./home.module.css";
 
@@ -19,6 +20,7 @@ export function Stats({ dictionary, stats }: StatsProps) {
 
   return (
     <section className={styles.statsSection}>
+      <FloatingShapes />
       <div className={`container ${styles.statsGrid}`}>
         {items.map((item, index) => (
           <Reveal key={item.key} className={`${styles.statCard} hover-lift`} delay={index * 120}>

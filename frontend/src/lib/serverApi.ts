@@ -63,6 +63,23 @@ export async function getPublicBanners(): Promise<Banner[]> {
   return result.success ? result.data : [];
 }
 
+export type AboutFeature = {
+  id: number;
+  icon: string | null;
+  title: string;
+  description: string | null;
+};
+
+export async function getPublicAboutFeatures(): Promise<AboutFeature[]> {
+  const result = await backendFetch<AboutFeature[]>("/api/about-features");
+  return result.success ? result.data : [];
+}
+
+export async function getAdminAboutFeatures(): Promise<AboutFeature[]> {
+  const result = await backendFetch<AboutFeature[]>("/api/admin/about-features");
+  return result.success ? result.data : [];
+}
+
 export type Settings = PublicSettings & {
   id: number;
   site_name: string;
@@ -143,6 +160,7 @@ export type BlogSummary = {
 export type BlogDetail = BlogSummary & {
   content: string | null;
   updated_at: string;
+  related: BlogSummary[];
 };
 
 export type BlogListResult = {
@@ -202,5 +220,102 @@ export async function getAdminBlogs(): Promise<AdminBlogSummary[]> {
 
 export async function getAdminBlogById(id: string): Promise<AdminBlogDetail | null> {
   const result = await backendFetch<AdminBlogDetail>(`/api/admin/blogs/${id}`);
+  return result.success ? result.data : null;
+}
+
+export type StudyCategory = { id: number; name: string; slug: string };
+
+export type StudySummary = {
+  id: number;
+  title: string;
+  slug: string;
+  description: string | null;
+  author: string | null;
+  cover_image: string | null;
+  published_at: string | null;
+  category_name: string | null;
+  category_slug: string | null;
+};
+
+export type StudyDetail = StudySummary & {
+  category_id: number | null;
+  main_image: string | null;
+  content_intro: string | null;
+  content_body: string | null;
+  pdf_file: string | null;
+  updated_at: string;
+  related: StudySummary[];
+};
+
+export type StudyListResult = {
+  items: StudySummary[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};
+
+export type StudySort = "newest" | "oldest";
+
+export async function getPublicStudies(options: {
+  page?: number;
+  category?: string;
+  sort?: StudySort;
+} = {}): Promise<StudyListResult> {
+  const { page = 1, category, sort } = options;
+  const params = new URLSearchParams({ page: String(page) });
+  if (category) params.set("category", category);
+  if (sort) params.set("sort", sort);
+
+  const result = await backendFetch<StudyListResult>(`/api/studies?${params.toString()}`);
+  return result.success ? result.data : { items: [], total: 0, page: 1, pageSize: 9, totalPages: 0 };
+}
+
+export async function getPublicStudyBySlug(slug: string): Promise<StudyDetail | null> {
+  const result = await backendFetch<StudyDetail>(`/api/studies/${encodeURIComponent(slug)}`);
+  return result.success ? result.data : null;
+}
+
+export async function getPublicStudyCategories(): Promise<StudyCategory[]> {
+  const result = await backendFetch<StudyCategory[]>("/api/studies-categories");
+  return result.success ? result.data : [];
+}
+
+export type AdminStudySummary = {
+  id: number;
+  title: string;
+  slug: string;
+  status: "draft" | "published";
+  cover_image: string | null;
+  published_at: string | null;
+  updated_at: string;
+  category_name: string | null;
+};
+
+export type AdminStudyDetail = {
+  id: number;
+  category_id: number | null;
+  title: string;
+  slug: string;
+  author: string | null;
+  description: string | null;
+  content_intro: string | null;
+  content_body: string | null;
+  cover_image: string | null;
+  main_image: string | null;
+  pdf_file: string | null;
+  status: "draft" | "published";
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function getAdminStudies(): Promise<AdminStudySummary[]> {
+  const result = await backendFetch<AdminStudySummary[]>("/api/admin/studies");
+  return result.success ? result.data : [];
+}
+
+export async function getAdminStudyById(id: string): Promise<AdminStudyDetail | null> {
+  const result = await backendFetch<AdminStudyDetail>(`/api/admin/studies/${id}`);
   return result.success ? result.data : null;
 }

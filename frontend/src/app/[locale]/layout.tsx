@@ -73,7 +73,15 @@ export default async function LocaleLayout({
       </a>
       <Header locale={locale} dictionary={dictionary} siteName={siteName} logoUrl={logoUrl} />
       <main id="main-content">{children}</main>
-      <Footer dictionary={dictionary} siteName={siteName} logoUrl={logoUrl} />
+      <Footer
+        locale={locale}
+        dictionary={dictionary}
+        siteName={siteName}
+        logoUrl={logoUrl}
+        callNumber={settings?.callNumber ?? null}
+        whatsappNumber={settings?.whatsappNumber ?? null}
+        socialLinks={settings?.socialLinks || []}
+      />
     </>
   );
 }

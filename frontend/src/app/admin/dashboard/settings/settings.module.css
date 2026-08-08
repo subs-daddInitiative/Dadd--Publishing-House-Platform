@@ -154,3 +154,15 @@
 .createBannerForm {
   margin-top: var(--space-3);
 }
+
+.iconField {
+  max-width: 6rem;
+}
+
+.editRow {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+  align-items: center;
+  flex: 1;
+}

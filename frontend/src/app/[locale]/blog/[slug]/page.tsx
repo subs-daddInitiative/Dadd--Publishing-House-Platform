@@ -5,6 +5,7 @@ import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import { getPublicBlogBySlug, getPublicSettings, backendAssetUrl } from "@/lib/serverApi";
 import { notFound } from "next/navigation";
+import { BlogCard } from "@/features/blog/BlogCard";
 import styles from "@/features/blog/blog.module.css";
 
 type PageParams = { locale: string; slug: string };
@@ -117,6 +118,17 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
 
       {blog.content && (
         <div className={styles.postBody} dangerouslySetInnerHTML={{ __html: blog.content }} />
+      )}
+
+      {blog.related.length > 0 && (
+        <section className={styles.relatedSection}>
+          <h2 className={styles.relatedTitle}>{dictionary.blogPage.relatedArticles}</h2>
+          <div className={styles.postsGrid}>
+            {blog.related.map((related) => (
+              <BlogCard key={related.id} locale={locale} blog={related} variant="grid" byLabel={dictionary.blogPage.by} />
+            ))}
+          </div>
+        </section>
       )}
 
       <div className={styles.postActions}>

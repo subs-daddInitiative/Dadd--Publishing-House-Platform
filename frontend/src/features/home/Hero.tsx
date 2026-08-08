@@ -5,6 +5,7 @@ import type { Locale } from "@/i18n/config";
 import { Reveal } from "@/components/Reveal";
 import { StaggerText } from "@/components/StaggerText";
 import { Parallax } from "@/components/Parallax";
+import { FloatingShapes } from "@/components/FloatingShapes";
 import styles from "./home.module.css";
 import heroBook from "../../../public/whyloaydontread.png"
 
@@ -20,6 +21,7 @@ export function Hero({ locale, dictionary, brandName }: HeroProps) {
       <div className={styles.heroBackdrop} aria-hidden="true" />
       <div className={styles.heroBlobPrimary} aria-hidden="true" />
       <div className={styles.heroBlobSecondary} aria-hidden="true" />
+      <FloatingShapes />
       <div className={`container ${styles.heroGrid}`}>
         <div className={styles.heroTextCol}>
           <Reveal as="p" className={styles.heroTagline}>

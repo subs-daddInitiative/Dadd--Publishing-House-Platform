@@ -20,6 +20,8 @@
     "statsStudies": "Veröffentlichte Studien",
     "statsBlogs": "Blogartikel",
     "aboutTitle": "Über uns",
+    "aboutBadge": "Unsere Vision & Mission",
+    "aboutHeading": "Für einen Aufbruch, der beim Menschen beginnt",
     "aboutFallback": "Ein Verlagshaus für ernsthafte arabische Literatur, das Bücher und Studien mit Sorgfalt gestaltet.",
     "announcementsTitle": "Neuigkeiten & Veranstaltungen",
     "previousSlide": "Zurück",
@@ -47,7 +49,11 @@
     "contactFormError": "Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut."
   },
   "footer": {
-    "rights": "Alle Rechte vorbehalten"
+    "rights": "Alle Rechte vorbehalten",
+    "tagline": "Ein Verlagshaus für ernsthafte arabische Literatur, von der Idee bis zur Seite.",
+    "quickLinksTitle": "Schnellzugriff",
+    "contactTitle": "Kontakt",
+    "followTitle": "Folgen Sie uns"
   },
   "blogPage": {
     "title": "Ausgewählte Beiträge",
@@ -58,6 +64,25 @@
     "next": "Weiter",
     "by": "Von",
     "backHome": "Zurück zur Startseite",
-    "moreArticles": "Weitere Artikel"
+    "moreArticles": "Weitere Artikel",
+    "relatedArticles": "Ähnliche Artikel"
+  },
+  "studiesPage": {
+    "title": "Vertiefende Studien",
+    "subtitle": "Forschung und Analysen, die Ihre Zeit wert sind.",
+    "viewAll": "Alle ansehen",
+    "empty": "Noch keine Studien veröffentlicht.",
+    "prev": "Zurück",
+    "next": "Weiter",
+    "by": "Von",
+    "allCategories": "Alle Kategorien",
+    "sortNewest": "Neueste zuerst",
+    "sortOldest": "Älteste zuerst",
+    "downloadPdf": "PDF herunterladen",
+    "backHome": "Zurück zur Startseite",
+    "moreStudies": "Weitere Studien",
+    "relatedStudies": "Ähnliche Studien",
+    "breadcrumbHome": "Startseite",
+    "breadcrumbStudies": "Studien"
   }
 }

@@ -1,6 +1,7 @@
 import type { Dictionary } from "@/i18n/getDictionary";
 import type { Banner } from "@/lib/serverApi";
 import { Reveal } from "@/components/Reveal";
+import { FloatingShapes } from "@/components/FloatingShapes";
 import { BannerSlider } from "./BannerSlider";
 import styles from "./home.module.css";
 
@@ -14,7 +15,8 @@ export function Banners({ dictionary, banners, backendUrl }: BannersProps) {
   if (banners.length === 0) return null;
 
   return (
-    <section className={styles.section}>
+    <section className={styles.sectionAlt}>
+      <FloatingShapes />
       <div className="container">
         <Reveal as="h2" className={styles.sectionTitleAccent}>
           {dictionary.home.announcementsTitle}

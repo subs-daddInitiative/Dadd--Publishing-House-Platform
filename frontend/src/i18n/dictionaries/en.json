@@ -20,6 +20,8 @@
     "statsStudies": "Published Studies",
     "statsBlogs": "Blog Articles",
     "aboutTitle": "About Us",
+    "aboutBadge": "Our Vision & Mission",
+    "aboutHeading": "Towards a renaissance built on people",
     "aboutFallback": "A publishing house dedicated to serious Arabic writing, producing books and studies with care and craft.",
     "announcementsTitle": "News & Events",
     "previousSlide": "Previous",
@@ -47,7 +49,11 @@
     "contactFormError": "Could not send your message. Please try again."
   },
   "footer": {
-    "rights": "All rights reserved"
+    "rights": "All rights reserved",
+    "tagline": "A publishing house dedicated to serious Arabic writing, from idea to page.",
+    "quickLinksTitle": "Quick Links",
+    "contactTitle": "Contact",
+    "followTitle": "Follow Us"
   },
   "blogPage": {
     "title": "Curated Selections",
@@ -58,6 +64,25 @@
     "next": "Next",
     "by": "By",
     "backHome": "Back to Home",
-    "moreArticles": "More Articles"
+    "moreArticles": "More Articles",
+    "relatedArticles": "Related Articles"
+  },
+  "studiesPage": {
+    "title": "In-Depth Studies",
+    "subtitle": "Research and analysis worth your time.",
+    "viewAll": "View All",
+    "empty": "No studies published yet.",
+    "prev": "Previous",
+    "next": "Next",
+    "by": "By",
+    "allCategories": "All Categories",
+    "sortNewest": "Newest First",
+    "sortOldest": "Oldest First",
+    "downloadPdf": "Download PDF",
+    "backHome": "Back to Home",
+    "moreStudies": "More Studies",
+    "relatedStudies": "Related Studies",
+    "breadcrumbHome": "Home",
+    "breadcrumbStudies": "Studies"
   }
 }

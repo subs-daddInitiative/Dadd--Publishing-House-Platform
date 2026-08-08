@@ -316,6 +316,17 @@ html[dir="rtl"] .viewAllLink:hover {
   text-decoration: underline;
 }
 
+.relatedSection {
+  max-width: 64rem;
+  margin: var(--space-5) auto 0;
+}
+
+.relatedTitle {
+  font-size: 1.4rem;
+  margin: 0 0 var(--space-3);
+  text-align: center;
+}
+
 .postActions {
   max-width: 42rem;
   margin: var(--space-4) auto 0;

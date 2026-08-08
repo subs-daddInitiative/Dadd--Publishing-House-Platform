@@ -3,6 +3,7 @@ const {
   listPublicBlogs,
   countPublicBlogs,
   findPublicBlogBySlug,
+  findRelatedBlogs,
   listAdminBlogs,
   findAdminBlogById,
   ensureUniqueSlug,
@@ -45,7 +46,8 @@ async function getPublicBlogBySlug(req, res, next) {
     if (!blog) {
       return res.status(404).json({ success: false, message: "Blog not found" });
     }
-    res.json({ success: true, data: blog });
+    const related = await findRelatedBlogs(blog.category_id, blog.id);
+    res.json({ success: true, data: { ...blog, related } });
   } catch (error) {
     next(error);
   }

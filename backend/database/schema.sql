@@ -84,7 +84,10 @@ CREATE TABLE IF NOT EXISTS studies (
   slug VARCHAR(280) NOT NULL,
   author VARCHAR(190) NULL,
   description TEXT NULL,
+  content_intro LONGTEXT NULL,
+  content_body LONGTEXT NULL,
   cover_image VARCHAR(255) NULL,
+  main_image VARCHAR(255) NULL,
   pdf_file VARCHAR(255) NULL,
   status ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
   published_at DATETIME NULL,
@@ -138,6 +141,21 @@ CREATE TABLE IF NOT EXISTS blogs (
   CONSTRAINT fk_blogs_author
     FOREIGN KEY (author_id) REFERENCES users (id)
     ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
+-- about_features (homepage "About" section pillar cards, admin-managed)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS about_features (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  icon VARCHAR(20) NULL,
+  title VARCHAR(190) NOT NULL,
+  description VARCHAR(500) NULL,
+  sort_order SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at DATETIME NULL,
+  KEY idx_about_features_sort (sort_order)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------

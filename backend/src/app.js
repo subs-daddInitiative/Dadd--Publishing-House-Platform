@@ -13,6 +13,8 @@ const bannersRoutes = require("./features/banners/banners.routes");
 const contactRoutes = require("./features/contact/contact.routes");
 const statsRoutes = require("./features/stats/stats.routes");
 const blogsRoutes = require("./features/blogs/blogs.routes");
+const studiesRoutes = require("./features/studies/studies.routes");
+const aboutFeaturesRoutes = require("./features/aboutFeatures/aboutFeatures.routes");
 
 const app = express();
 
@@ -42,11 +44,15 @@ app.use("/api", bannersRoutes.publicRouter);
 app.use("/api", contactRoutes.publicRouter);
 app.use("/api", statsRoutes.publicRouter);
 app.use("/api", blogsRoutes.publicRouter);
+app.use("/api", studiesRoutes.publicRouter);
+app.use("/api", aboutFeaturesRoutes.publicRouter);
 
 app.use("/api/admin", settingsRoutes.adminRouter);
 app.use("/api/admin", bannersRoutes.adminRouter);
 app.use("/api/admin", contactRoutes.adminRouter);
 app.use("/api/admin", blogsRoutes.adminRouter);
+app.use("/api/admin", studiesRoutes.adminRouter);
+app.use("/api/admin", aboutFeaturesRoutes.adminRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

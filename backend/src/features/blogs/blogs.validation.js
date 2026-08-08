@@ -1,28 +1,7 @@
-const sanitizeHtml = require("sanitize-html");
 const { slugify } = require("../../utils/slugify");
+const { sanitizeRichText } = require("../../utils/sanitizeRichText");
 
 const STATUSES = ["draft", "published"];
-
-const SANITIZE_OPTIONS = {
-  allowedTags: [
-    "p",
-    "br",
-    "strong",
-    "em",
-    "u",
-    "h2",
-    "h3",
-    "ul",
-    "ol",
-    "li",
-    "a",
-    "blockquote",
-  ],
-  allowedAttributes: {
-    a: ["href", "target", "rel"],
-  },
-  allowedSchemes: ["http", "https", "mailto"],
-};
 
 function validateBlogPayload(body, { partial = false } = {}) {
   const errors = [];
@@ -47,7 +26,7 @@ function validateBlogPayload(body, { partial = false } = {}) {
   }
 
   if (body.content !== undefined) {
-    value.content = sanitizeHtml(String(body.content), SANITIZE_OPTIONS);
+    value.content = sanitizeRichText(body.content);
   }
 
   if (body.category_id !== undefined) {
