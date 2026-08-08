@@ -84,5 +84,45 @@
     "relatedStudies": "Ähnliche Studien",
     "breadcrumbHome": "Startseite",
     "breadcrumbStudies": "Studien"
+  },
+  "booksPage": {
+    "title": "Buchbibliothek",
+    "subtitle": "Finden Sie Ihre nächste großartige Lektüre.",
+    "viewAll": "Alle ansehen",
+    "empty": "Noch keine Bücher veröffentlicht.",
+    "prev": "Zurück",
+    "next": "Weiter",
+    "by": "Von",
+    "allCategories": "Alle Kategorien",
+    "sortNewest": "Neueste zuerst",
+    "sortOldest": "Älteste zuerst",
+    "sortPriceAsc": "Preis: aufsteigend",
+    "sortPriceDesc": "Preis: absteigend",
+    "addToCart": "In den Warenkorb",
+    "favorite": "Zu Favoriten hinzufügen",
+    "unfavorite": "Aus Favoriten entfernen",
+    "buyExternally": "Kaufen bei",
+    "relatedBooks": "Das könnte Ihnen auch gefallen",
+    "backHome": "Zurück zur Startseite",
+    "moreBooks": "Weitere Bücher",
+    "breadcrumbHome": "Startseite",
+    "breadcrumbBooks": "Bücher"
+  },
+  "cartPage": {
+    "title": "Ihr Warenkorb",
+    "empty": "Ihr Warenkorb ist leer.",
+    "total": "Gesamt",
+    "sendWhatsapp": "Bestellung über WhatsApp senden",
+    "remove": "Entfernen",
+    "continueShopping": "Weiter einkaufen"
+  },
+  "favoritesPage": {
+    "title": "Ihre Favoriten",
+    "empty": "Sie haben noch keine Bücher favorisiert.",
+    "continueShopping": "Bücher durchsuchen"
+  },
+  "header": {
+    "cartLabel": "Warenkorb",
+    "favoritesLabel": "Favoriten"
   }
 }

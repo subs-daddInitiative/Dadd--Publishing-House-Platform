@@ -84,5 +84,45 @@
     "relatedStudies": "Related Studies",
     "breadcrumbHome": "Home",
     "breadcrumbStudies": "Studies"
+  },
+  "booksPage": {
+    "title": "Books Library",
+    "subtitle": "Find your next great read.",
+    "viewAll": "View All",
+    "empty": "No books published yet.",
+    "prev": "Previous",
+    "next": "Next",
+    "by": "By",
+    "allCategories": "All Categories",
+    "sortNewest": "Newest First",
+    "sortOldest": "Oldest First",
+    "sortPriceAsc": "Price: Low to High",
+    "sortPriceDesc": "Price: High to Low",
+    "addToCart": "Add to Cart",
+    "favorite": "Add to Favorites",
+    "unfavorite": "Remove from Favorites",
+    "buyExternally": "Buy From",
+    "relatedBooks": "You May Also Like",
+    "backHome": "Back to Home",
+    "moreBooks": "More Books",
+    "breadcrumbHome": "Home",
+    "breadcrumbBooks": "Books"
+  },
+  "cartPage": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty.",
+    "total": "Total",
+    "sendWhatsapp": "Send Order via WhatsApp",
+    "remove": "Remove",
+    "continueShopping": "Continue Shopping"
+  },
+  "favoritesPage": {
+    "title": "Your Favorites",
+    "empty": "You haven't favorited any books yet.",
+    "continueShopping": "Browse Books"
+  },
+  "header": {
+    "cartLabel": "Cart",
+    "favoritesLabel": "Favorites"
   }
 }

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { locales } from "@/i18n/config";
-import { getPublicBlogs, getPublicStudies } from "@/lib/serverApi";
+import { getPublicBlogs, getPublicStudies, getPublicBooks } from "@/lib/serverApi";
 
 const routes = ["", "/books", "/studies", "/blog", "/contact"];
 
@@ -20,8 +20,20 @@ async function getAllStudyEntries() {
   return [firstPage, ...pages].flatMap((result) => result.items);
 }
 
+async function getAllBookEntries() {
+  const firstPage = await getPublicBooks({ page: 1 });
+  const pages = await Promise.all(
+    Array.from({ length: firstPage.totalPages - 1 }, (_, index) => getPublicBooks({ page: index + 2 }))
+  );
+  return [firstPage, ...pages].flatMap((result) => result.items);
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [blogs, studies] = await Promise.all([getAllBlogEntries(), getAllStudyEntries()]);
+  const [blogs, studies, books] = await Promise.all([
+    getAllBlogEntries(),
+    getAllStudyEntries(),
+    getAllBookEntries(),
+  ]);
 
   const staticEntries = locales.flatMap((locale) =>
     routes.map((route) => ({
@@ -44,5 +56,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  return [...staticEntries, ...blogEntries, ...studyEntries];
+  const bookEntries = locales.flatMap((locale) =>
+    books.map((book) => ({
+      url: `/${locale}/books/${book.slug}`,
+      lastModified: book.published_at ? new Date(book.published_at) : new Date(),
+    }))
+  );
+
+  return [...staticEntries, ...blogEntries, ...studyEntries, ...bookEntries];
 }

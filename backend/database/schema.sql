@@ -46,6 +46,10 @@ CREATE TABLE IF NOT EXISTS books (
   slug VARCHAR(280) NOT NULL,
   author VARCHAR(190) NULL,
   description TEXT NULL,
+  price DECIMAL(10,2) NULL,
+  currency VARCHAR(6) NOT NULL DEFAULT 'SAR',
+  rating DECIMAL(2,1) NULL,
+  reviews_count INT UNSIGNED NOT NULL DEFAULT 0,
   cover_image VARCHAR(255) NULL,
   pdf_file VARCHAR(255) NULL,
   status ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
@@ -58,6 +62,20 @@ CREATE TABLE IF NOT EXISTS books (
   CONSTRAINT fk_books_category
     FOREIGN KEY (category_id) REFERENCES books_categories (id)
     ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
+-- book_external_links (external purchase links, e.g. other marketplaces)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS book_external_links (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  book_id INT UNSIGNED NOT NULL,
+  label VARCHAR(100) NOT NULL,
+  url VARCHAR(255) NOT NULL,
+  sort_order SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_book_external_links_book FOREIGN KEY (book_id) REFERENCES books (id)
+    ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------

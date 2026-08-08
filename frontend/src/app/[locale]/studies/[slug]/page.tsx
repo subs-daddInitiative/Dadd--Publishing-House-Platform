@@ -22,8 +22,9 @@ export async function generateMetadata({
 }: {
   params: Promise<PageParams>;
 }): Promise<Metadata> {
-  const { locale, slug } = await params;
+  const { locale, slug: rawSlug } = await params;
   if (!isLocale(locale)) return {};
+  const slug = decodeURIComponent(rawSlug);
 
   const [study, settings] = await Promise.all([getPublicStudyBySlug(slug), getPublicSettings()]);
   if (!study) return {};
@@ -58,9 +59,10 @@ export async function generateMetadata({
 }
 
 export default async function StudyPostPage({ params }: { params: Promise<PageParams> }) {
-  const { locale: rawLocale, slug } = await params;
+  const { locale: rawLocale, slug: rawSlug } = await params;
   if (!isLocale(rawLocale)) notFound();
   const locale = rawLocale as Locale;
+  const slug = decodeURIComponent(rawSlug);
 
   const [dictionary, study, settings, banners] = await Promise.all([
     getDictionary(locale),

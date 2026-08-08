@@ -16,7 +16,7 @@ type ContactProps = {
 
 export function Contact({ dictionary, callNumber, whatsappNumber, socialLinks }: ContactProps) {
   return (
-    <section className={styles.sectionAlt}>
+    <section className={styles.section}>
       <FloatingShapes />
       <div className="container">
         <Reveal className={styles.contactHeader}>

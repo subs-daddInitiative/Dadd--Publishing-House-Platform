@@ -105,7 +105,7 @@ async function findAdminBlogById(id) {
 
 async function slugExists(slug, excludeId) {
   const params = [slug];
-  let query = "SELECT id FROM blogs WHERE slug = ? AND deleted_at IS NULL";
+  let query = "SELECT id FROM blogs WHERE slug = ?";
   if (excludeId) {
     query += " AND id != ?";
     params.push(excludeId);

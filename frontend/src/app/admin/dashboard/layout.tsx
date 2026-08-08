@@ -29,6 +29,11 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             </Link>
           </li>
           <li>
+            <Link href="/admin/dashboard/books" className={styles.navLink}>
+              الكتب
+            </Link>
+          </li>
+          <li>
             <Link href="/admin/dashboard/studies" className={styles.navLink}>
               الدراسات
             </Link>

@@ -24,7 +24,7 @@ function createCategoryRepository(table) {
 
   async function slugExists(slug, excludeId) {
     const params = [slug];
-    let query = `SELECT id FROM ${table} WHERE slug = ? AND deleted_at IS NULL`;
+    let query = `SELECT id FROM ${table} WHERE slug = ?`;
     if (excludeId) {
       query += " AND id != ?";
       params.push(excludeId);

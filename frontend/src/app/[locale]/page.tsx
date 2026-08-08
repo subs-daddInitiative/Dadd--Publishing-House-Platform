@@ -7,10 +7,12 @@ import {
   getPublicBlogs,
   getPublicStudies,
   getPublicAboutFeatures,
+  getPublicBooks,
 } from "@/lib/serverApi";
 import { Hero } from "@/features/home/Hero";
 import { Stats } from "@/features/home/Stats";
 import { About } from "@/features/home/About";
+import { BooksSection } from "@/features/home/BooksSection";
 import { Banners } from "@/features/home/Banners";
 import { StudiesSection } from "@/features/home/StudiesSection";
 import { BlogsSection } from "@/features/home/BlogsSection";
@@ -26,15 +28,17 @@ export default async function HomePage({
   if (!isLocale(rawLocale)) notFound();
 
   const locale = rawLocale as Locale;
-  const [dictionary, settings, banners, stats, blogList, studyList, aboutFeatures] = await Promise.all([
-    getDictionary(locale),
-    getPublicSettings(),
-    getPublicBanners(),
-    getPublicStats(),
-    getPublicBlogs(1),
-    getPublicStudies({ page: 1 }),
-    getPublicAboutFeatures(),
-  ]);
+  const [dictionary, settings, banners, stats, blogList, studyList, aboutFeatures, bookList] =
+    await Promise.all([
+      getDictionary(locale),
+      getPublicSettings(),
+      getPublicBanners(),
+      getPublicStats(),
+      getPublicBlogs(1),
+      getPublicStudies({ page: 1 }),
+      getPublicAboutFeatures(),
+      getPublicBooks({ page: 1 }),
+    ]);
 
   const backendUrl = process.env.BACKEND_URL || "http://localhost:4000";
   const brandName = settings?.siteName || dictionary.common.siteName;
@@ -44,6 +48,7 @@ export default async function HomePage({
       <Hero locale={locale} dictionary={dictionary} brandName={brandName} />
       <Stats dictionary={dictionary} stats={stats} />
       <About dictionary={dictionary} aboutText={settings?.aboutText ?? null} features={aboutFeatures} />
+      <BooksSection locale={locale} dictionary={dictionary} books={bookList.items.slice(0, 4)} />
       <BlogsSection locale={locale} dictionary={dictionary} blogs={blogList.items} />
       <Banners dictionary={dictionary} banners={banners} backendUrl={backendUrl} />
       <StudiesSection locale={locale} dictionary={dictionary} studies={studyList.items} />

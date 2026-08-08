@@ -20,7 +20,7 @@ export function BlogsSection({ locale, dictionary, blogs }: BlogsSectionProps) {
   const compact = restBlogs.slice(0, 2);
 
   return (
-    <section className={styles.section}>
+    <section className={styles.sectionAlt}>
       <div className="container">
         <div className={styles.highlightHeader}>
           <Reveal>

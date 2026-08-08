@@ -15,7 +15,7 @@ export function Banners({ dictionary, banners, backendUrl }: BannersProps) {
   if (banners.length === 0) return null;
 
   return (
-    <section className={styles.sectionAlt}>
+    <section className={styles.section}>
       <FloatingShapes />
       <div className="container">
         <Reveal as="h2" className={styles.sectionTitleAccent}>

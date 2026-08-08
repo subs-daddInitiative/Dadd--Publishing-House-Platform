@@ -319,3 +319,108 @@ export async function getAdminStudyById(id: string): Promise<AdminStudyDetail | 
   const result = await backendFetch<AdminStudyDetail>(`/api/admin/studies/${id}`);
   return result.success ? result.data : null;
 }
+
+export type BookCategory = { id: number; name: string; slug: string };
+
+export type BookExternalLink = { id: number; label: string; url: string };
+
+export type BookSummary = {
+  id: number;
+  title: string;
+  slug: string;
+  author: string | null;
+  description: string | null;
+  price: string | null;
+  currency: string;
+  rating: string | null;
+  reviews_count: number;
+  cover_image: string | null;
+  published_at: string | null;
+  category_name: string | null;
+  category_slug: string | null;
+};
+
+export type BookDetail = BookSummary & {
+  category_id: number | null;
+  pdf_file: string | null;
+  updated_at: string;
+  external_links: BookExternalLink[];
+  related: BookSummary[];
+};
+
+export type BookListResult = {
+  items: BookSummary[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};
+
+export type BookSort = "newest" | "oldest" | "price_asc" | "price_desc";
+
+export async function getPublicBooks(options: {
+  page?: number;
+  category?: string;
+  sort?: BookSort;
+} = {}): Promise<BookListResult> {
+  const { page = 1, category, sort } = options;
+  const params = new URLSearchParams({ page: String(page) });
+  if (category) params.set("category", category);
+  if (sort) params.set("sort", sort);
+
+  const result = await backendFetch<BookListResult>(`/api/books?${params.toString()}`);
+  return result.success ? result.data : { items: [], total: 0, page: 1, pageSize: 12, totalPages: 0 };
+}
+
+export async function getPublicBookBySlug(slug: string): Promise<BookDetail | null> {
+  const result = await backendFetch<BookDetail>(`/api/books/${encodeURIComponent(slug)}`);
+  return result.success ? result.data : null;
+}
+
+export async function getPublicBookCategories(): Promise<BookCategory[]> {
+  const result = await backendFetch<BookCategory[]>("/api/books-categories");
+  return result.success ? result.data : [];
+}
+
+export type AdminBookSummary = {
+  id: number;
+  title: string;
+  slug: string;
+  status: "draft" | "published";
+  price: string | null;
+  currency: string;
+  cover_image: string | null;
+  published_at: string | null;
+  updated_at: string;
+  category_name: string | null;
+};
+
+export type AdminBookDetail = {
+  id: number;
+  category_id: number | null;
+  title: string;
+  slug: string;
+  author: string | null;
+  description: string | null;
+  price: string | null;
+  currency: string;
+  rating: string | null;
+  reviews_count: number;
+  cover_image: string | null;
+  pdf_file: string | null;
+  status: "draft" | "published";
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+  external_links: BookExternalLink[];
+};
+
+export async function getAdminBooks(): Promise<AdminBookSummary[]> {
+  const result = await backendFetch<AdminBookSummary[]>("/api/admin/books");
+  return result.success ? result.data : [];
+}
+
+export async function getAdminBookById(id: string): Promise<AdminBookDetail | null> {
+  const result = await backendFetch<AdminBookDetail>(`/api/admin/books/${id}`);
+  return result.success ? result.data : null;
+}

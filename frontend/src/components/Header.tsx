@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/getDictionary";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { HeaderStoreActions } from "@/components/HeaderStoreActions";
 import styles from "./Header.module.css";
 
 type HeaderProps = {
@@ -42,6 +43,11 @@ export function Header({ locale, dictionary, siteName, logoUrl }: HeaderProps) {
             ))}
           </ul>
         </nav>
+        <HeaderStoreActions
+          locale={locale}
+          cartLabel={dictionary.header.cartLabel}
+          favoritesLabel={dictionary.header.favoritesLabel}
+        />
         <LanguageSwitcher locale={locale} />
       </div>
     </header>

@@ -15,8 +15,9 @@ export async function generateMetadata({
 }: {
   params: Promise<PageParams>;
 }): Promise<Metadata> {
-  const { locale, slug } = await params;
+  const { locale, slug: rawSlug } = await params;
   if (!isLocale(locale)) return {};
+  const slug = decodeURIComponent(rawSlug);
 
   const [blog, settings] = await Promise.all([getPublicBlogBySlug(slug), getPublicSettings()]);
   if (!blog) return {};
@@ -51,9 +52,10 @@ export async function generateMetadata({
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<PageParams> }) {
-  const { locale: rawLocale, slug } = await params;
+  const { locale: rawLocale, slug: rawSlug } = await params;
   if (!isLocale(rawLocale)) notFound();
   const locale = rawLocale as Locale;
+  const slug = decodeURIComponent(rawSlug);
 
   const [dictionary, blog, settings] = await Promise.all([
     getDictionary(locale),

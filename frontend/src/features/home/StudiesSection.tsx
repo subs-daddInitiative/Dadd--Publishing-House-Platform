@@ -20,7 +20,7 @@ export function StudiesSection({ locale, dictionary, studies }: StudiesSectionPr
   const compact = restStudies.slice(0, 2);
 
   return (
-    <section className={styles.section}>
+    <section className={styles.sectionAlt}>
       <div className="container">
         <div className={styles.highlightHeader}>
           <Reveal>

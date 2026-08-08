@@ -84,5 +84,45 @@
     "relatedStudies": "دراسات ذات صلة",
     "breadcrumbHome": "الرئيسية",
     "breadcrumbStudies": "الدراسات"
+  },
+  "booksPage": {
+    "title": "مكتبة الكتب",
+    "subtitle": "اعثر على قراءتك القادمة.",
+    "viewAll": "عرض الكل",
+    "empty": "لا توجد كتب منشورة بعد.",
+    "prev": "السابق",
+    "next": "التالي",
+    "by": "بقلم",
+    "allCategories": "كل التصنيفات",
+    "sortNewest": "الأحدث أولاً",
+    "sortOldest": "الأقدم أولاً",
+    "sortPriceAsc": "السعر: من الأقل للأعلى",
+    "sortPriceDesc": "السعر: من الأعلى للأقل",
+    "addToCart": "أضف إلى السلة",
+    "favorite": "أضف إلى المفضلة",
+    "unfavorite": "إزالة من المفضلة",
+    "buyExternally": "الشراء من",
+    "relatedBooks": "قد يعجبك أيضًا",
+    "backHome": "العودة للرئيسية",
+    "moreBooks": "المزيد من الكتب",
+    "breadcrumbHome": "الرئيسية",
+    "breadcrumbBooks": "الكتب"
+  },
+  "cartPage": {
+    "title": "سلة المشتريات",
+    "empty": "سلتك فارغة.",
+    "total": "الإجمالي",
+    "sendWhatsapp": "إرسال الطلب عبر واتساب",
+    "remove": "إزالة",
+    "continueShopping": "متابعة التسوق"
+  },
+  "favoritesPage": {
+    "title": "المفضلة",
+    "empty": "لم تقم بإضافة أي كتب إلى المفضلة بعد.",
+    "continueShopping": "تصفح الكتب"
+  },
+  "header": {
+    "cartLabel": "السلة",
+    "favoritesLabel": "المفضلة"
   }
 }

@@ -6,6 +6,7 @@ import { getPublicSettings, backendAssetUrl } from "@/lib/serverApi";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SyncHtmlAttributes } from "@/components/SyncHtmlAttributes";
+import { StoreProvider } from "@/components/store/StoreProvider";
 import { notFound } from "next/navigation";
 
 export function generateStaticParams() {
@@ -66,7 +67,7 @@ export default async function LocaleLayout({
   const logoUrl = backendAssetUrl(settings?.logo);
 
   return (
-    <>
+    <StoreProvider>
       <SyncHtmlAttributes lang={locale} dir={dir} />
       <a href="#main-content" className="skip-link">
         {dictionary.common.skipToContent}
@@ -82,6 +83,6 @@ export default async function LocaleLayout({
         whatsappNumber={settings?.whatsappNumber ?? null}
         socialLinks={settings?.socialLinks || []}
       />
-    </>
+    </StoreProvider>
   );
 }
