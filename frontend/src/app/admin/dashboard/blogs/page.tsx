@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAdminBlogs, backendAssetUrl } from "@/lib/serverApi";
 import { BlogRowActions } from "./BlogRowActions";
+import { AdminBlogsFilters } from "./AdminBlogsFilters";
 import styles from "./blogs.module.css";
 
 export const metadata = { title: "المدونة" };
@@ -10,8 +11,14 @@ const STATUS_LABELS: Record<string, string> = {
   published: "منشور",
 };
 
-export default async function AdminBlogsPage() {
-  const blogs = await getAdminBlogs();
+export default async function AdminBlogsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string; premium?: string }>;
+}) {
+  const { search, premium: premiumParam } = await searchParams;
+  const premium = premiumParam === "free" || premiumParam === "premium" ? premiumParam : undefined;
+  const blogs = await getAdminBlogs({ search, premium });
 
   return (
     <section>
@@ -26,6 +33,8 @@ export default async function AdminBlogsPage() {
           </Link>
         </div>
       </div>
+
+      <AdminBlogsFilters />
 
       {blogs.length === 0 ? (
         <p className={styles.empty}>لا توجد مقالات بعد.</p>
@@ -55,6 +64,10 @@ export default async function AdminBlogsPage() {
                       }
                     >
                       {STATUS_LABELS[blog.status]}
+                    </span>
+                    {" · "}
+                    <span className={blog.is_premium ? styles.premiumBadge : styles.freeBadge}>
+                      {blog.is_premium ? "للمشتركين فقط" : "مجانية"}
                     </span>
                     {" · "}
                     {blog.published_at || blog.updated_at}

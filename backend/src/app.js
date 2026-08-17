@@ -16,6 +16,11 @@ const blogsRoutes = require("./features/blogs/blogs.routes");
 const studiesRoutes = require("./features/studies/studies.routes");
 const aboutFeaturesRoutes = require("./features/aboutFeatures/aboutFeatures.routes");
 const booksRoutes = require("./features/books/books.routes");
+const usersRoutes = require("./features/users/users.routes");
+const subscribersRoutes = require("./features/subscribers/subscribers.routes");
+const subscriptionsRoutes = require("./features/subscriptions/subscriptions.routes");
+const contentAccessRoutes = require("./features/contentAccess/contentAccess.routes");
+const writerUpgradesRoutes = require("./features/writerUpgrades/writerUpgrades.routes");
 
 const app = express();
 
@@ -48,6 +53,10 @@ app.use("/api", blogsRoutes.publicRouter);
 app.use("/api", studiesRoutes.publicRouter);
 app.use("/api", aboutFeaturesRoutes.publicRouter);
 app.use("/api", booksRoutes.publicRouter);
+app.use("/api", subscribersRoutes.publicRouter);
+app.use("/api", subscriptionsRoutes.publicRouter);
+app.use("/api", contentAccessRoutes.publicRouter);
+app.use("/api", writerUpgradesRoutes.publicRouter);
 
 app.use("/api/admin", settingsRoutes.adminRouter);
 app.use("/api/admin", bannersRoutes.adminRouter);
@@ -56,6 +65,10 @@ app.use("/api/admin", blogsRoutes.adminRouter);
 app.use("/api/admin", studiesRoutes.adminRouter);
 app.use("/api/admin", aboutFeaturesRoutes.adminRouter);
 app.use("/api/admin", booksRoutes.adminRouter);
+app.use("/api/admin", usersRoutes.adminRouter);
+app.use("/api/admin", subscriptionsRoutes.adminRouter);
+app.use("/api/admin", contentAccessRoutes.adminRouter);
+app.use("/api/admin", writerUpgradesRoutes.adminRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

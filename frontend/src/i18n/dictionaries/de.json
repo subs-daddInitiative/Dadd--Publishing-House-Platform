@@ -10,6 +10,62 @@
     "blog": "Blog",
     "contact": "Kontakt"
   },
+  "authPage": {
+    "registerTitle": "Autorenkonto erstellen",
+    "loginTitle": "Anmelden",
+    "nameLabel": "Name",
+    "accountTypeLabel": "Kontotyp",
+    "accountTypeReader": "Leser",
+    "accountTypeWriter": "Autor",
+    "emailLabel": "E-Mail",
+    "passwordLabel": "Passwort",
+    "submitRegister": "Konto erstellen",
+    "submitLogin": "Anmelden",
+    "submitting": "Wird gesendet...",
+    "haveAccount": "Bereits ein Konto?",
+    "noAccount": "Noch kein Konto?",
+    "switchToLogin": "Anmelden",
+    "switchToRegister": "Neues Konto erstellen",
+    "errorGeneric": "Etwas ist schiefgelaufen, bitte versuchen Sie es erneut."
+  },
+  "accountPage": {
+    "title": "Mein Konto",
+    "tierNone": "Nicht abonniert",
+    "tierBeginner": "Angehender Autor",
+    "tierVerified": "Verifizierter Autor",
+    "currentPlanLabel": "Aktuelle Mitgliedschaft",
+    "expiresLabel": "Läuft ab am",
+    "choosePlanTitle": "Mitgliedschaftsplan wählen",
+    "monthly": "Monatlich",
+    "annual": "Jährlich",
+    "subscribeButton": "Jetzt abonnieren",
+    "renewButton": "Verlängern",
+    "logout": "Abmelden",
+    "priceUnavailable": "Preis noch nicht festgelegt",
+    "writerSectionTitle": "Autorenstatus",
+    "myBlogs": "Meine Blogs",
+    "requestUpgrade": "Upgrade zum verifizierten Autor beantragen",
+    "requestPending": "Ihre Anfrage wird von Moderatoren geprüft.",
+    "requestInvited": "Sie wurden zum Upgrade eingeladen! Abonnieren Sie unten den verifizierten Autorenplan.",
+    "requestRejected": "Ihre Anfrage wurde abgelehnt",
+    "rejectionReasonLabel": "Grund",
+    "nextEligibleLabel": "Sie können erneut anfragen nach",
+    "mustBeBeginnerFirst": "Abonnieren Sie zuerst als angehender Autor, bevor Sie ein Upgrade beantragen."
+  },
+  "subscribeResultPage": {
+    "title": "Zahlungsergebnis",
+    "checking": "Zahlungsstatus wird überprüft...",
+    "success": "Ihre Mitgliedschaft ist jetzt aktiv.",
+    "failed": "Die Zahlung wurde nicht abgeschlossen. Bitte versuchen Sie es erneut.",
+    "backToAccount": "Zurück zu meinem Konto"
+  },
+  "premiumLock": {
+    "mustRegister": "Dieser Inhalt ist für registrierte Mitglieder. Erstellen Sie ein kostenloses Konto, um fortzufahren.",
+    "registerNow": "Konto erstellen",
+    "blogsLocked": "Dieser Artikel ist für Premium-Blog-Abonnenten.",
+    "studiesLocked": "Diese Studie ist für Abonnenten oder kann einzeln erworben werden.",
+    "buyThisStudy": "Diese Studie kaufen"
+  },
   "home": {
     "heroTitle": "Worte, die bleiben",
     "heroBadge": "Arabisches Verlagshaus",
@@ -65,7 +121,11 @@
     "by": "Von",
     "backHome": "Zurück zur Startseite",
     "moreArticles": "Weitere Artikel",
-    "relatedArticles": "Ähnliche Artikel"
+    "relatedArticles": "Ähnliche Artikel",
+    "lockedFile": "Diese Datei ist nur für Premium-Blog-Abonnenten verfügbar.",
+    "filterAll": "Alle Artikel",
+    "filterFree": "Kostenlos",
+    "filterPremium": "Nur für Abonnenten"
   },
   "studiesPage": {
     "title": "Vertiefende Studien",
@@ -123,6 +183,8 @@
   },
   "header": {
     "cartLabel": "Warenkorb",
-    "favoritesLabel": "Favoriten"
+    "favoritesLabel": "Favoriten",
+    "loginLabel": "Anmelden",
+    "accountLabel": "Mein Konto"
   }
 }

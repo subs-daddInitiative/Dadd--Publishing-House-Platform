@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const { requireAuth } = require("../../middlewares/requireAuth");
+const { requireAdmin } = require("../../middlewares/requireAdmin");
 const { createImageUpload } = require("../../middlewares/imageUpload");
 const {
   getPublicBanners,
@@ -16,9 +17,9 @@ publicRouter.get("/banners", getPublicBanners);
 
 const adminRouter = Router();
 adminRouter.use(requireAuth);
-adminRouter.get("/banners", getAllBanners);
-adminRouter.post("/banners", bannerUpload.single("image"), createBannerHandler);
-adminRouter.put("/banners/:id", bannerUpload.single("image"), updateBannerHandler);
-adminRouter.delete("/banners/:id", deleteBannerHandler);
+adminRouter.get("/banners", requireAdmin, getAllBanners);
+adminRouter.post("/banners", requireAdmin, bannerUpload.single("image"), createBannerHandler);
+adminRouter.put("/banners/:id", requireAdmin, bannerUpload.single("image"), updateBannerHandler);
+adminRouter.delete("/banners/:id", requireAdmin, deleteBannerHandler);
 
 module.exports = { publicRouter, adminRouter };

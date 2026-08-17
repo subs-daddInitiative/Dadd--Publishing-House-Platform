@@ -5,9 +5,9 @@ import { getPublicBlogs, getPublicStudies, getPublicBooks } from "@/lib/serverAp
 const routes = ["", "/books", "/studies", "/blog", "/contact"];
 
 async function getAllBlogEntries() {
-  const firstPage = await getPublicBlogs(1);
+  const firstPage = await getPublicBlogs({ page: 1 });
   const pages = await Promise.all(
-    Array.from({ length: firstPage.totalPages - 1 }, (_, index) => getPublicBlogs(index + 2))
+    Array.from({ length: firstPage.totalPages - 1 }, (_, index) => getPublicBlogs({ page: index + 2 }))
   );
   return [firstPage, ...pages].flatMap((result) => result.items);
 }

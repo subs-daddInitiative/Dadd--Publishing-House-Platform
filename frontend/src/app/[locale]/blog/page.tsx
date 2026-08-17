@@ -3,6 +3,7 @@ import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import { getPublicBlogs } from "@/lib/serverApi";
 import { BlogCard } from "@/features/blog/BlogCard";
+import { BlogsFilters } from "@/features/blog/BlogsFilters";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import styles from "@/features/blog/blog.module.css";
@@ -38,16 +39,17 @@ export default async function BlogPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; premium?: string }>;
 }) {
   const { locale: rawLocale } = await params;
   if (!isLocale(rawLocale)) notFound();
 
   const locale = rawLocale as Locale;
-  const { page: pageParam } = await searchParams;
+  const { page: pageParam, premium: premiumParam } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
+  const premium = premiumParam === "free" || premiumParam === "premium" ? premiumParam : undefined;
 
-  const [dictionary, blogList] = await Promise.all([getDictionary(locale), getPublicBlogs(page)]);
+  const [dictionary, blogList] = await Promise.all([getDictionary(locale), getPublicBlogs({ page, premium })]);
 
   const { items, totalPages } = blogList;
   const isFirstPage = page === 1;
@@ -63,6 +65,13 @@ export default async function BlogPage({
           <p className={styles.pageSubtitle}>{dictionary.blogPage.subtitle}</p>
         </div>
       </div>
+
+      <BlogsFilters
+        locale={locale}
+        allLabel={dictionary.blogPage.filterAll}
+        freeLabel={dictionary.blogPage.filterFree}
+        premiumLabel={dictionary.blogPage.filterPremium}
+      />
 
       {items.length === 0 ? (
         <p className={styles.empty}>{dictionary.blogPage.empty}</p>
@@ -92,14 +101,20 @@ export default async function BlogPage({
       {totalPages > 1 && (
         <nav className={styles.pagination} aria-label="pagination">
           {page > 1 ? (
-            <Link href={`/${locale}/blog?page=${page - 1}`} className={styles.pageLink}>
+            <Link
+              href={`/${locale}/blog?page=${page - 1}${premium ? `&premium=${premium}` : ""}`}
+              className={styles.pageLink}
+            >
               {dictionary.blogPage.prev}
             </Link>
           ) : (
             <span className={styles.pageLinkDisabled}>{dictionary.blogPage.prev}</span>
           )}
           {page < totalPages ? (
-            <Link href={`/${locale}/blog?page=${page + 1}`} className={styles.pageLink}>
+            <Link
+              href={`/${locale}/blog?page=${page + 1}${premium ? `&premium=${premium}` : ""}`}
+              className={styles.pageLink}
+            >
               {dictionary.blogPage.next}
             </Link>
           ) : (

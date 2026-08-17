@@ -1,0 +1,22 @@
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateModeratorPayload(body) {
+  const errors = [];
+  const value = {};
+
+  const name = typeof body.name === "string" ? body.name.trim() : "";
+  if (!name) errors.push("Name is required");
+  value.name = name.slice(0, 150);
+
+  const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+  if (!email || !EMAIL_PATTERN.test(email)) errors.push("A valid email is required");
+  value.email = email.slice(0, 190);
+
+  const password = typeof body.password === "string" ? body.password : "";
+  if (password.length < 8) errors.push("Password must be at least 8 characters");
+  value.password = password;
+
+  return { errors, value };
+}
+
+module.exports = { validateModeratorPayload };

@@ -12,6 +12,8 @@ const {
   softDeleteStudy,
 } = require("./studies.repository");
 const { validateStudyPayload } = require("./studies.validation");
+const { hasActiveStudiesAccess } = require("../subscribers/subscribers.repository");
+const { findCompletedPurchase } = require("../contentAccess/studyPurchases.repository");
 
 const PAGE_SIZE = 9;
 const SORTS = ["newest", "oldest"];
@@ -52,7 +54,24 @@ async function getPublicStudyBySlug(req, res, next) {
       return res.status(404).json({ success: false, message: "Study not found" });
     }
     const related = await findRelatedStudies(study.category_id, study.id);
-    res.json({ success: true, data: { ...study, related } });
+
+    let locked = false;
+    if (study.is_premium) {
+      let entitled = false;
+      if (req.subscriber) {
+        entitled =
+          (await hasActiveStudiesAccess(req.subscriber.sub)) ||
+          Boolean(await findCompletedPurchase(req.subscriber.sub, study.id));
+      }
+      if (!entitled) {
+        locked = true;
+        study.content_intro = null;
+        study.content_body = null;
+        study.pdf_file = null;
+      }
+    }
+
+    res.json({ success: true, data: { ...study, locked, related } });
   } catch (error) {
     next(error);
   }

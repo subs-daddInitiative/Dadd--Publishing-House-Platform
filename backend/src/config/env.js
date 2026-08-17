@@ -23,6 +23,16 @@ const env = {
     secret: required("JWT_SECRET"),
     expiresIn: process.env.JWT_EXPIRES_IN || "1d",
   },
+  subscriberJwt: {
+    secret: process.env.SUBSCRIBER_JWT_SECRET || required("JWT_SECRET"),
+    expiresIn: process.env.SUBSCRIBER_JWT_EXPIRES_IN || "30d",
+  },
+  frontendUrl: process.env.FRONTEND_URL || "http://localhost:3000",
+  backendUrl: process.env.BACKEND_URL || "http://localhost:4000",
+  tap: {
+    secretKey: process.env.TAP_SECRET_KEY || "",
+    baseUrl: process.env.TAP_BASE_URL || "https://api.tap.company/v2",
+  },
 };
 
 module.exports = { env };

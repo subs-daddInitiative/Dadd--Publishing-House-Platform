@@ -1,0 +1,122 @@
+.field {
+  margin-bottom: var(--space-2);
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  margin-bottom: var(--space-1);
+}
+
+.textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.editorWrap {
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  overflow: hidden;
+  margin-bottom: var(--space-1);
+}
+
+.itemMeta {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-1);
+}
+
+.buttonSecondary {
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--color-text);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.blockCard {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: var(--space-2);
+  margin-bottom: var(--space-2);
+  background: var(--color-surface);
+}
+
+.blockCard > * + * {
+  margin-top: var(--space-1);
+}
+
+.blockHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.blockType {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.blockActions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.blockMoveButton,
+.blockRemoveButton {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.blockRemoveButton {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.blockMoveButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.blockImagePreview {
+  max-width: 12rem;
+  max-height: 8rem;
+  object-fit: cover;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-border);
+  display: block;
+}
+
+.addBlockRow {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.addBlockRow .select {
+  width: auto;
+  margin-bottom: 0;
+}

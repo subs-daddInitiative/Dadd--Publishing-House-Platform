@@ -2,7 +2,7 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { RichTextEditor } from "@/components/RichTextEditor";
+import { BlockEditor, type ContentBlock } from "@/features/blogEditor/BlockEditor";
 import type { AdminBlogDetail, BlogCategory } from "@/lib/serverApi";
 import styles from "./blogs.module.css";
 
@@ -23,6 +23,16 @@ function slugify(text: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function parseInitialBlocks(raw: string | null | undefined): ContentBlock[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 export function BlogForm({
   mode,
   blogId,
@@ -40,8 +50,11 @@ export function BlogForm({
   const [authorName, setAuthorName] = useState(initialBlog?.author_name || "");
   const [categoryId, setCategoryId] = useState(initialBlog?.category_id?.toString() || "");
   const [excerpt, setExcerpt] = useState(initialBlog?.excerpt || "");
-  const [content, setContent] = useState(initialBlog?.content || "");
+  const [blocks, setBlocks] = useState<ContentBlock[]>(parseInitialBlocks(initialBlog?.content_blocks));
+  const [seoKeywords, setSeoKeywords] = useState(initialBlog?.seo_keywords || "");
   const [status, setStatus] = useState(initialBlog?.status || "draft");
+  const [isPremium, setIsPremium] = useState(Boolean(initialBlog?.is_premium));
+  const [uploading, setUploading] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "saving" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -63,8 +76,10 @@ export function BlogForm({
     formData.append("author_name", authorName);
     formData.append("category_id", categoryId);
     formData.append("excerpt", excerpt);
-    formData.append("content", content);
+    formData.append("content_blocks", JSON.stringify(blocks));
+    formData.append("seo_keywords", seoKeywords);
     formData.append("status", status);
+    formData.append("is_premium", String(isPremium));
 
     const file = fileInputRef.current?.files?.[0];
     if (file) {
@@ -180,6 +195,30 @@ export function BlogForm({
       </div>
 
       <div className={styles.field}>
+        <div className={styles.premiumToggleRow}>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={isPremium}
+            onClick={() => setIsPremium((prev) => !prev)}
+            className={`${styles.premiumToggle} ${isPremium ? styles.premiumToggleOn : ""}`}
+          >
+            <span className={styles.premiumToggleThumb} />
+          </button>
+          <div>
+            <p className={styles.premiumToggleLabel}>
+              {isPremium ? "مقالة للمشتركين فقط" : "مقالة مجانية"}
+            </p>
+            <p className={styles.premiumToggleHint}>
+              {isPremium
+                ? "لن تظهر إلا لمن يملك اشتراك المدونة المميزة"
+                : "تظهر لجميع الزوار مجانًا"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.field}>
         <label className={styles.label}>صورة الغلاف</label>
         {currentCoverImageUrl && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -189,15 +228,31 @@ export function BlogForm({
       </div>
 
       <div className={styles.field}>
-        <label className={styles.label}>محتوى المقالة</label>
-        <div className={styles.editorWrap}>
-          <RichTextEditor value={content} onChange={setContent} />
-        </div>
+        <label className={styles.label}>محتوى المقالة (أقسام)</label>
+        <BlockEditor
+          blocks={blocks}
+          onChange={setBlocks}
+          onUploadingChange={setUploading}
+          uploadUrl="/api/admin/blogs/upload-asset"
+        />
+      </div>
+
+      <div className={styles.field}>
+        <label htmlFor="blogSeoKeywords" className={styles.label}>
+          كلمات مفتاحية لتحسين محركات البحث (SEO) - لا تظهر للزوار
+        </label>
+        <input
+          id="blogSeoKeywords"
+          className={styles.input}
+          value={seoKeywords}
+          onChange={(event) => setSeoKeywords(event.target.value)}
+          placeholder="افصل بين الكلمات بفواصل"
+        />
       </div>
 
       <div className={styles.formActions}>
-        <button type="submit" className={styles.button} disabled={submitState === "saving"}>
-          {submitState === "saving" ? "جارٍ الحفظ..." : "حفظ"}
+        <button type="submit" className={styles.button} disabled={submitState === "saving" || uploading}>
+          {uploading ? "جارٍ رفع الملفات..." : submitState === "saving" ? "جارٍ الحفظ..." : "حفظ"}
         </button>
         {submitState === "error" && <p className={styles.statusError}>{errorMessage}</p>}
       </div>

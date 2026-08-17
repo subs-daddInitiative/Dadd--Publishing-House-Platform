@@ -11,7 +11,8 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const admin = await getCurrentAdmin();
   if (!admin) redirect("/admin/login");
 
-  const unreadCount = await getUnreadContactCount();
+  const isAdmin = admin.role === "admin";
+  const unreadCount = isAdmin ? await getUnreadContactCount() : 0;
 
   return (
     <div className={styles.shell}>
@@ -21,11 +22,6 @@ export default async function DashboardLayout({ children }: { children: ReactNod
           <li>
             <Link href="/admin/dashboard" className={styles.navLink}>
               نظرة عامة
-            </Link>
-          </li>
-          <li>
-            <Link href="/admin/dashboard/settings" className={styles.navLink}>
-              الإعدادات
             </Link>
           </li>
           <li>
@@ -44,11 +40,35 @@ export default async function DashboardLayout({ children }: { children: ReactNod
             </Link>
           </li>
           <li>
-            <Link href="/admin/dashboard/contact-messages" className={styles.navLink}>
-              رسائل التواصل
-              {unreadCount > 0 && <span className={styles.badge}>{unreadCount}</span>}
+            <Link href="/admin/dashboard/blog-reviews" className={styles.navLink}>
+              مراجعة مقالات الكُتّاب
             </Link>
           </li>
+          <li>
+            <Link href="/admin/dashboard/writer-requests" className={styles.navLink}>
+              طلبات التوثيق
+            </Link>
+          </li>
+          {isAdmin && (
+            <>
+              <li>
+                <Link href="/admin/dashboard/contact-messages" className={styles.navLink}>
+                  رسائل التواصل
+                  {unreadCount > 0 && <span className={styles.badge}>{unreadCount}</span>}
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin/dashboard/settings" className={styles.navLink}>
+                  الإعدادات
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin/dashboard/users" className={styles.navLink}>
+                  المستخدمون
+                </Link>
+              </li>
+            </>
+          )}
         </ul>
         <LogoutButton />
       </aside>

@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const { requireAuth } = require("../../middlewares/requireAuth");
+const { optionalSubscriberAuth } = require("../../middlewares/optionalSubscriberAuth");
 const { studiesUpload } = require("./studiesUpload");
 const { createCategoryRepository } = require("../../utils/categoryRepository");
 const { createCategoryController } = require("../../utils/categoryController");
@@ -24,7 +25,7 @@ const studyCategories = createCategoryController(createCategoryRepository("studi
 const publicRouter = Router();
 publicRouter.get("/studies", getPublicStudies);
 publicRouter.get("/studies-categories", getStudyCategories);
-publicRouter.get("/studies/:slug", getPublicStudyBySlug);
+publicRouter.get("/studies/:slug", optionalSubscriberAuth, getPublicStudyBySlug);
 
 const adminRouter = Router();
 adminRouter.use(requireAuth);

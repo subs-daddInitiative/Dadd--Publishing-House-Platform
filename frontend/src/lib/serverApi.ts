@@ -26,7 +26,7 @@ async function backendFetch<T>(
   return response.json();
 }
 
-export type AdminUser = { id: number; name: string; email: string; role: string };
+export type AdminUser = { id: number; name: string; email: string; role: "admin" | "moderator" };
 
 export async function getCurrentAdmin(): Promise<AdminUser | null> {
   const result = await backendFetch<{ user: AdminUser }>("/api/auth/me");
@@ -155,11 +155,22 @@ export type BlogSummary = {
   category_name: string | null;
   category_slug: string | null;
   author_name: string | null;
+  is_premium: number;
 };
 
+export type BlogContentBlock =
+  | { id: string; type: "text"; html: string }
+  | { id: string; type: "image"; url: string; alt: string; caption: string }
+  | { id: string; type: "image_text"; url: string; alt: string; html: string; layout: "image-left" | "image-right" }
+  | { id: string; type: "quote"; text: string; author: string }
+  | { id: string; type: "tags"; tags: string[] }
+  | { id: string; type: "pdf" | "voice"; url: string | null; label: string; access: "free" | "premium"; locked?: boolean };
+
 export type BlogDetail = BlogSummary & {
-  content: string | null;
+  content_blocks: BlogContentBlock[];
+  seo_keywords: string | null;
   updated_at: string;
+  locked: boolean;
   related: BlogSummary[];
 };
 
@@ -171,8 +182,14 @@ export type BlogListResult = {
   totalPages: number;
 };
 
-export async function getPublicBlogs(page = 1): Promise<BlogListResult> {
-  const result = await backendFetch<BlogListResult>(`/api/blogs?page=${page}`);
+export async function getPublicBlogs(
+  options: { page?: number; premium?: "free" | "premium" } = {}
+): Promise<BlogListResult> {
+  const { page = 1, premium } = options;
+  const params = new URLSearchParams({ page: String(page) });
+  if (premium) params.set("premium", premium);
+
+  const result = await backendFetch<BlogListResult>(`/api/blogs?${params.toString()}`);
   return result.success ? result.data : { items: [], total: 0, page: 1, pageSize: 9, totalPages: 0 };
 }
 
@@ -191,6 +208,8 @@ export type AdminBlogSummary = {
   title: string;
   slug: string;
   status: "draft" | "published";
+  review_status: "none" | "pending" | "approved" | "rejected";
+  is_premium: number;
   cover_image: string | null;
   published_at: string | null;
   updated_at: string;
@@ -205,16 +224,24 @@ export type AdminBlogDetail = {
   title: string;
   slug: string;
   excerpt: string | null;
-  content: string | null;
+  content_blocks: string | null;
+  seo_keywords: string | null;
   cover_image: string | null;
   status: "draft" | "published";
+  review_status: "none" | "pending" | "approved" | "rejected";
+  review_reason: string | null;
+  is_premium: number;
   published_at: string | null;
   created_at: string;
   updated_at: string;
 };
 
-export async function getAdminBlogs(): Promise<AdminBlogSummary[]> {
-  const result = await backendFetch<AdminBlogSummary[]>("/api/admin/blogs");
+export async function getAdminBlogs(options: { search?: string; premium?: "free" | "premium" } = {}): Promise<AdminBlogSummary[]> {
+  const params = new URLSearchParams();
+  if (options.search) params.set("search", options.search);
+  if (options.premium) params.set("premium", options.premium);
+  const query = params.toString();
+  const result = await backendFetch<AdminBlogSummary[]>(`/api/admin/blogs${query ? `?${query}` : ""}`);
   return result.success ? result.data : [];
 }
 
@@ -235,6 +262,9 @@ export type StudySummary = {
   published_at: string | null;
   category_name: string | null;
   category_slug: string | null;
+  is_premium: number;
+  price: string | null;
+  currency: string;
 };
 
 export type StudyDetail = StudySummary & {
@@ -244,6 +274,7 @@ export type StudyDetail = StudySummary & {
   content_body: string | null;
   pdf_file: string | null;
   updated_at: string;
+  locked: boolean;
   related: StudySummary[];
 };
 
@@ -305,6 +336,9 @@ export type AdminStudyDetail = {
   main_image: string | null;
   pdf_file: string | null;
   status: "draft" | "published";
+  is_premium: number;
+  price: string | null;
+  currency: string;
   published_at: string | null;
   created_at: string;
   updated_at: string;
@@ -423,4 +457,145 @@ export async function getAdminBooks(): Promise<AdminBookSummary[]> {
 export async function getAdminBookById(id: string): Promise<AdminBookDetail | null> {
   const result = await backendFetch<AdminBookDetail>(`/api/admin/books/${id}`);
   return result.success ? result.data : null;
+}
+
+export type Moderator = {
+  id: number;
+  name: string;
+  email: string;
+  is_active: number;
+  last_login_at: string | null;
+  created_at: string;
+};
+
+export async function getAdminModerators(): Promise<Moderator[]> {
+  const result = await backendFetch<Moderator[]>("/api/admin/users");
+  return result.success ? result.data : [];
+}
+
+export type Subscriber = {
+  id: number;
+  name: string;
+  email: string;
+  account_type: "reader" | "writer";
+  current_tier: "none" | "beginner" | "verified";
+  tier_expires_at: string | null;
+  blog_access_expires_at: string | null;
+  studies_access_expires_at: string | null;
+  created_at: string;
+};
+
+export async function getCurrentSubscriber(): Promise<Subscriber | null> {
+  const result = await backendFetch<{ subscriber: Subscriber }>("/api/subscriber/me");
+  return result.success ? result.data.subscriber : null;
+}
+
+export type SubscriptionTier = "beginner" | "verified";
+export type BillingCycle = "monthly" | "annual";
+
+export type SubscriptionPlan = {
+  id: number;
+  tier: SubscriptionTier;
+  billing_cycle: BillingCycle;
+  price: string;
+  currency: string;
+};
+
+export async function getPublicSubscriptionPlans(): Promise<SubscriptionPlan[]> {
+  const result = await backendFetch<SubscriptionPlan[]>("/api/subscription-plans");
+  return result.success ? result.data : [];
+}
+
+export type ContentAccessCategory = "blogs" | "studies";
+
+export type ContentAccessPlan = {
+  id: number;
+  category: ContentAccessCategory;
+  billing_cycle: BillingCycle;
+  price: string;
+  currency: string;
+};
+
+export async function getPublicContentAccessPlans(): Promise<ContentAccessPlan[]> {
+  const result = await backendFetch<ContentAccessPlan[]>("/api/content-access-plans");
+  return result.success ? result.data : [];
+}
+
+export type WriterUpgradeRequest = {
+  id: number;
+  subscriber_id: number;
+  status: "pending" | "invited" | "rejected";
+  created_at: string;
+  name: string;
+  email: string;
+  current_tier: "none" | "beginner" | "verified";
+};
+
+export async function getPendingWriterUpgradeRequests(): Promise<WriterUpgradeRequest[]> {
+  const result = await backendFetch<WriterUpgradeRequest[]>("/api/admin/writer-upgrade-requests");
+  return result.success ? result.data : [];
+}
+
+export type WriterUpgradeStatus = {
+  status: "pending" | "invited" | "rejected";
+  reason: string | null;
+  decided_at: string | null;
+  next_eligible_at: string | null;
+} | null;
+
+export async function getWriterUpgradeStatus(): Promise<WriterUpgradeStatus> {
+  const result = await backendFetch<WriterUpgradeStatus>("/api/subscriber/writer-upgrade/status");
+  return result.success ? result.data : null;
+}
+
+export type WriterBlogSummary = {
+  id: number;
+  title: string;
+  slug: string;
+  status: "draft" | "published";
+  review_status: "none" | "pending" | "approved" | "rejected";
+  review_reason: string | null;
+  cover_image: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type WriterBlogDetail = {
+  id: number;
+  category_id: number | null;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content_blocks: string | null;
+  cover_image: string | null;
+  status: "draft" | "published";
+  review_status: "none" | "pending" | "approved" | "rejected";
+  review_reason: string | null;
+};
+
+export async function getWriterBlogs(): Promise<WriterBlogSummary[]> {
+  const result = await backendFetch<WriterBlogSummary[]>("/api/subscriber/blogs");
+  return result.success ? result.data : [];
+}
+
+export async function getWriterBlogById(id: string): Promise<WriterBlogDetail | null> {
+  const result = await backendFetch<WriterBlogDetail>(`/api/subscriber/blogs/${id}`);
+  return result.success ? result.data : null;
+}
+
+export type PendingReviewBlog = {
+  id: number;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  cover_image: string | null;
+  created_at: string;
+  category_name: string | null;
+  writer_name: string;
+  writer_email: string;
+};
+
+export async function getPendingReviewBlogs(): Promise<PendingReviewBlog[]> {
+  const result = await backendFetch<PendingReviewBlog[]>("/api/admin/blogs/pending-review");
+  return result.success ? result.data : [];
 }

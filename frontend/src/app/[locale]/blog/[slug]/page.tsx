@@ -3,9 +3,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
-import { getPublicBlogBySlug, getPublicSettings, backendAssetUrl } from "@/lib/serverApi";
+import {
+  getPublicBlogBySlug,
+  getPublicSettings,
+  getCurrentSubscriber,
+  getPublicContentAccessPlans,
+  backendAssetUrl,
+} from "@/lib/serverApi";
 import { notFound } from "next/navigation";
 import { BlogCard } from "@/features/blog/BlogCard";
+import { BlockRenderer } from "@/features/blog/BlockRenderer";
+import { PremiumLock } from "@/features/subscribers/PremiumLock";
 import styles from "@/features/blog/blog.module.css";
 
 type PageParams = { locale: string; slug: string };
@@ -29,6 +37,7 @@ export async function generateMetadata({
   return {
     title: `${blog.title} | ${siteName}`,
     description,
+    keywords: blog.seo_keywords || undefined,
     alternates: {
       canonical: `/${locale}/blog/${blog.slug}`,
       languages: Object.fromEntries(locales.map((loc) => [loc, `/${loc}/blog/${blog.slug}`])),
@@ -64,6 +73,11 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
   ]);
 
   if (!blog) notFound();
+
+  const [subscriber, contentPlans] = blog.locked
+    ? await Promise.all([getCurrentSubscriber(), getPublicContentAccessPlans()])
+    : [null, []];
+  const blogPlans = contentPlans.filter((plan) => plan.category === "blogs");
 
   const siteName = settings?.siteName || dictionary.common.siteName;
   const logoUrl = backendAssetUrl(settings?.logo);
@@ -118,8 +132,18 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
         </div>
       )}
 
-      {blog.content && (
-        <div className={styles.postBody} dangerouslySetInnerHTML={{ __html: blog.content }} />
+      {blog.content_blocks.length > 0 && (
+        <BlockRenderer blocks={blog.content_blocks} lockedFileLabel={dictionary.blogPage.lockedFile} />
+      )}
+
+      {blog.locked && (
+        <PremiumLock
+          locale={locale}
+          dictionary={dictionary}
+          category="blogs"
+          isLoggedIn={Boolean(subscriber)}
+          plans={blogPlans}
+        />
       )}
 
       {blog.related.length > 0 && (

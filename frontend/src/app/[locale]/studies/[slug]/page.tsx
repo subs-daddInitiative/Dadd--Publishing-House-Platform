@@ -7,12 +7,15 @@ import {
   getPublicStudyBySlug,
   getPublicSettings,
   getPublicBanners,
+  getCurrentSubscriber,
+  getPublicContentAccessPlans,
   backendAssetUrl,
 } from "@/lib/serverApi";
 import { notFound } from "next/navigation";
 import { Parallax } from "@/components/Parallax";
 import { Banners } from "@/features/home/Banners";
 import { StudyCard } from "@/features/studies/StudyCard";
+import { PremiumLock } from "@/features/subscribers/PremiumLock";
 import styles from "@/features/studies/studies.module.css";
 
 type PageParams = { locale: string; slug: string };
@@ -72,6 +75,11 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
   ]);
 
   if (!study) notFound();
+
+  const [subscriber, contentPlans] = study.locked
+    ? await Promise.all([getCurrentSubscriber(), getPublicContentAccessPlans()])
+    : [null, []];
+  const studyPlans = contentPlans.filter((plan) => plan.category === "studies");
 
   const siteName = settings?.siteName || dictionary.common.siteName;
   const logoUrl = backendAssetUrl(settings?.logo);
@@ -175,6 +183,19 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
 
       {study.content_intro && (
         <div className={styles.contentBlock} dangerouslySetInnerHTML={{ __html: study.content_intro }} />
+      )}
+
+      {study.locked && (
+        <PremiumLock
+          locale={locale}
+          dictionary={dictionary}
+          category="studies"
+          isLoggedIn={Boolean(subscriber)}
+          plans={studyPlans}
+          studyId={study.id}
+          studyPrice={study.price}
+          studyCurrency={study.currency}
+        />
       )}
 
       <Banners

@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const rateLimit = require("express-rate-limit");
 const { requireAuth } = require("../../middlewares/requireAuth");
+const { requireAdmin } = require("../../middlewares/requireAdmin");
 const {
   submitMessage,
   getMessages,
@@ -22,9 +23,9 @@ publicRouter.post("/contact", submitLimiter, submitMessage);
 
 const adminRouter = Router();
 adminRouter.use(requireAuth);
-adminRouter.get("/contact-messages", getMessages);
-adminRouter.get("/contact-messages/unread-count", getUnreadCount);
-adminRouter.patch("/contact-messages/:id/read", markMessageAsRead);
-adminRouter.delete("/contact-messages/:id", deleteMessage);
+adminRouter.get("/contact-messages", requireAdmin, getMessages);
+adminRouter.get("/contact-messages/unread-count", requireAdmin, getUnreadCount);
+adminRouter.patch("/contact-messages/:id/read", requireAdmin, markMessageAsRead);
+adminRouter.delete("/contact-messages/:id", requireAdmin, deleteMessage);
 
 module.exports = { publicRouter, adminRouter };

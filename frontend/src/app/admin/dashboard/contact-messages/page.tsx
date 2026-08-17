@@ -1,4 +1,5 @@
-import { getAdminContactMessages } from "@/lib/serverApi";
+import { redirect } from "next/navigation";
+import { getCurrentAdmin, getAdminContactMessages } from "@/lib/serverApi";
 import { MessageActions } from "./MessageActions";
 import { SubjectFilter } from "./SubjectFilter";
 import styles from "./contact-messages.module.css";
@@ -17,6 +18,9 @@ export default async function ContactMessagesPage({
 }: {
   searchParams: Promise<{ subject?: string }>;
 }) {
+  const admin = await getCurrentAdmin();
+  if (!admin || admin.role !== "admin") redirect("/admin/dashboard");
+
   const { subject } = await searchParams;
   const messages = await getAdminContactMessages(subject);
 

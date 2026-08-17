@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(150) NOT NULL,
   email VARCHAR(190) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  role ENUM('admin') NOT NULL DEFAULT 'admin',
+  role ENUM('admin', 'moderator') NOT NULL DEFAULT 'admin',
   is_active TINYINT(1) NOT NULL DEFAULT 1,
   last_login_at DATETIME NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -108,6 +108,9 @@ CREATE TABLE IF NOT EXISTS studies (
   main_image VARCHAR(255) NULL,
   pdf_file VARCHAR(255) NULL,
   status ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
+  is_premium TINYINT(1) NOT NULL DEFAULT 0,
+  price DECIMAL(10, 2) NULL,
+  currency VARCHAR(6) NOT NULL DEFAULT 'SAR',
   published_at DATETIME NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -140,24 +143,39 @@ CREATE TABLE IF NOT EXISTS blogs (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   category_id INT UNSIGNED NULL,
   author_id INT UNSIGNED NULL,
+  submitted_by_subscriber_id INT UNSIGNED NULL,
   author_name VARCHAR(190) NULL,
   title VARCHAR(255) NOT NULL,
   slug VARCHAR(280) NOT NULL,
   excerpt VARCHAR(500) NULL,
   content LONGTEXT NULL,
+  content_blocks LONGTEXT NULL,
+  seo_keywords VARCHAR(500) NULL,
   cover_image VARCHAR(255) NULL,
   status ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
+  review_status ENUM('none', 'pending', 'approved', 'rejected') NOT NULL DEFAULT 'none',
+  review_reason TEXT NULL,
+  reviewed_by INT UNSIGNED NULL,
+  reviewed_at DATETIME NULL,
+  is_premium TINYINT(1) NOT NULL DEFAULT 0,
   published_at DATETIME NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at DATETIME NULL,
   UNIQUE KEY uq_blogs_slug (slug),
   KEY idx_blogs_status (status),
+  KEY idx_blogs_review_status (review_status),
   CONSTRAINT fk_blogs_category
     FOREIGN KEY (category_id) REFERENCES blogs_categories (id)
     ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT fk_blogs_author
     FOREIGN KEY (author_id) REFERENCES users (id)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT fk_blogs_submitted_by
+    FOREIGN KEY (submitted_by_subscriber_id) REFERENCES subscribers (id)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT fk_blogs_reviewed_by
+    FOREIGN KEY (reviewed_by) REFERENCES users (id)
     ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -250,6 +268,138 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   deleted_at DATETIME NULL,
   KEY idx_contact_messages_is_read (is_read),
   KEY idx_contact_messages_subject (subject)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
+-- subscribers (public writer accounts, separate from admin/moderator users)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS subscribers (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(150) NOT NULL,
+  email VARCHAR(190) NOT NULL,
+  account_type ENUM('reader', 'writer') NOT NULL DEFAULT 'reader',
+  password_hash VARCHAR(255) NOT NULL,
+  current_tier ENUM('none', 'beginner', 'verified') NOT NULL DEFAULT 'none',
+  tier_expires_at DATETIME NULL,
+  blog_access_expires_at DATETIME NULL,
+  studies_access_expires_at DATETIME NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at DATETIME NULL,
+  UNIQUE KEY uq_subscribers_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
+-- subscription_plans (admin-editable prices for the two writer tiers)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS subscription_plans (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  tier ENUM('beginner', 'verified') NOT NULL,
+  billing_cycle ENUM('monthly', 'annual') NOT NULL,
+  price DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  currency VARCHAR(6) NOT NULL DEFAULT 'SAR',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_plan_tier_cycle (tier, billing_cycle)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO subscription_plans (tier, billing_cycle, price, currency)
+SELECT * FROM (
+  SELECT 'beginner' AS tier, 'monthly' AS billing_cycle, 0 AS price, 'SAR' AS currency UNION ALL
+  SELECT 'beginner', 'annual', 0, 'SAR' UNION ALL
+  SELECT 'verified', 'monthly', 0, 'SAR' UNION ALL
+  SELECT 'verified', 'annual', 0, 'SAR'
+) AS seed
+WHERE NOT EXISTS (SELECT 1 FROM subscription_plans);
+
+-- ---------------------------------------------------------------------------
+-- subscriptions (billing history / TAP charge tracking per subscriber)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  subscriber_id INT UNSIGNED NOT NULL,
+  plan_id INT UNSIGNED NOT NULL,
+  status ENUM('pending', 'active', 'expired', 'cancelled', 'failed') NOT NULL DEFAULT 'pending',
+  tap_charge_id VARCHAR(100) NULL,
+  starts_at DATETIME NULL,
+  ends_at DATETIME NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_subscriptions_subscriber FOREIGN KEY (subscriber_id) REFERENCES subscribers (id) ON DELETE CASCADE,
+  CONSTRAINT fk_subscriptions_plan FOREIGN KEY (plan_id) REFERENCES subscription_plans (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
+-- content_subscription_plans (admin-editable prices for premium blogs/studies access)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS content_subscription_plans (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  category ENUM('blogs', 'studies') NOT NULL,
+  billing_cycle ENUM('monthly', 'annual') NOT NULL,
+  price DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  currency VARCHAR(6) NOT NULL DEFAULT 'SAR',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_content_plan (category, billing_cycle)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO content_subscription_plans (category, billing_cycle, price, currency)
+SELECT * FROM (
+  SELECT 'blogs' AS category, 'monthly' AS billing_cycle, 0 AS price, 'SAR' AS currency UNION ALL
+  SELECT 'blogs', 'annual', 0, 'SAR' UNION ALL
+  SELECT 'studies', 'annual', 0, 'SAR'
+) AS seed
+WHERE NOT EXISTS (SELECT 1 FROM content_subscription_plans);
+
+-- ---------------------------------------------------------------------------
+-- content_access_subscriptions (billing history for premium blogs/studies access)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS content_access_subscriptions (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  subscriber_id INT UNSIGNED NOT NULL,
+  plan_id INT UNSIGNED NOT NULL,
+  status ENUM('pending', 'active', 'expired', 'cancelled', 'failed') NOT NULL DEFAULT 'pending',
+  tap_charge_id VARCHAR(100) NULL,
+  starts_at DATETIME NULL,
+  ends_at DATETIME NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_content_access_subscriber FOREIGN KEY (subscriber_id) REFERENCES subscribers (id) ON DELETE CASCADE,
+  CONSTRAINT fk_content_access_plan FOREIGN KEY (plan_id) REFERENCES content_subscription_plans (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
+-- study_purchases (one-time per-study purchases)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS study_purchases (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  subscriber_id INT UNSIGNED NOT NULL,
+  study_id INT UNSIGNED NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  currency VARCHAR(6) NOT NULL DEFAULT 'SAR',
+  status ENUM('pending', 'completed', 'failed') NOT NULL DEFAULT 'pending',
+  tap_charge_id VARCHAR(100) NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_study_purchases_subscriber FOREIGN KEY (subscriber_id) REFERENCES subscribers (id) ON DELETE CASCADE,
+  CONSTRAINT fk_study_purchases_study FOREIGN KEY (study_id) REFERENCES studies (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
+-- writer_upgrade_requests (writer requests to move from beginner to verified)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS writer_upgrade_requests (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  subscriber_id INT UNSIGNED NOT NULL,
+  status ENUM('pending', 'invited', 'rejected') NOT NULL DEFAULT 'pending',
+  reason TEXT NULL,
+  decided_by INT UNSIGNED NULL,
+  decided_at DATETIME NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_writer_upgrade_subscriber FOREIGN KEY (subscriber_id) REFERENCES subscribers (id) ON DELETE CASCADE,
+  CONSTRAINT fk_writer_upgrade_decided_by FOREIGN KEY (decided_by) REFERENCES users (id) ON DELETE SET NULL,
+  KEY idx_writer_upgrade_subscriber (subscriber_id, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

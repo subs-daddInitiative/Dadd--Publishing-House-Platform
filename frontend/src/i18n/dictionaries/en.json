@@ -10,6 +10,62 @@
     "blog": "Blog",
     "contact": "Contact"
   },
+  "authPage": {
+    "registerTitle": "Create a Writer Account",
+    "loginTitle": "Log In",
+    "nameLabel": "Name",
+    "accountTypeLabel": "Account Type",
+    "accountTypeReader": "Reader",
+    "accountTypeWriter": "Writer",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "submitRegister": "Create Account",
+    "submitLogin": "Log In",
+    "submitting": "Submitting...",
+    "haveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "switchToLogin": "Log In",
+    "switchToRegister": "Create a new account",
+    "errorGeneric": "Something went wrong, please try again."
+  },
+  "accountPage": {
+    "title": "My Account",
+    "tierNone": "Not subscribed",
+    "tierBeginner": "Beginner Writer",
+    "tierVerified": "Verified Writer",
+    "currentPlanLabel": "Current Membership",
+    "expiresLabel": "Expires on",
+    "choosePlanTitle": "Choose a Membership Plan",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "subscribeButton": "Subscribe Now",
+    "renewButton": "Renew",
+    "logout": "Log Out",
+    "priceUnavailable": "Price not set yet",
+    "writerSectionTitle": "Writer Status",
+    "myBlogs": "My Blogs",
+    "requestUpgrade": "Request Upgrade to Verified Writer",
+    "requestPending": "Your request is being reviewed by moderators.",
+    "requestInvited": "You've been invited to upgrade! Subscribe to the verified writer plan below.",
+    "requestRejected": "Your request was rejected",
+    "rejectionReasonLabel": "Reason",
+    "nextEligibleLabel": "You can request again after",
+    "mustBeBeginnerFirst": "Subscribe as a beginner writer first before requesting an upgrade."
+  },
+  "subscribeResultPage": {
+    "title": "Payment Result",
+    "checking": "Checking payment status...",
+    "success": "Your membership is now active.",
+    "failed": "Payment did not complete. Please try again.",
+    "backToAccount": "Back to My Account"
+  },
+  "premiumLock": {
+    "mustRegister": "This content is for registered members. Create a free account to continue.",
+    "registerNow": "Create Account",
+    "blogsLocked": "This article is for premium blog subscribers.",
+    "studiesLocked": "This study is for subscribers, or can be purchased individually.",
+    "buyThisStudy": "Buy This Study"
+  },
   "home": {
     "heroTitle": "Words That Endure",
     "heroBadge": "Arabic Publishing House",
@@ -65,7 +121,11 @@
     "by": "By",
     "backHome": "Back to Home",
     "moreArticles": "More Articles",
-    "relatedArticles": "Related Articles"
+    "relatedArticles": "Related Articles",
+    "lockedFile": "This file is only available to premium blog subscribers.",
+    "filterAll": "All Articles",
+    "filterFree": "Free",
+    "filterPremium": "Subscribers Only"
   },
   "studiesPage": {
     "title": "In-Depth Studies",
@@ -123,6 +183,8 @@
   },
   "header": {
     "cartLabel": "Cart",
-    "favoritesLabel": "Favorites"
+    "favoritesLabel": "Favorites",
+    "loginLabel": "Log In",
+    "accountLabel": "My Account"
   }
 }

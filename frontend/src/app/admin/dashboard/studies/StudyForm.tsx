@@ -47,6 +47,8 @@ export function StudyForm({
   const [contentIntro, setContentIntro] = useState(initialStudy?.content_intro || "");
   const [contentBody, setContentBody] = useState(initialStudy?.content_body || "");
   const [status, setStatus] = useState(initialStudy?.status || "draft");
+  const [isPremium, setIsPremium] = useState(Boolean(initialStudy?.is_premium));
+  const [price, setPrice] = useState(initialStudy?.price || "");
   const [submitState, setSubmitState] = useState<"idle" | "saving" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -71,6 +73,8 @@ export function StudyForm({
     formData.append("content_intro", contentIntro);
     formData.append("content_body", contentBody);
     formData.append("status", status);
+    formData.append("is_premium", String(isPremium));
+    if (isPremium) formData.append("price", price);
 
     const coverFile = coverInputRef.current?.files?.[0];
     if (coverFile) formData.append("cover_image", coverFile);
@@ -184,6 +188,29 @@ export function StudyForm({
           onChange={(event) => setDescription(event.target.value)}
           maxLength={500}
         />
+      </div>
+
+      <div className={styles.field}>
+        <label className={styles.label}>
+          <input
+            type="checkbox"
+            checked={isPremium}
+            onChange={(event) => setIsPremium(event.target.checked)}
+          />{" "}
+          دراسة مميزة (تباع منفردة أو عبر اشتراك الدراسات السنوي)
+        </label>
+        {isPremium && (
+          <input
+            type="number"
+            min={0}
+            step="0.01"
+            className={styles.input}
+            placeholder="سعر الدراسة (ريال)"
+            value={price}
+            onChange={(event) => setPrice(event.target.value)}
+            required
+          />
+        )}
       </div>
 
       <div className={styles.field}>

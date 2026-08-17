@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { locales, localeDirections, isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
-import { getPublicSettings, backendAssetUrl } from "@/lib/serverApi";
+import { getPublicSettings, backendAssetUrl, getCurrentSubscriber } from "@/lib/serverApi";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SyncHtmlAttributes } from "@/components/SyncHtmlAttributes";
@@ -58,9 +58,10 @@ export default async function LocaleLayout({
   }
 
   const locale = rawLocale as Locale;
-  const [dictionary, settings] = await Promise.all([
+  const [dictionary, settings, subscriber] = await Promise.all([
     getDictionary(locale),
     getPublicSettings(),
+    getCurrentSubscriber(),
   ]);
   const dir = localeDirections[locale];
   const siteName = settings?.siteName || dictionary.common.siteName;
@@ -72,7 +73,7 @@ export default async function LocaleLayout({
       <a href="#main-content" className="skip-link">
         {dictionary.common.skipToContent}
       </a>
-      <Header locale={locale} dictionary={dictionary} siteName={siteName} logoUrl={logoUrl} />
+      <Header locale={locale} dictionary={dictionary} siteName={siteName} logoUrl={logoUrl} subscriber={subscriber} />
       <main id="main-content">{children}</main>
       <Footer
         locale={locale}

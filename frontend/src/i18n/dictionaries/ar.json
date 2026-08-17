@@ -10,6 +10,62 @@
     "blog": "المدونة",
     "contact": "تواصل معنا"
   },
+  "authPage": {
+    "registerTitle": "إنشاء حساب كاتب",
+    "loginTitle": "تسجيل الدخول",
+    "nameLabel": "الاسم",
+    "accountTypeLabel": "نوع الحساب",
+    "accountTypeReader": "قارئ",
+    "accountTypeWriter": "كاتب",
+    "emailLabel": "البريد الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "submitRegister": "إنشاء الحساب",
+    "submitLogin": "تسجيل الدخول",
+    "submitting": "جارٍ الإرسال...",
+    "haveAccount": "لديك حساب؟",
+    "noAccount": "ليس لديك حساب؟",
+    "switchToLogin": "تسجيل الدخول",
+    "switchToRegister": "إنشاء حساب جديد",
+    "errorGeneric": "حدث خطأ، حاول مرة أخرى."
+  },
+  "accountPage": {
+    "title": "حسابي",
+    "tierNone": "غير مشترك",
+    "tierBeginner": "كاتب مبتدئ",
+    "tierVerified": "كاتب موثق",
+    "currentPlanLabel": "العضوية الحالية",
+    "expiresLabel": "تنتهي في",
+    "choosePlanTitle": "اختر باقة العضوية",
+    "monthly": "شهريًا",
+    "annual": "سنويًا",
+    "subscribeButton": "اشترك الآن",
+    "renewButton": "تجديد",
+    "logout": "تسجيل الخروج",
+    "priceUnavailable": "السعر غير متوفر بعد",
+    "writerSectionTitle": "حالة الكتابة",
+    "myBlogs": "مقالاتي",
+    "requestUpgrade": "طلب الترقية إلى كاتب موثق",
+    "requestPending": "طلبك قيد المراجعة من قبل المشرفين.",
+    "requestInvited": "تمت دعوتك للترقية! يمكنك الاشتراك في باقة الكاتب الموثق أدناه.",
+    "requestRejected": "تم رفض طلبك",
+    "rejectionReasonLabel": "السبب",
+    "nextEligibleLabel": "يمكنك إعادة الطلب بعد",
+    "mustBeBeginnerFirst": "يجب الاشتراك كـكاتب مبتدئ أولاً قبل طلب الترقية."
+  },
+  "subscribeResultPage": {
+    "title": "نتيجة الدفع",
+    "checking": "جارٍ التحقق من حالة الدفع...",
+    "success": "تم تفعيل عضويتك بنجاح.",
+    "failed": "لم تكتمل عملية الدفع. حاول مرة أخرى.",
+    "backToAccount": "العودة إلى حسابي"
+  },
+  "premiumLock": {
+    "mustRegister": "هذا المحتوى مخصص للأعضاء المسجلين. سجّل حسابًا مجانيًا للمتابعة.",
+    "registerNow": "إنشاء حساب",
+    "blogsLocked": "هذا المقال مخصص للمشتركين في المدونة المميزة.",
+    "studiesLocked": "هذه الدراسة مخصصة للمشتركين أو يمكن شراؤها منفردة.",
+    "buyThisStudy": "شراء هذه الدراسة"
+  },
   "home": {
     "heroTitle": "كلمات تُخلَّد",
     "heroBadge": "دار نشر عربية",
@@ -65,7 +121,11 @@
     "by": "بقلم",
     "backHome": "العودة للرئيسية",
     "moreArticles": "المزيد من المقالات",
-    "relatedArticles": "مقالات ذات صلة"
+    "relatedArticles": "مقالات ذات صلة",
+    "lockedFile": "هذا الملف متاح فقط للمشتركين في المدونة المميزة.",
+    "filterAll": "كل المقالات",
+    "filterFree": "مجانية",
+    "filterPremium": "للمشتركين فقط"
   },
   "studiesPage": {
     "title": "دراسات معمّقة",
@@ -123,6 +183,8 @@
   },
   "header": {
     "cartLabel": "السلة",
-    "favoritesLabel": "المفضلة"
+    "favoritesLabel": "المفضلة",
+    "loginLabel": "تسجيل الدخول",
+    "accountLabel": "حسابي"
   }
 }

@@ -3,6 +3,7 @@ const { slugify } = require("../../utils/slugify");
 
 const PUBLIC_LIST_FIELDS = `
   s.id, s.title, s.slug, s.description, s.author, s.cover_image, s.published_at,
+  s.is_premium, s.price, s.currency,
   sc.name AS category_name, sc.slug AS category_slug
 `;
 
@@ -111,6 +112,14 @@ async function listAdminStudies() {
   return rows;
 }
 
+async function findStudyById(id) {
+  const [rows] = await pool.query(
+    "SELECT id, title, is_premium, price, currency FROM studies WHERE id = ? AND deleted_at IS NULL LIMIT 1",
+    [id]
+  );
+  return rows[0] || null;
+}
+
 async function findAdminStudyById(id) {
   const [rows] = await pool.query(
     "SELECT * FROM studies WHERE id = ? AND deleted_at IS NULL LIMIT 1",
@@ -146,8 +155,8 @@ async function createStudy(data) {
   const [result] = await pool.query(
     `INSERT INTO studies
        (category_id, title, slug, author, description, content_intro, content_body,
-        cover_image, main_image, pdf_file, status, published_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        cover_image, main_image, pdf_file, status, is_premium, price, currency, published_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.category_id || null,
       data.title,
@@ -160,6 +169,9 @@ async function createStudy(data) {
       data.main_image || null,
       data.pdf_file || null,
       data.status,
+      data.is_premium ? 1 : 0,
+      data.is_premium ? data.price || null : null,
+      data.currency || "SAR",
       publishedAt,
     ]
   );
@@ -179,6 +191,9 @@ async function updateStudy(id, fields) {
     "main_image",
     "pdf_file",
     "status",
+    "is_premium",
+    "price",
+    "currency",
   ];
   const keys = Object.keys(fields).filter((key) => allowedKeys.includes(key));
   if (keys.length === 0) return findAdminStudyById(id);
@@ -210,6 +225,7 @@ module.exports = {
   findRelatedStudies,
   listAdminStudies,
   findAdminStudyById,
+  findStudyById,
   ensureUniqueSlug,
   createStudy,
   updateStudy,

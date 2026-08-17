@@ -43,6 +43,19 @@ function validateStudyPayload(body, { partial = false } = {}) {
     value.status = status;
   }
 
+  if (body.is_premium !== undefined) {
+    value.is_premium = body.is_premium === "true" || body.is_premium === true || body.is_premium === "1";
+  }
+
+  if (body.price !== undefined) {
+    const price = Number(body.price);
+    value.price = Number.isFinite(price) && price >= 0 ? price : null;
+  }
+
+  if (body.currency !== undefined && String(body.currency).trim() !== "") {
+    value.currency = String(body.currency).trim().slice(0, 6).toUpperCase();
+  }
+
   return { errors, value };
 }
 

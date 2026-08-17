@@ -4,6 +4,8 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/getDictionary";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { HeaderStoreActions } from "@/components/HeaderStoreActions";
+import { HeaderAccountLink } from "@/components/HeaderAccountLink";
+import type { Subscriber } from "@/lib/serverApi";
 import styles from "./Header.module.css";
 
 type HeaderProps = {
@@ -11,9 +13,10 @@ type HeaderProps = {
   dictionary: Dictionary;
   siteName: string;
   logoUrl: string | null;
+  subscriber: Subscriber | null;
 };
 
-export function Header({ locale, dictionary, siteName, logoUrl }: HeaderProps) {
+export function Header({ locale, dictionary, siteName, logoUrl, subscriber }: HeaderProps) {
   const navItems = [
     { href: `/${locale}`, label: dictionary.nav.home },
     { href: `/${locale}/books`, label: dictionary.nav.books },
@@ -47,6 +50,12 @@ export function Header({ locale, dictionary, siteName, logoUrl }: HeaderProps) {
           locale={locale}
           cartLabel={dictionary.header.cartLabel}
           favoritesLabel={dictionary.header.favoritesLabel}
+        />
+        <HeaderAccountLink
+          locale={locale}
+          subscriber={subscriber}
+          loginLabel={dictionary.header.loginLabel}
+          accountLabel={dictionary.header.accountLabel}
         />
         <LanguageSwitcher locale={locale} />
       </div>

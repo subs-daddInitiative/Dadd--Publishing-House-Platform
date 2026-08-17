@@ -1,0 +1,194 @@
+.authPage {
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-3);
+}
+
+.authTitle {
+  font-size: 1.8rem;
+  margin-bottom: var(--space-3);
+  text-align: center;
+}
+
+.formField {
+  margin-bottom: var(--space-2);
+}
+
+.formLabel {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.formInput {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.formSubmit {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--gradient-primary);
+  background-size: 160% 160%;
+  color: var(--color-on-primary);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: var(--space-2);
+  transition: background-position var(--duration-slow) ease, transform var(--duration-fast) ease;
+}
+
+.formSubmit:hover:not(:disabled) {
+  background-position: 100% 50%;
+}
+
+.formSubmit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formStatusError {
+  color: var(--color-danger, #d0433a);
+  margin-top: var(--space-2);
+  font-size: 0.9rem;
+}
+
+.accountTypeChoice {
+  display: flex;
+  gap: var(--space-3);
+  font-size: 0.9rem;
+}
+
+.formSwitch {
+  margin-top: var(--space-3);
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.formSwitch a {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.accountPage {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-3);
+}
+
+.accountTitle {
+  font-size: 2rem;
+  margin-bottom: var(--space-3);
+}
+
+.accountCard {
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.tierBadge {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.expiresText {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.plansGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--space-3);
+}
+
+.planCard {
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: var(--space-3);
+  text-align: center;
+}
+
+.planTier {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.planCycle {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin-bottom: var(--space-2);
+}
+
+.planPrice {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.planButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.planButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.logoutButton {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.resultPage {
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-3);
+  text-align: center;
+}
