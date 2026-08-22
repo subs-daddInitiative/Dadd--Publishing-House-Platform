@@ -2,6 +2,7 @@ import { isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import { getCurrentSubscriber, getPublicSubscriptionPlans, getWriterUpgradeStatus } from "@/lib/serverApi";
 import { AccountView } from "@/features/subscribers/AccountView";
+import { AccountNav } from "@/features/subscribers/AccountNav";
 import { notFound, redirect } from "next/navigation";
 
 export default async function AccountPage({
@@ -23,12 +24,15 @@ export default async function AccountPage({
   ]);
 
   return (
-    <AccountView
-      locale={locale}
-      dictionary={dictionary}
-      subscriber={subscriber}
-      plans={plans}
-      upgradeStatus={upgradeStatus}
-    />
+    <>
+      <AccountNav locale={locale} dictionary={dictionary} subscriber={subscriber} />
+      <AccountView
+        locale={locale}
+        dictionary={dictionary}
+        subscriber={subscriber}
+        plans={plans}
+        upgradeStatus={upgradeStatus}
+      />
+    </>
   );
 }

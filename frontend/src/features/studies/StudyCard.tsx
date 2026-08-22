@@ -3,34 +3,34 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { StudySummary } from "@/lib/serverApi";
 import { backendAssetUrl } from "@/lib/serverApi";
+import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import styles from "./studies.module.css";
 
 type StudyCardProps = {
   locale: Locale;
   study: StudySummary;
-  variant?: "featured" | "compact" | "grid";
+  variant?: "list" | "grid";
   byLabel: string;
+  favoriteLabel?: string;
 };
 
-const VARIANT_CLASS = {
-  featured: "cardFeatured",
-  compact: "cardCompact",
-  grid: "cardGrid",
-} as const;
-
-export function StudyCard({ locale, study, variant = "grid", byLabel }: StudyCardProps) {
+export function StudyCard({ locale, study, variant = "list", byLabel, favoriteLabel }: StudyCardProps) {
   const href = `/${locale}/studies/${study.slug}`;
   const coverImageUrl = backendAssetUrl(study.cover_image);
+  const isGrid = variant === "grid";
 
   return (
-    <Link href={href} className={`${styles.card} ${styles[VARIANT_CLASS[variant]]} hover-lift`}>
+    <Link href={href} className={`${styles.card} ${isGrid ? styles.cardGridItem : ""} hover-lift`}>
       <div className={styles.cardImageWrap}>
+        {favoriteLabel && (
+          <FavoriteButton locale={locale} itemType="study" itemId={study.id} label={favoriteLabel} />
+        )}
         {coverImageUrl ? (
           <Image
             src={coverImageUrl}
             alt={study.title}
             fill
-            sizes={variant === "featured" ? "(max-width: 45rem) 100vw, 50vw" : "(max-width: 45rem) 100vw, 25vw"}
+            sizes={isGrid ? "(max-width: 55rem) 100vw, 25vw" : "(max-width: 40rem) 100vw, 12rem"}
             className={styles.cardImage}
           />
         ) : (
@@ -43,9 +43,7 @@ export function StudyCard({ locale, study, variant = "grid", byLabel }: StudyCar
 
       <div className={styles.cardBody}>
         <h3 className={styles.cardTitle}>{study.title}</h3>
-        {variant !== "compact" && study.description && (
-          <p className={styles.cardExcerpt}>{study.description}</p>
-        )}
+        {study.description && <p className={styles.cardExcerpt}>{study.description}</p>}
         {study.author && (
           <div className={styles.cardMetaRow}>
             <span className={styles.cardAuthorAvatar} aria-hidden="true">

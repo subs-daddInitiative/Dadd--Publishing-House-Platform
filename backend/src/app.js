@@ -21,6 +21,7 @@ const subscribersRoutes = require("./features/subscribers/subscribers.routes");
 const subscriptionsRoutes = require("./features/subscriptions/subscriptions.routes");
 const contentAccessRoutes = require("./features/contentAccess/contentAccess.routes");
 const writerUpgradesRoutes = require("./features/writerUpgrades/writerUpgrades.routes");
+const favoritesRoutes = require("./features/favorites/favorites.routes");
 
 const app = express();
 
@@ -57,6 +58,7 @@ app.use("/api", subscribersRoutes.publicRouter);
 app.use("/api", subscriptionsRoutes.publicRouter);
 app.use("/api", contentAccessRoutes.publicRouter);
 app.use("/api", writerUpgradesRoutes.publicRouter);
+app.use("/api", favoritesRoutes.publicRouter);
 
 app.use("/api/admin", settingsRoutes.adminRouter);
 app.use("/api/admin", bannersRoutes.adminRouter);

@@ -3,34 +3,34 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { BlogSummary } from "@/lib/serverApi";
 import { backendAssetUrl } from "@/lib/serverApi";
+import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import styles from "./blog.module.css";
 
 type BlogCardProps = {
   locale: Locale;
   blog: BlogSummary;
-  variant?: "featured" | "compact" | "grid";
+  variant?: "list" | "grid";
   byLabel: string;
+  favoriteLabel?: string;
 };
 
-const VARIANT_CLASS = {
-  featured: "cardFeatured",
-  compact: "cardCompact",
-  grid: "cardGrid",
-} as const;
-
-export function BlogCard({ locale, blog, variant = "grid", byLabel }: BlogCardProps) {
+export function BlogCard({ locale, blog, variant = "list", byLabel, favoriteLabel }: BlogCardProps) {
   const href = `/${locale}/blog/${blog.slug}`;
   const coverImageUrl = backendAssetUrl(blog.cover_image);
+  const isGrid = variant === "grid";
 
   return (
-    <Link href={href} className={`${styles.card} ${styles[VARIANT_CLASS[variant]]} hover-lift`}>
+    <Link href={href} className={`${styles.card} ${isGrid ? styles.cardGridItem : ""} hover-lift`}>
       <div className={styles.cardImageWrap}>
+        {favoriteLabel && (
+          <FavoriteButton locale={locale} itemType="blog" itemId={blog.id} label={favoriteLabel} />
+        )}
         {coverImageUrl ? (
           <Image
             src={coverImageUrl}
             alt={blog.title}
             fill
-            sizes={variant === "featured" ? "(max-width: 45rem) 100vw, 50vw" : "(max-width: 45rem) 100vw, 25vw"}
+            sizes={isGrid ? "(max-width: 55rem) 100vw, 25vw" : "(max-width: 40rem) 100vw, 12rem"}
             className={styles.cardImage}
           />
         ) : (
@@ -43,7 +43,7 @@ export function BlogCard({ locale, blog, variant = "grid", byLabel }: BlogCardPr
 
       <div className={styles.cardBody}>
         <h3 className={styles.cardTitle}>{blog.title}</h3>
-        {variant !== "compact" && blog.excerpt && <p className={styles.cardExcerpt}>{blog.excerpt}</p>}
+        {blog.excerpt && <p className={styles.cardExcerpt}>{blog.excerpt}</p>}
         {blog.author_name && (
           <div className={styles.cardAuthorRow}>
             <span className={styles.cardAuthorAvatar} aria-hidden="true">

@@ -5,6 +5,8 @@ import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import {
   getPublicBlogBySlug,
+  getPublicBlogs,
+  getPublicStudies,
   getPublicSettings,
   getCurrentSubscriber,
   getPublicContentAccessPlans,
@@ -14,6 +16,7 @@ import { notFound } from "next/navigation";
 import { BlogCard } from "@/features/blog/BlogCard";
 import { BlockRenderer } from "@/features/blog/BlockRenderer";
 import { PremiumLock } from "@/features/subscribers/PremiumLock";
+import { Sidebar } from "@/components/Sidebar";
 import styles from "@/features/blog/blog.module.css";
 
 type PageParams = { locale: string; slug: string };
@@ -66,10 +69,12 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
   const locale = rawLocale as Locale;
   const slug = decodeURIComponent(rawSlug);
 
-  const [dictionary, blog, settings] = await Promise.all([
+  const [dictionary, blog, settings, recentBlogsResult, recentStudiesResult] = await Promise.all([
     getDictionary(locale),
     getPublicBlogBySlug(slug),
     getPublicSettings(),
+    getPublicBlogs({ page: 1 }),
+    getPublicStudies({ page: 1 }),
   ]);
 
   if (!blog) notFound();
@@ -78,6 +83,7 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
     ? await Promise.all([getCurrentSubscriber(), getPublicContentAccessPlans()])
     : [null, []];
   const blogPlans = contentPlans.filter((plan) => plan.category === "blogs");
+  const sidebarRecentBlogs = recentBlogsResult.items.filter((item) => item.id !== blog.id).slice(0, 5);
 
   const siteName = settings?.siteName || dictionary.common.siteName;
   const logoUrl = backendAssetUrl(settings?.logo);
@@ -105,12 +111,14 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
   };
 
   return (
-    <article className={`container ${styles.page}`}>
+    <div className={`container ${styles.page}`}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      <div className={styles.layoutGrid}>
+      <article className={styles.mainCol}>
       <header className={styles.postHeader}>
         {blog.category_name && <span className={styles.postCategoryTag}>{blog.category_name}</span>}
         <h1 className={styles.postTitle}>{blog.title}</h1>
@@ -151,7 +159,14 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
           <h2 className={styles.relatedTitle}>{dictionary.blogPage.relatedArticles}</h2>
           <div className={styles.postsGrid}>
             {blog.related.map((related) => (
-              <BlogCard key={related.id} locale={locale} blog={related} variant="grid" byLabel={dictionary.blogPage.by} />
+              <BlogCard
+                key={related.id}
+                locale={locale}
+                blog={related}
+                variant="grid"
+                byLabel={dictionary.blogPage.by}
+                favoriteLabel={dictionary.booksPage.favorite}
+              />
             ))}
           </div>
         </section>
@@ -165,6 +180,15 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
           {dictionary.blogPage.moreArticles}
         </Link>
       </div>
-    </article>
+      </article>
+
+      <Sidebar
+        locale={locale}
+        dictionary={dictionary}
+        recentBlogs={sidebarRecentBlogs}
+        recentStudies={recentStudiesResult.items.slice(0, 5)}
+      />
+      </div>
+    </div>
   );
 }

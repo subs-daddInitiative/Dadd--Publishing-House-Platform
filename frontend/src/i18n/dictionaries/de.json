@@ -3,11 +3,21 @@
     "siteName": "Verlagshaus",
     "skipToContent": "Zum Inhalt springen"
   },
+  "sidebar": {
+    "recentBlogsTitle": "Neueste Artikel",
+    "recentStudiesTitle": "Neueste Studien",
+    "categoriesTitle": "Kategorien",
+    "subscribeCtaTitle": "Premium-Blog abonnieren",
+    "subscribeCtaText": "Voller Zugriff auf alle Premium-Artikel und exklusiven Dateien.",
+    "subscribeCtaButton": "Jetzt abonnieren",
+    "premiumBadge": "Premium"
+  },
   "nav": {
     "home": "Startseite",
     "books": "Buchbibliothek",
     "studies": "Studien",
     "blog": "Blog",
+    "subscribe": "Blog-Abo",
     "contact": "Kontakt"
   },
   "authPage": {
@@ -50,7 +60,21 @@
     "requestRejected": "Ihre Anfrage wurde abgelehnt",
     "rejectionReasonLabel": "Grund",
     "nextEligibleLabel": "Sie können erneut anfragen nach",
-    "mustBeBeginnerFirst": "Abonnieren Sie zuerst als angehender Autor, bevor Sie ein Upgrade beantragen."
+    "mustBeBeginnerFirst": "Abonnieren Sie zuerst als angehender Autor, bevor Sie ein Upgrade beantragen.",
+    "navOverview": "Übersicht",
+    "navProfile": "Profil",
+    "navFavorites": "Favoriten",
+    "navWriterUpgrade": "Verifizierten Autor beantragen",
+    "nameLabel": "Name",
+    "emailLabel": "E-Mail",
+    "bioLabel": "Über mich",
+    "changePhoto": "Profilbild ändern",
+    "saveProfile": "Änderungen speichern",
+    "savedMessage": "Erfolgreich gespeichert.",
+    "changePasswordTitle": "Passwort ändern",
+    "currentPasswordLabel": "Aktuelles Passwort",
+    "newPasswordLabel": "Neues Passwort",
+    "changePasswordButton": "Passwort aktualisieren"
   },
   "subscribeResultPage": {
     "title": "Zahlungsergebnis",
@@ -58,6 +82,23 @@
     "success": "Ihre Mitgliedschaft ist jetzt aktiv.",
     "failed": "Die Zahlung wurde nicht abgeschlossen. Bitte versuchen Sie es erneut.",
     "backToAccount": "Zurück zu meinem Konto"
+  },
+  "subscribePage": {
+    "title": "Premium-Blog-Abonnement",
+    "subtitle": "Genießen Sie vollen Zugriff auf alle Premium-Artikel und exklusiven Dateien im Blog.",
+    "monthlyCardTitle": "Monatsabo",
+    "annualCardTitle": "Jahresabo",
+    "annualBadge": "Bester Wert",
+    "perMonth": "/ Monat",
+    "perYear": "/ Jahr",
+    "featureAllArticles": "Zugriff auf alle Premium-Artikel",
+    "featureFiles": "Exklusive PDFs herunterladen und Premium-Audio anhören",
+    "featureCancelAnytime": "Verwalten Sie Ihr Abonnement jederzeit über Ihre Kontoseite",
+    "subscribeButton": "Jetzt abonnieren",
+    "loginToSubscribe": "Zum Abonnieren anmelden",
+    "alreadySubscribedTitle": "Sie sind bereits abonniert",
+    "alreadySubscribedText": "Ihr Blog-Abonnement ist aktiv bis",
+    "priceUnavailable": "Preis noch nicht festgelegt"
   },
   "premiumLock": {
     "mustRegister": "Dieser Inhalt ist für registrierte Mitglieder. Erstellen Sie ein kostenloses Konto, um fortzufahren.",
@@ -115,6 +156,8 @@
     "title": "Ausgewählte Beiträge",
     "subtitle": "Neue Stimmen und zeitlose Erzählungen.",
     "viewAll": "Alle ansehen",
+    "subscribeCta": "Jetzt abonnieren",
+    "heroBadge": "Exklusive Inhalte für Abonnenten",
     "empty": "Noch keine Artikel veröffentlicht.",
     "prev": "Zurück",
     "next": "Weiter",
@@ -143,7 +186,9 @@
     "moreStudies": "Weitere Studien",
     "relatedStudies": "Ähnliche Studien",
     "breadcrumbHome": "Startseite",
-    "breadcrumbStudies": "Studien"
+    "breadcrumbStudies": "Studien",
+    "heroBadge": "Exklusive Studien für Abonnenten",
+    "subscribeCta": "Jetzt abonnieren"
   },
   "booksPage": {
     "title": "Buchbibliothek",
@@ -179,7 +224,11 @@
   "favoritesPage": {
     "title": "Ihre Favoriten",
     "empty": "Sie haben noch keine Bücher favorisiert.",
-    "continueShopping": "Bücher durchsuchen"
+    "emptyAll": "Sie haben noch nichts favorisiert.",
+    "continueShopping": "Bücher durchsuchen",
+    "booksSectionTitle": "Bücher",
+    "blogsSectionTitle": "Artikel",
+    "studiesSectionTitle": "Studien"
   },
   "header": {
     "cartLabel": "Warenkorb",

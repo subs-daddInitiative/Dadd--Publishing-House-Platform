@@ -1,7 +1,17 @@
 const { Router } = require("express");
 const rateLimit = require("express-rate-limit");
 const { requireSubscriberAuth } = require("../../middlewares/requireSubscriberAuth");
-const { register, login, logout, me } = require("./subscribers.controller");
+const { createImageUpload } = require("../../middlewares/imageUpload");
+const {
+  register,
+  login,
+  logout,
+  me,
+  updateProfileHandler,
+  changePasswordHandler,
+} = require("./subscribers.controller");
+
+const avatarUpload = createImageUpload("subscriber-avatars");
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -16,5 +26,12 @@ publicRouter.post("/subscriber/register", authLimiter, register);
 publicRouter.post("/subscriber/login", authLimiter, login);
 publicRouter.post("/subscriber/logout", requireSubscriberAuth, logout);
 publicRouter.get("/subscriber/me", requireSubscriberAuth, me);
+publicRouter.put(
+  "/subscriber/profile",
+  requireSubscriberAuth,
+  avatarUpload.single("profile_image"),
+  updateProfileHandler
+);
+publicRouter.put("/subscriber/password", requireSubscriberAuth, changePasswordHandler);
 
 module.exports = { publicRouter };

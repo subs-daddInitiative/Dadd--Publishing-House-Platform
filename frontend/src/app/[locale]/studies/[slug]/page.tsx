@@ -5,6 +5,8 @@ import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import {
   getPublicStudyBySlug,
+  getPublicStudies,
+  getPublicBlogs,
   getPublicSettings,
   getPublicBanners,
   getCurrentSubscriber,
@@ -16,6 +18,7 @@ import { Parallax } from "@/components/Parallax";
 import { Banners } from "@/features/home/Banners";
 import { StudyCard } from "@/features/studies/StudyCard";
 import { PremiumLock } from "@/features/subscribers/PremiumLock";
+import { Sidebar } from "@/components/Sidebar";
 import styles from "@/features/studies/studies.module.css";
 
 type PageParams = { locale: string; slug: string };
@@ -67,11 +70,13 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
   const locale = rawLocale as Locale;
   const slug = decodeURIComponent(rawSlug);
 
-  const [dictionary, study, settings, banners] = await Promise.all([
+  const [dictionary, study, settings, banners, recentStudiesResult, recentBlogsResult] = await Promise.all([
     getDictionary(locale),
     getPublicStudyBySlug(slug),
     getPublicSettings(),
     getPublicBanners(),
+    getPublicStudies({ page: 1 }),
+    getPublicBlogs({ page: 1 }),
   ]);
 
   if (!study) notFound();
@@ -80,6 +85,7 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
     ? await Promise.all([getCurrentSubscriber(), getPublicContentAccessPlans()])
     : [null, []];
   const studyPlans = contentPlans.filter((plan) => plan.category === "studies");
+  const sidebarRecentStudies = recentStudiesResult.items.filter((item) => item.id !== study.id).slice(0, 5);
 
   const siteName = settings?.siteName || dictionary.common.siteName;
   const logoUrl = backendAssetUrl(settings?.logo);
@@ -123,13 +129,15 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
   };
 
   return (
-    <article className={`container ${styles.page}`}>
+    <div className={`container ${styles.page}`}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
+      <div className={styles.layoutGrid}>
+      <article className={styles.mainCol}>
       <nav className={styles.breadcrumb} aria-label="breadcrumb">
         <Link href={`/${locale}`}>{dictionary.studiesPage.breadcrumbHome}</Link>
         <span aria-hidden="true">/</span>
@@ -213,7 +221,14 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
           <h2 className={styles.relatedTitle}>{dictionary.studiesPage.relatedStudies}</h2>
           <div className={styles.postsGrid}>
             {study.related.map((related) => (
-              <StudyCard key={related.id} locale={locale} study={related} variant="grid" byLabel={dictionary.studiesPage.by} />
+              <StudyCard
+                key={related.id}
+                locale={locale}
+                study={related}
+                variant="grid"
+                byLabel={dictionary.studiesPage.by}
+                favoriteLabel={dictionary.booksPage.favorite}
+              />
             ))}
           </div>
         </section>
@@ -227,6 +242,16 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
           {dictionary.studiesPage.moreStudies}
         </Link>
       </div>
-    </article>
+      </article>
+
+      <Sidebar
+        locale={locale}
+        dictionary={dictionary}
+        recentStudies={sidebarRecentStudies}
+        recentBlogs={recentBlogsResult.items.slice(0, 5)}
+        showSubscribeCta={false}
+      />
+      </div>
+    </div>
   );
 }

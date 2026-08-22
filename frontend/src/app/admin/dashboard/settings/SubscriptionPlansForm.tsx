@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { SubscriptionPlan } from "@/lib/serverApi";
+import { currencySymbol } from "@/lib/currency";
 import styles from "./settings.module.css";
 
 const TIER_LABELS: Record<string, string> = {
@@ -51,7 +52,7 @@ export function SubscriptionPlansForm({ initialPlans }: SubscriptionPlansFormPro
         <div className={styles.row} key={plan.id}>
           <div className={styles.field}>
             <label htmlFor={`plan-${plan.id}`} className={styles.label}>
-              {TIER_LABELS[plan.tier]} - {CYCLE_LABELS[plan.billing_cycle]} ({plan.currency})
+              {TIER_LABELS[plan.tier]} - {CYCLE_LABELS[plan.billing_cycle]} ({currencySymbol(plan.currency)})
             </label>
             <input
               id={`plan-${plan.id}`}

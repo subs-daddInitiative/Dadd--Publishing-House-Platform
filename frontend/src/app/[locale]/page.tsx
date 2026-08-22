@@ -45,7 +45,7 @@ export default async function HomePage({
 
   return (
     <>
-      <Hero locale={locale} dictionary={dictionary} brandName={brandName} />
+      <Hero locale={locale} dictionary={dictionary} brandName={brandName} stats={stats} />
       <Stats dictionary={dictionary} stats={stats} />
       <About dictionary={dictionary} aboutText={settings?.aboutText ?? null} features={aboutFeatures} />
       <BooksSection locale={locale} dictionary={dictionary} books={bookList.items.slice(0, 4)} />

@@ -171,7 +171,7 @@ async function createStudy(data) {
       data.status,
       data.is_premium ? 1 : 0,
       data.is_premium ? data.price || null : null,
-      data.currency || "SAR",
+      data.currency || "USD",
       publishedAt,
     ]
   );

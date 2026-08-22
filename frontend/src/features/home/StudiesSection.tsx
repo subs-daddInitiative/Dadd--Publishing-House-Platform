@@ -14,10 +14,8 @@ type StudiesSectionProps = {
 };
 
 export function StudiesSection({ locale, dictionary, studies }: StudiesSectionProps) {
-  const [featured, ...restStudies] = studies;
-  if (!featured) return null;
-
-  const compact = restStudies.slice(0, 2);
+  const items = studies.slice(0, 3);
+  if (items.length === 0) return null;
 
   return (
     <section className={styles.sectionAlt}>
@@ -35,10 +33,15 @@ export function StudiesSection({ locale, dictionary, studies }: StudiesSectionPr
         </div>
 
         <Reveal delay={150}>
-          <div className={studyStyles.bentoGrid}>
-            <StudyCard locale={locale} study={featured} variant="featured" byLabel={dictionary.studiesPage.by} />
-            {compact.map((study) => (
-              <StudyCard key={study.id} locale={locale} study={study} variant="compact" byLabel={dictionary.studiesPage.by} />
+          <div className={studyStyles.postsList}>
+            {items.map((study) => (
+              <StudyCard
+                key={study.id}
+                locale={locale}
+                study={study}
+                byLabel={dictionary.studiesPage.by}
+                favoriteLabel={dictionary.booksPage.favorite}
+              />
             ))}
           </div>
         </Reveal>

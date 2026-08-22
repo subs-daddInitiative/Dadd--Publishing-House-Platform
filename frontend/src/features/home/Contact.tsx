@@ -1,7 +1,6 @@
 import type { Dictionary } from "@/i18n/getDictionary";
 import type { SocialLink } from "@/lib/serverApi";
 import { Reveal } from "@/components/Reveal";
-import { FloatingShapes } from "@/components/FloatingShapes";
 import { ContactForm } from "./ContactForm";
 import { PhoneIcon, WhatsappIcon } from "./icons";
 import { PLATFORM_LABELS, PLATFORM_ICONS } from "@/components/socialPlatforms";
@@ -17,7 +16,6 @@ type ContactProps = {
 export function Contact({ dictionary, callNumber, whatsappNumber, socialLinks }: ContactProps) {
   return (
     <section className={styles.section}>
-      <FloatingShapes />
       <div className="container">
         <Reveal className={styles.contactHeader}>
           <h2 className={styles.contactTitle}>{dictionary.home.contactTitle}</h2>

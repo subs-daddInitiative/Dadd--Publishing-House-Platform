@@ -3,11 +3,21 @@
     "siteName": "Publishing House",
     "skipToContent": "Skip to content"
   },
+  "sidebar": {
+    "recentBlogsTitle": "Latest Articles",
+    "recentStudiesTitle": "Latest Studies",
+    "categoriesTitle": "Categories",
+    "subscribeCtaTitle": "Subscribe to the Premium Blog",
+    "subscribeCtaText": "Full access to every premium article and exclusive file.",
+    "subscribeCtaButton": "Subscribe Now",
+    "premiumBadge": "Premium"
+  },
   "nav": {
     "home": "Home",
     "books": "Books Library",
     "studies": "Studies",
     "blog": "Blog",
+    "subscribe": "Blog Subscription",
     "contact": "Contact"
   },
   "authPage": {
@@ -50,7 +60,21 @@
     "requestRejected": "Your request was rejected",
     "rejectionReasonLabel": "Reason",
     "nextEligibleLabel": "You can request again after",
-    "mustBeBeginnerFirst": "Subscribe as a beginner writer first before requesting an upgrade."
+    "mustBeBeginnerFirst": "Subscribe as a beginner writer first before requesting an upgrade.",
+    "navOverview": "Overview",
+    "navProfile": "Profile",
+    "navFavorites": "Favorites",
+    "navWriterUpgrade": "Request Verified Writer",
+    "nameLabel": "Name",
+    "emailLabel": "Email",
+    "bioLabel": "Bio",
+    "changePhoto": "Change profile photo",
+    "saveProfile": "Save Changes",
+    "savedMessage": "Saved successfully.",
+    "changePasswordTitle": "Change Password",
+    "currentPasswordLabel": "Current Password",
+    "newPasswordLabel": "New Password",
+    "changePasswordButton": "Update Password"
   },
   "subscribeResultPage": {
     "title": "Payment Result",
@@ -58,6 +82,23 @@
     "success": "Your membership is now active.",
     "failed": "Payment did not complete. Please try again.",
     "backToAccount": "Back to My Account"
+  },
+  "subscribePage": {
+    "title": "Premium Blog Subscription",
+    "subtitle": "Enjoy full access to every premium article and exclusive file in the blog.",
+    "monthlyCardTitle": "Monthly Plan",
+    "annualCardTitle": "Annual Plan",
+    "annualBadge": "Best Value",
+    "perMonth": "/ month",
+    "perYear": "/ year",
+    "featureAllArticles": "Access to all premium articles",
+    "featureFiles": "Download exclusive PDFs and listen to premium audio",
+    "featureCancelAnytime": "Manage your subscription anytime from your account page",
+    "subscribeButton": "Subscribe Now",
+    "loginToSubscribe": "Log in to subscribe",
+    "alreadySubscribedTitle": "You're already subscribed",
+    "alreadySubscribedText": "Your blog subscription is active until",
+    "priceUnavailable": "Price not set yet"
   },
   "premiumLock": {
     "mustRegister": "This content is for registered members. Create a free account to continue.",
@@ -115,6 +156,8 @@
     "title": "Curated Selections",
     "subtitle": "New voices and timeless narratives.",
     "viewAll": "View All",
+    "subscribeCta": "Subscribe Now",
+    "heroBadge": "Exclusive content for subscribers",
     "empty": "No articles published yet.",
     "prev": "Previous",
     "next": "Next",
@@ -143,7 +186,9 @@
     "moreStudies": "More Studies",
     "relatedStudies": "Related Studies",
     "breadcrumbHome": "Home",
-    "breadcrumbStudies": "Studies"
+    "breadcrumbStudies": "Studies",
+    "heroBadge": "Exclusive studies for subscribers",
+    "subscribeCta": "Subscribe Now"
   },
   "booksPage": {
     "title": "Books Library",
@@ -179,7 +224,11 @@
   "favoritesPage": {
     "title": "Your Favorites",
     "empty": "You haven't favorited any books yet.",
-    "continueShopping": "Browse Books"
+    "emptyAll": "You haven't favorited anything yet.",
+    "continueShopping": "Browse Books",
+    "booksSectionTitle": "Books",
+    "blogsSectionTitle": "Articles",
+    "studiesSectionTitle": "Studies"
   },
   "header": {
     "cartLabel": "Cart",

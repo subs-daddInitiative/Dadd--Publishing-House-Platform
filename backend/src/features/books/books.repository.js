@@ -177,7 +177,7 @@ async function createBook(data) {
       data.author || null,
       data.description || null,
       data.price ?? null,
-      data.currency || "SAR",
+      data.currency || "USD",
       data.rating ?? null,
       data.reviews_count ?? 0,
       data.cover_image || null,

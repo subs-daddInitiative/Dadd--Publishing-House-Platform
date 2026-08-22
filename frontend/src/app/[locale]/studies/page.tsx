@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
-import { getPublicStudies, getPublicStudyCategories, type StudySort } from "@/lib/serverApi";
+import { getPublicStudies, getPublicStudyCategories, getPublicBlogs, type StudySort } from "@/lib/serverApi";
 import { StudyCard } from "@/features/studies/StudyCard";
 import { StudiesFilters } from "@/features/studies/StudiesFilters";
+import { Reveal } from "@/components/Reveal";
+import { Sidebar } from "@/components/Sidebar";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import styles from "@/features/studies/studies.module.css";
@@ -49,17 +51,14 @@ export default async function StudiesPage({
   const page = Math.max(1, Number(pageParam) || 1);
   const sort: StudySort = sortParam === "oldest" ? "oldest" : "newest";
 
-  const [dictionary, categories, studyList] = await Promise.all([
+  const [dictionary, categories, studyList, recentBlogsResult] = await Promise.all([
     getDictionary(locale),
     getPublicStudyCategories(),
     getPublicStudies({ page, category, sort }),
+    getPublicBlogs({ page: 1 }),
   ]);
 
   const { items, totalPages } = studyList;
-  const isFirstPage = page === 1;
-  const featured = isFirstPage ? items[0] : null;
-  const compact = isFirstPage ? items.slice(1, 3) : [];
-  const rest = isFirstPage ? items.slice(3) : items;
 
   const pageQuery = (targetPage: number) => {
     const params = new URLSearchParams();
@@ -70,65 +69,92 @@ export default async function StudiesPage({
   };
 
   return (
-    <section className={`container ${styles.page}`}>
-      <div className={styles.pageHeader}>
-        <div>
-          <h1 className={styles.pageTitle}>{dictionary.studiesPage.title}</h1>
-          <p className={styles.pageSubtitle}>{dictionary.studiesPage.subtitle}</p>
+    <>
+      <section className={styles.studiesHero}>
+        <div className={styles.studiesHeroBackdrop} aria-hidden="true" />
+        <div className={styles.studiesHeroBlobPrimary} aria-hidden="true" />
+        <div className={styles.studiesHeroBlobSecondary} aria-hidden="true" />
+        <div className={`container ${styles.studiesHeroInner}`}>
+          <Reveal>
+            <span className={styles.studiesHeroBadge}>{dictionary.studiesPage.heroBadge}</span>
+            <h1 className={styles.studiesHeroTitle}>{dictionary.studiesPage.title}</h1>
+            <p className={styles.studiesHeroSubtitle}>{dictionary.studiesPage.subtitle}</p>
+          </Reveal>
+
+          <Reveal delay={150} className={styles.studiesHeroActions}>
+            <Link href={`/${locale}/subscribe`} className={`${styles.heroSubscribeButton} hover-lift`}>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M12 3.5c-1 0-1.8.8-1.8 1.8v.6C7.5 6.6 5.5 9.2 5.5 12.3v3.4L4 18.2v1h16v-1l-1.5-2.5v-3.4c0-3.1-2-5.7-4.7-6.4v-.6c0-1-.8-1.8-1.8-1.8Z"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinejoin="round"
+                />
+                <path d="M9.5 20a2.5 2.5 0 0 0 5 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+              {dictionary.studiesPage.subscribeCta}
+            </Link>
+            <StudiesFilters
+              locale={locale}
+              categories={categories}
+              allCategoriesLabel={dictionary.studiesPage.allCategories}
+              sortNewestLabel={dictionary.studiesPage.sortNewest}
+              sortOldestLabel={dictionary.studiesPage.sortOldest}
+            />
+          </Reveal>
         </div>
-      </div>
+      </section>
 
-      <StudiesFilters
-        locale={locale}
-        categories={categories}
-        allCategoriesLabel={dictionary.studiesPage.allCategories}
-        sortNewestLabel={dictionary.studiesPage.sortNewest}
-        sortOldestLabel={dictionary.studiesPage.sortOldest}
-      />
+      <section className={`container ${styles.page}`}>
+        <div className={styles.layoutGrid}>
+          <div className={styles.mainCol}>
+            {items.length === 0 ? (
+              <p className={styles.empty}>{dictionary.studiesPage.empty}</p>
+            ) : (
+              <div className={styles.postsList}>
+                {items.map((study) => (
+                  <StudyCard
+                    key={study.id}
+                    locale={locale}
+                    study={study}
+                    byLabel={dictionary.studiesPage.by}
+                    favoriteLabel={dictionary.booksPage.favorite}
+                  />
+                ))}
+              </div>
+            )}
 
-      {items.length === 0 ? (
-        <p className={styles.empty}>{dictionary.studiesPage.empty}</p>
-      ) : (
-        <>
-          {(featured || compact.length > 0) && (
-            <div className={styles.bentoGrid}>
-              {featured && (
-                <StudyCard locale={locale} study={featured} variant="featured" byLabel={dictionary.studiesPage.by} />
-              )}
-              {compact.map((study) => (
-                <StudyCard key={study.id} locale={locale} study={study} variant="compact" byLabel={dictionary.studiesPage.by} />
-              ))}
-            </div>
-          )}
+            {totalPages > 1 && (
+              <nav className={styles.pagination} aria-label="pagination">
+                {page > 1 ? (
+                  <Link href={`/${locale}/studies${pageQuery(page - 1)}`} className={styles.pageLink}>
+                    {dictionary.studiesPage.prev}
+                  </Link>
+                ) : (
+                  <span className={styles.pageLinkDisabled}>{dictionary.studiesPage.prev}</span>
+                )}
+                {page < totalPages ? (
+                  <Link href={`/${locale}/studies${pageQuery(page + 1)}`} className={styles.pageLink}>
+                    {dictionary.studiesPage.next}
+                  </Link>
+                ) : (
+                  <span className={styles.pageLinkDisabled}>{dictionary.studiesPage.next}</span>
+                )}
+              </nav>
+            )}
+          </div>
 
-          {rest.length > 0 && (
-            <div className={styles.postsGrid}>
-              {rest.map((study) => (
-                <StudyCard key={study.id} locale={locale} study={study} variant="grid" byLabel={dictionary.studiesPage.by} />
-              ))}
-            </div>
-          )}
-        </>
-      )}
-
-      {totalPages > 1 && (
-        <nav className={styles.pagination} aria-label="pagination">
-          {page > 1 ? (
-            <Link href={`/${locale}/studies${pageQuery(page - 1)}`} className={styles.pageLink}>
-              {dictionary.studiesPage.prev}
-            </Link>
-          ) : (
-            <span className={styles.pageLinkDisabled}>{dictionary.studiesPage.prev}</span>
-          )}
-          {page < totalPages ? (
-            <Link href={`/${locale}/studies${pageQuery(page + 1)}`} className={styles.pageLink}>
-              {dictionary.studiesPage.next}
-            </Link>
-          ) : (
-            <span className={styles.pageLinkDisabled}>{dictionary.studiesPage.next}</span>
-          )}
-        </nav>
-      )}
-    </section>
+          <Sidebar
+            locale={locale}
+            dictionary={dictionary}
+            recentStudies={items.slice(0, 5)}
+            recentBlogs={recentBlogsResult.items.slice(0, 5)}
+            categories={categories}
+            categoriesBasePath="/studies"
+            showSubscribeCta={false}
+          />
+        </div>
+      </section>
+    </>
   );
 }

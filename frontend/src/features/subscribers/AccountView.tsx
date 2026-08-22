@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/getDictionary";
 import type { Subscriber, SubscriptionPlan, WriterUpgradeStatus } from "@/lib/serverApi";
+import { formatCurrency } from "@/lib/currency";
 import styles from "./subscribers.module.css";
 
 type AccountViewProps = {
@@ -25,7 +26,6 @@ const TIER_LABEL_KEY = {
 export function AccountView({ locale, dictionary, subscriber, plans, upgradeStatus }: AccountViewProps) {
   const router = useRouter();
   const [pendingPlanId, setPendingPlanId] = useState<number | null>(null);
-  const [requestPending, setRequestPending] = useState(false);
   const [error, setError] = useState("");
 
   const isWriter = subscriber.account_type === "writer";
@@ -52,21 +52,6 @@ export function AccountView({ locale, dictionary, subscriber, plans, upgradeStat
     }
   }
 
-  async function handleRequestUpgrade() {
-    setRequestPending(true);
-    setError("");
-
-    const response = await fetch("/api/subscriber/writer-upgrade/request", { method: "POST" });
-    const result = await response.json();
-
-    if (result.success) {
-      router.refresh();
-    } else {
-      setError(result.message || dictionary.authPage.errorGeneric);
-    }
-    setRequestPending(false);
-  }
-
   async function handleLogout() {
     await fetch("/api/subscriber/logout", { method: "POST" });
     router.push(`/${locale}`);
@@ -74,10 +59,6 @@ export function AccountView({ locale, dictionary, subscriber, plans, upgradeStat
   }
 
   const tierLabel = dictionary.accountPage[TIER_LABEL_KEY[subscriber.current_tier]];
-  const cooldownActive =
-    upgradeStatus?.status === "rejected" &&
-    upgradeStatus.next_eligible_at &&
-    new Date(upgradeStatus.next_eligible_at) > new Date();
 
   return (
     <div className={styles.accountPage}>
@@ -98,50 +79,14 @@ export function AccountView({ locale, dictionary, subscriber, plans, upgradeStat
       {isWriter && (
         <>
           <h2 className={styles.accountTitle}>{dictionary.accountPage.writerSectionTitle}</h2>
-          <Link href={`/${locale}/account/blogs`} className={styles.planButton}>
-            {dictionary.accountPage.myBlogs}
-          </Link>
           <div className={styles.accountCard}>
-            {subscriber.current_tier !== "beginner" ? (
-              <p>{dictionary.accountPage.mustBeBeginnerFirst}</p>
-            ) : upgradeStatus?.status === "pending" ? (
-              <p>{dictionary.accountPage.requestPending}</p>
-            ) : upgradeStatus?.status === "invited" ? (
-              <p>{dictionary.accountPage.requestInvited}</p>
-            ) : upgradeStatus?.status === "rejected" ? (
-              <>
-                <p>{dictionary.accountPage.requestRejected}</p>
-                {upgradeStatus.reason && (
-                  <p className={styles.expiresText}>
-                    {dictionary.accountPage.rejectionReasonLabel}: {upgradeStatus.reason}
-                  </p>
-                )}
-                {cooldownActive && upgradeStatus.next_eligible_at && (
-                  <p className={styles.expiresText}>
-                    {dictionary.accountPage.nextEligibleLabel}:{" "}
-                    {new Date(upgradeStatus.next_eligible_at).toLocaleDateString(locale)}
-                  </p>
-                )}
-                {!cooldownActive && (
-                  <button
-                    type="button"
-                    className={styles.planButton}
-                    disabled={requestPending}
-                    onClick={handleRequestUpgrade}
-                  >
-                    {dictionary.accountPage.requestUpgrade}
-                  </button>
-                )}
-              </>
-            ) : (
-              <button
-                type="button"
-                className={styles.planButton}
-                disabled={requestPending}
-                onClick={handleRequestUpgrade}
-              >
-                {dictionary.accountPage.requestUpgrade}
-              </button>
+            <Link href={`/${locale}/account/blogs`} className={styles.planButton}>
+              {dictionary.accountPage.myBlogs}
+            </Link>
+            {subscriber.current_tier !== "verified" && (
+              <Link href={`/${locale}/account/writer-upgrade`} className={styles.planButton}>
+                {dictionary.accountPage.navWriterUpgrade}
+              </Link>
             )}
           </div>
 
@@ -157,7 +102,7 @@ export function AccountView({ locale, dictionary, subscriber, plans, upgradeStat
                     {plan.billing_cycle === "monthly" ? dictionary.accountPage.monthly : dictionary.accountPage.annual}
                   </div>
                   <div className={styles.planPrice}>
-                    {price > 0 ? `${price.toFixed(2)} ${plan.currency}` : dictionary.accountPage.priceUnavailable}
+                    {price > 0 ? formatCurrency(price, plan.currency) : dictionary.accountPage.priceUnavailable}
                   </div>
                   <button
                     type="button"

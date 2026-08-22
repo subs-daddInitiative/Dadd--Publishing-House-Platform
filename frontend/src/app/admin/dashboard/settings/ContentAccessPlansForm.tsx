@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ContentAccessPlan } from "@/lib/serverApi";
+import { currencySymbol } from "@/lib/currency";
 import styles from "./settings.module.css";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -51,7 +52,7 @@ export function ContentAccessPlansForm({ initialPlans }: ContentAccessPlansFormP
         <div className={styles.row} key={plan.id}>
           <div className={styles.field}>
             <label htmlFor={`content-plan-${plan.id}`} className={styles.label}>
-              {CATEGORY_LABELS[plan.category]} - {CYCLE_LABELS[plan.billing_cycle]} ({plan.currency})
+              {CATEGORY_LABELS[plan.category]} - {CYCLE_LABELS[plan.billing_cycle]} ({currencySymbol(plan.currency)})
             </label>
             <input
               id={`content-plan-${plan.id}`}

@@ -22,6 +22,7 @@ export function Header({ locale, dictionary, siteName, logoUrl, subscriber }: He
     { href: `/${locale}/books`, label: dictionary.nav.books },
     { href: `/${locale}/studies`, label: dictionary.nav.studies },
     { href: `/${locale}/blog`, label: dictionary.nav.blog },
+    { href: `/${locale}/subscribe`, label: dictionary.nav.subscribe },
     { href: `/${locale}/contact`, label: dictionary.nav.contact },
   ];
 
@@ -46,18 +47,20 @@ export function Header({ locale, dictionary, siteName, logoUrl, subscriber }: He
             ))}
           </ul>
         </nav>
-        <HeaderStoreActions
-          locale={locale}
-          cartLabel={dictionary.header.cartLabel}
-          favoritesLabel={dictionary.header.favoritesLabel}
-        />
-        <HeaderAccountLink
-          locale={locale}
-          subscriber={subscriber}
-          loginLabel={dictionary.header.loginLabel}
-          accountLabel={dictionary.header.accountLabel}
-        />
-        <LanguageSwitcher locale={locale} />
+        <div className={styles.actionsGroup}>
+          <HeaderStoreActions
+            locale={locale}
+            cartLabel={dictionary.header.cartLabel}
+            favoritesLabel={dictionary.header.favoritesLabel}
+          />
+          <HeaderAccountLink
+            locale={locale}
+            subscriber={subscriber}
+            loginLabel={dictionary.header.loginLabel}
+            accountLabel={dictionary.header.accountLabel}
+          />
+          <LanguageSwitcher locale={locale} />
+        </div>
       </div>
     </header>
   );

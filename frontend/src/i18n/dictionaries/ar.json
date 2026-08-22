@@ -3,11 +3,21 @@
     "siteName": "دار إتقان للنشر",
     "skipToContent": "الانتقال إلى المحتوى"
   },
+  "sidebar": {
+    "recentBlogsTitle": "أحدث المقالات",
+    "recentStudiesTitle": "أحدث الدراسات",
+    "categoriesTitle": "التصنيفات",
+    "subscribeCtaTitle": "اشترك في المدونة المميزة",
+    "subscribeCtaText": "وصول كامل لجميع المقالات والملفات الحصرية.",
+    "subscribeCtaButton": "اشترك الآن",
+    "premiumBadge": "مميز"
+  },
   "nav": {
     "home": "الرئيسية",
     "books": "مكتبة الكتب",
     "studies": "الدراسات",
     "blog": "المدونة",
+    "subscribe": "اشتراك المدونة",
     "contact": "تواصل معنا"
   },
   "authPage": {
@@ -50,7 +60,21 @@
     "requestRejected": "تم رفض طلبك",
     "rejectionReasonLabel": "السبب",
     "nextEligibleLabel": "يمكنك إعادة الطلب بعد",
-    "mustBeBeginnerFirst": "يجب الاشتراك كـكاتب مبتدئ أولاً قبل طلب الترقية."
+    "mustBeBeginnerFirst": "يجب الاشتراك كـكاتب مبتدئ أولاً قبل طلب الترقية.",
+    "navOverview": "نظرة عامة",
+    "navProfile": "الملف الشخصي",
+    "navFavorites": "المفضلة",
+    "navWriterUpgrade": "طلب الترقية لكاتب موثق",
+    "nameLabel": "الاسم",
+    "emailLabel": "البريد الإلكتروني",
+    "bioLabel": "نبذة عني",
+    "changePhoto": "تغيير الصورة الشخصية",
+    "saveProfile": "حفظ التغييرات",
+    "savedMessage": "تم الحفظ بنجاح.",
+    "changePasswordTitle": "تغيير كلمة المرور",
+    "currentPasswordLabel": "كلمة المرور الحالية",
+    "newPasswordLabel": "كلمة المرور الجديدة",
+    "changePasswordButton": "تحديث كلمة المرور"
   },
   "subscribeResultPage": {
     "title": "نتيجة الدفع",
@@ -58,6 +82,23 @@
     "success": "تم تفعيل عضويتك بنجاح.",
     "failed": "لم تكتمل عملية الدفع. حاول مرة أخرى.",
     "backToAccount": "العودة إلى حسابي"
+  },
+  "subscribePage": {
+    "title": "اشتراك المدونة المميزة",
+    "subtitle": "استمتع بالوصول الكامل لجميع المقالات والملفات الحصرية في المدونة.",
+    "monthlyCardTitle": "الاشتراك الشهري",
+    "annualCardTitle": "الاشتراك السنوي",
+    "annualBadge": "الأوفر",
+    "perMonth": "/ شهريًا",
+    "perYear": "/ سنويًا",
+    "featureAllArticles": "الوصول لجميع المقالات المميزة",
+    "featureFiles": "تحميل ملفات PDF والاستماع للتسجيلات الصوتية الحصرية",
+    "featureCancelAnytime": "يمكنك إدارة اشتراكك من صفحة حسابك في أي وقت",
+    "subscribeButton": "اشترك الآن",
+    "loginToSubscribe": "سجّل الدخول للاشتراك",
+    "alreadySubscribedTitle": "أنت مشترك بالفعل",
+    "alreadySubscribedText": "اشتراكك في المدونة المميزة فعّال حتى",
+    "priceUnavailable": "السعر غير متوفر بعد"
   },
   "premiumLock": {
     "mustRegister": "هذا المحتوى مخصص للأعضاء المسجلين. سجّل حسابًا مجانيًا للمتابعة.",
@@ -115,6 +156,8 @@
     "title": "مقالات مختارة",
     "subtitle": "أصوات جديدة وحكايات لا تشيخ.",
     "viewAll": "عرض الكل",
+    "subscribeCta": "اشترك الآن",
+    "heroBadge": "محتوى حصري للمشتركين",
     "empty": "لا توجد مقالات منشورة بعد.",
     "prev": "السابق",
     "next": "التالي",
@@ -143,7 +186,9 @@
     "moreStudies": "المزيد من الدراسات",
     "relatedStudies": "دراسات ذات صلة",
     "breadcrumbHome": "الرئيسية",
-    "breadcrumbStudies": "الدراسات"
+    "breadcrumbStudies": "الدراسات",
+    "heroBadge": "دراسات حصرية للمشتركين",
+    "subscribeCta": "اشترك الآن"
   },
   "booksPage": {
     "title": "مكتبة الكتب",
@@ -179,7 +224,11 @@
   "favoritesPage": {
     "title": "المفضلة",
     "empty": "لم تقم بإضافة أي كتب إلى المفضلة بعد.",
-    "continueShopping": "تصفح الكتب"
+    "emptyAll": "لم تقم بإضافة أي عناصر إلى المفضلة بعد.",
+    "continueShopping": "تصفح الكتب",
+    "booksSectionTitle": "الكتب",
+    "blogsSectionTitle": "المقالات",
+    "studiesSectionTitle": "الدراسات"
   },
   "header": {
     "cartLabel": "السلة",

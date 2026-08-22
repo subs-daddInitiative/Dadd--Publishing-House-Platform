@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/getDictionary";
 import { useStore } from "@/components/store/StoreProvider";
+import { formatCurrency } from "@/lib/currency";
 import styles from "./books.module.css";
 
 type CartViewProps = {
@@ -28,9 +29,9 @@ export function CartView({ locale, dictionary, whatsappNumber }: CartViewProps) 
     );
   }
 
-  const currency = cart[0]?.currency || "SAR";
+  const currency = cart[0]?.currency || "USD";
   const summaryLines = cart.map((item) => `- ${item.title} x${item.qty}`).join("\n");
-  const message = `${dictionary.cartPage.title}:\n${summaryLines}\n\n${dictionary.cartPage.total}: ${cartTotal.toFixed(2)} ${currency}`;
+  const message = `${dictionary.cartPage.title}:\n${summaryLines}\n\n${dictionary.cartPage.total}: ${formatCurrency(cartTotal, currency)}`;
   const whatsappHref = whatsappNumber
     ? `https://wa.me/${whatsappNumber.replace(/[^\d]/g, "")}?text=${encodeURIComponent(message)}`
     : null;
@@ -51,7 +52,7 @@ export function CartView({ locale, dictionary, whatsappNumber }: CartViewProps) 
               {item.title}
             </Link>
             <p className={styles.listItemPrice}>
-              {item.price !== null ? `${item.price.toFixed(2)} ${item.currency}` : ""}
+              {item.price !== null ? formatCurrency(item.price, item.currency) : ""}
             </p>
             <div className={styles.qtyStepper}>
               <button type="button" className={styles.qtyButton} onClick={() => setQty(item.id, item.qty - 1)}>
@@ -71,7 +72,7 @@ export function CartView({ locale, dictionary, whatsappNumber }: CartViewProps) 
 
       <div className={styles.cartSummary}>
         <span className={styles.cartTotalLabel}>
-          {dictionary.cartPage.total}: {cartTotal.toFixed(2)} {currency}
+          {dictionary.cartPage.total}: {formatCurrency(cartTotal, currency)}
         </span>
       </div>
 

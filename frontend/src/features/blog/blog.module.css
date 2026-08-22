@@ -2,27 +2,142 @@
   padding-block: var(--space-5);
 }
 
-.pageHeader {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
-  flex-wrap: wrap;
+.layoutGrid {
+  display: grid;
+  grid-template-columns: 1fr 20rem;
+  gap: var(--space-4);
+  align-items: start;
 }
 
-.pageTitle {
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
-  margin: 0 0 0.4rem;
+.mainCol {
+  min-width: 0;
+}
+
+@media (max-width: 60rem) {
+  .layoutGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.blogHero {
   position: relative;
-  display: inline-block;
+  overflow: hidden;
+  background: var(--gradient-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding-block: var(--space-5);
+}
+
+.blogHeroBackdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-hero);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.blogHeroBlobPrimary {
+  composes: gradient-blob from global;
+  top: -6rem;
+  inset-inline-start: -4rem;
+  width: 20rem;
+  height: 20rem;
+  background: color-mix(in srgb, var(--color-primary) 45%, transparent);
+}
+
+.blogHeroBlobSecondary {
+  composes: gradient-blob gradient-blob--secondary from global;
+  bottom: -8rem;
+  inset-inline-end: -6rem;
+  width: 22rem;
+  height: 22rem;
+  background: color-mix(in srgb, var(--color-secondary) 40%, transparent);
+}
+
+.blogHeroInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-2);
+}
+
+.blogHeroBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 1.1rem;
+  border-radius: 999px;
+  background: var(--gradient-brand);
+  background-size: 200% 200%;
+  color: var(--color-on-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  animation: gradient-pan 8s ease infinite;
+}
+
+.blogHeroTitle {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  margin: var(--space-1) 0 0;
+}
+
+.blogHeroSubtitle {
+  color: var(--color-text-muted);
+  max-width: 34rem;
+  margin: 0;
+}
+
+.blogHeroActions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+
+.heroSubscribeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 2.1rem;
+  border-radius: 999px;
+  background: var(--gradient-primary);
+  background-size: 160% 160%;
+  color: var(--color-on-primary);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 0.75rem 1.5rem -0.75rem color-mix(in srgb, var(--color-primary) 60%, transparent);
+  transition: background-position var(--duration-slow) ease, transform var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
+}
+
+.heroSubscribeButton:hover {
+  background-position: 100% 50%;
+  transform: translateY(-0.15rem);
+  box-shadow: 0 1rem 2rem -0.75rem color-mix(in srgb, var(--color-primary) 70%, transparent);
+}
+
+.heroSubscribeButton svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blogHeroBadge {
+    animation: none;
+  }
+
+  .heroSubscribeButton:hover {
+    transform: none;
+  }
 }
 
 .filters {
   display: flex;
   gap: var(--space-2);
   flex-wrap: wrap;
-  margin-bottom: var(--space-3);
 }
 
 .filterSelect {
@@ -32,22 +147,6 @@
   background: var(--color-surface);
   color: var(--color-text);
   font-size: 0.9rem;
-}
-
-.pageTitle::after {
-  content: "";
-  position: absolute;
-  inset-inline-start: 0;
-  bottom: -0.4rem;
-  width: 3rem;
-  height: 0.2rem;
-  border-radius: 999px;
-  background: var(--gradient-brand);
-}
-
-.pageSubtitle {
-  color: var(--color-text-muted);
-  margin: 0;
 }
 
 .viewAllLink {
@@ -69,23 +168,14 @@ html[dir="rtl"] .viewAllLink:hover {
   transform: translateX(-0.2rem);
 }
 
-/* Bento layout for the first page's top 3 posts */
-.bentoGrid {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  grid-template-rows: repeat(2, minmax(0, 1fr));
+/* List of posts: every row uses the same compact horizontal layout */
+.postsList {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-3);
-  margin-bottom: var(--space-4);
 }
 
-@media (max-width: 55rem) {
-  .bentoGrid {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
-  }
-}
-
-/* Regular grid for the remaining posts / subsequent pages */
+/* Grid used for "related articles" blocks */
 .postsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -104,35 +194,64 @@ html[dir="rtl"] .viewAllLink:hover {
   }
 }
 
-/* Card */
+/* Card — compact horizontal row: thumbnail on the side, text next to it */
 .card {
   position: relative;
   display: flex;
-  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 1rem;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
+  padding: var(--space-2);
 }
 
-.cardFeatured {
-  grid-row: span 2;
+@media (max-width: 40rem) {
+  .card {
+    flex-direction: column;
+    padding: 0;
+  }
+}
+
+/* Vertical card used for grids (e.g. related posts) instead of the list row */
+.cardGridItem {
+  flex-direction: column;
+  padding: 0;
+}
+
+.cardGridItem .cardImageWrap {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 0;
+}
+
+.cardGridItem .cardBody {
+  padding: var(--space-3);
+}
+
+html[dir="rtl"] .cardGridItem .cardBody {
+  padding: var(--space-3);
 }
 
 .cardImageWrap {
   position: relative;
-  aspect-ratio: 16 / 10;
+  flex-shrink: 0;
+  width: 12rem;
+  aspect-ratio: 4 / 3;
+  border-radius: 0.75rem;
+  overflow: hidden;
   background: var(--gradient-surface);
 }
 
-.cardFeatured .cardImageWrap {
-  aspect-ratio: 4 / 3;
-}
-
-.cardCompact .cardImageWrap {
-  aspect-ratio: 16 / 9;
+@media (max-width: 40rem) {
+  .cardImageWrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 0;
+  }
 }
 
 .cardImage {
@@ -150,7 +269,7 @@ html[dir="rtl"] .viewAllLink:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--color-on-primary);
   background: var(--gradient-primary);
@@ -171,28 +290,40 @@ html[dir="rtl"] .viewAllLink:hover {
 .cardBody {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: var(--space-3);
+  gap: 0.4rem;
+  padding: var(--space-2) var(--space-2) var(--space-2) 0;
   flex: 1;
+  min-width: 0;
+  justify-content: center;
 }
 
-.cardFeatured .cardBody {
-  padding: var(--space-4);
+html[dir="rtl"] .cardBody {
+  padding: var(--space-2) 0 var(--space-2) var(--space-2);
+}
+
+@media (max-width: 40rem) {
+  .cardBody {
+    padding: var(--space-3);
+  }
+
+  html[dir="rtl"] .cardBody {
+    padding: var(--space-3);
+  }
 }
 
 .cardTitle {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   margin: 0;
-  line-height: 1.3;
-}
-
-.cardFeatured .cardTitle {
-  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .cardExcerpt {
   color: var(--color-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;

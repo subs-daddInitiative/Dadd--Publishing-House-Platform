@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Locale } from "@/i18n/config";
+import { formatCurrency } from "@/lib/currency";
 import { StarRating } from "./StarRating";
 import { BookCardActions } from "./BookCardActions";
 import styles from "./books.module.css";
@@ -56,9 +57,7 @@ export function BookCard({ locale, book, addToCartLabel, favoriteLabel }: BookCa
         {book.author && <p className={styles.cardAuthor}>{book.author}</p>}
         {book.rating !== null && <StarRating rating={book.rating} reviewsCount={book.reviewsCount} />}
         {book.price !== null && (
-          <p className={styles.cardPrice}>
-            {book.price.toFixed(2)} {book.currency}
-          </p>
+          <p className={styles.cardPrice}>{formatCurrency(book.price, book.currency)}</p>
         )}
         <BookCardActions
           book={{

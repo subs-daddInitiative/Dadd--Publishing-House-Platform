@@ -3,6 +3,7 @@ const { listPlans, findPlanById, upsertPlanPrice, createPendingAccessSubscriptio
   require("./contentAccess.repository");
 const studyPurchases = require("./studyPurchases.repository");
 const { createCharge } = require("../subscriptions/tap.client");
+const { settleCharge } = require("../subscriptions/subscriptions.controller");
 const { findById: findSubscriberById } = require("../subscribers/subscribers.repository");
 const { findStudyById } = require("../studies/studies.repository");
 
@@ -127,13 +128,21 @@ async function getAccessStatus(req, res, next) {
       return res.status(400).json({ success: false, message: "tap_id is required" });
     }
 
-    const subscription = await findByTapChargeId(tapId);
+    let subscription = await findByTapChargeId(tapId);
     if (subscription && subscription.subscriber_id === req.subscriber.sub) {
+      if (subscription.status === "pending") {
+        await settleCharge(tapId);
+        subscription = await findByTapChargeId(tapId);
+      }
       return res.json({ success: true, data: { type: "content_access", status: subscription.status } });
     }
 
-    const purchase = await studyPurchases.findByTapChargeId(tapId);
+    let purchase = await studyPurchases.findByTapChargeId(tapId);
     if (purchase && purchase.subscriber_id === req.subscriber.sub) {
+      if (purchase.status === "pending") {
+        await settleCharge(tapId);
+        purchase = await studyPurchases.findByTapChargeId(tapId);
+      }
       return res.json({ success: true, data: { type: "study_purchase", status: purchase.status } });
     }
 

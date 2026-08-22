@@ -20,11 +20,19 @@ async function findActiveByEmail(email) {
 
 async function findById(id) {
   const [rows] = await pool.query(
-    `SELECT id, name, email, account_type, current_tier, tier_expires_at,
+    `SELECT id, name, bio, profile_image, email, account_type, current_tier, tier_expires_at,
             blog_access_expires_at, studies_access_expires_at, created_at
      FROM subscribers
      WHERE id = ? AND deleted_at IS NULL
      LIMIT 1`,
+    [id]
+  );
+  return rows[0] || null;
+}
+
+async function findAuthById(id) {
+  const [rows] = await pool.query(
+    "SELECT id, password_hash FROM subscribers WHERE id = ? AND deleted_at IS NULL LIMIT 1",
     [id]
   );
   return rows[0] || null;
@@ -66,12 +74,30 @@ async function updateTier(subscriberId, tier, expiresAt) {
   );
 }
 
+async function updateProfile(id, { name, bio, profileImage }) {
+  const fields = ["name = ?", "bio = ?"];
+  const params = [name, bio || null];
+  if (profileImage !== undefined) {
+    fields.push("profile_image = ?");
+    params.push(profileImage);
+  }
+  params.push(id);
+  await pool.query(`UPDATE subscribers SET ${fields.join(", ")} WHERE id = ?`, params);
+}
+
+async function updatePassword(id, passwordHash) {
+  await pool.query("UPDATE subscribers SET password_hash = ? WHERE id = ?", [passwordHash, id]);
+}
+
 module.exports = {
   findByEmail,
   findActiveByEmail,
   findById,
+  findAuthById,
   createSubscriber,
   updateTier,
+  updateProfile,
+  updatePassword,
   hasActiveBlogAccess,
   hasActiveStudiesAccess,
   grantContentAccess,

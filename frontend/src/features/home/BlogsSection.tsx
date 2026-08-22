@@ -14,10 +14,8 @@ type BlogsSectionProps = {
 };
 
 export function BlogsSection({ locale, dictionary, blogs }: BlogsSectionProps) {
-  const [featured, ...restBlogs] = blogs;
-  if (!featured) return null;
-
-  const compact = restBlogs.slice(0, 2);
+  const items = blogs.slice(0, 3);
+  if (items.length === 0) return null;
 
   return (
     <section className={styles.sectionAlt}>
@@ -27,7 +25,10 @@ export function BlogsSection({ locale, dictionary, blogs }: BlogsSectionProps) {
             <h2 className={styles.highlightTitle}>{dictionary.blogPage.title}</h2>
             <p className={styles.highlightSubtitle}>{dictionary.blogPage.subtitle}</p>
           </Reveal>
-          <Reveal delay={100}>
+          <Reveal delay={100} className={styles.blogHeaderActions}>
+            <Link href={`/${locale}/subscribe`} className={`${styles.primaryAction} hover-lift`}>
+              {dictionary.blogPage.subscribeCta}
+            </Link>
             <Link href={`/${locale}/blog`} className={blogStyles.viewAllLink}>
               {dictionary.blogPage.viewAll}
             </Link>
@@ -35,10 +36,15 @@ export function BlogsSection({ locale, dictionary, blogs }: BlogsSectionProps) {
         </div>
 
         <Reveal delay={150}>
-          <div className={blogStyles.bentoGrid}>
-            <BlogCard locale={locale} blog={featured} variant="featured" byLabel={dictionary.blogPage.by} />
-            {compact.map((blog) => (
-              <BlogCard key={blog.id} locale={locale} blog={blog} variant="compact" byLabel={dictionary.blogPage.by} />
+          <div className={blogStyles.postsList}>
+            {items.map((blog) => (
+              <BlogCard
+                key={blog.id}
+                locale={locale}
+                blog={blog}
+                byLabel={dictionary.blogPage.by}
+                favoriteLabel={dictionary.booksPage.favorite}
+              />
             ))}
           </div>
         </Reveal>

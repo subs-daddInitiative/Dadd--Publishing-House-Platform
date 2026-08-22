@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/getDictionary";
 import type { ContentAccessPlan } from "@/lib/serverApi";
+import { formatCurrency } from "@/lib/currency";
 import styles from "./subscribers.module.css";
 
 type PremiumLockProps = {
@@ -94,7 +95,7 @@ export function PremiumLock({
           disabled={pending !== null}
           onClick={purchaseThisStudy}
         >
-          {dictionary.premiumLock.buyThisStudy} - {Number(studyPrice).toFixed(2)} {studyCurrency}
+          {dictionary.premiumLock.buyThisStudy} - {formatCurrency(Number(studyPrice), studyCurrency || "USD")}
         </button>
       )}
 
@@ -107,7 +108,7 @@ export function PremiumLock({
                 {plan.billing_cycle === "monthly" ? dictionary.accountPage.monthly : dictionary.accountPage.annual}
               </div>
               <div className={styles.planPrice}>
-                {price > 0 ? `${price.toFixed(2)} ${plan.currency}` : dictionary.accountPage.priceUnavailable}
+                {price > 0 ? formatCurrency(price, plan.currency) : dictionary.accountPage.priceUnavailable}
               </div>
               <button
                 type="button"

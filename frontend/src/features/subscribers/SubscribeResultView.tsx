@@ -21,12 +21,32 @@ export function SubscribeResultView({ locale, dictionary, tapId }: SubscribeResu
       return;
     }
 
-    fetch(`/api/subscriber/subscriptions/status?tap_id=${encodeURIComponent(tapId)}`)
-      .then((response) => response.json())
-      .then((result) => {
-        setStatus(result.success && result.data.status === "active" ? "active" : "failed");
-      })
-      .catch(() => setStatus("failed"));
+    async function checkStatus() {
+      const encodedId = encodeURIComponent(tapId!);
+
+      // The charge could belong to a writer-tier subscription OR a
+      // content-access (blogs/studies) checkout - try both endpoints since
+      // the result page doesn't otherwise know which flow redirected here.
+      const writerTier = await fetch(`/api/subscriber/subscriptions/status?tap_id=${encodedId}`)
+        .then((response) => response.json())
+        .catch(() => null);
+      if (writerTier?.success) {
+        setStatus(writerTier.data.status === "active" ? "active" : "failed");
+        return;
+      }
+
+      const contentAccess = await fetch(`/api/subscriber/content-access/status?tap_id=${encodedId}`)
+        .then((response) => response.json())
+        .catch(() => null);
+      if (contentAccess?.success) {
+        setStatus(["active", "completed"].includes(contentAccess.data.status) ? "active" : "failed");
+        return;
+      }
+
+      setStatus("failed");
+    }
+
+    checkStatus();
   }, [tapId]);
 
   return (

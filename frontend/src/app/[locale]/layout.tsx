@@ -7,6 +7,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SyncHtmlAttributes } from "@/components/SyncHtmlAttributes";
 import { StoreProvider } from "@/components/store/StoreProvider";
+import { FavoritesProvider } from "@/components/favorites/FavoritesProvider";
 import { notFound } from "next/navigation";
 
 export function generateStaticParams() {
@@ -69,21 +70,23 @@ export default async function LocaleLayout({
 
   return (
     <StoreProvider>
-      <SyncHtmlAttributes lang={locale} dir={dir} />
-      <a href="#main-content" className="skip-link">
-        {dictionary.common.skipToContent}
-      </a>
-      <Header locale={locale} dictionary={dictionary} siteName={siteName} logoUrl={logoUrl} subscriber={subscriber} />
-      <main id="main-content">{children}</main>
-      <Footer
-        locale={locale}
-        dictionary={dictionary}
-        siteName={siteName}
-        logoUrl={logoUrl}
-        callNumber={settings?.callNumber ?? null}
-        whatsappNumber={settings?.whatsappNumber ?? null}
-        socialLinks={settings?.socialLinks || []}
-      />
+      <FavoritesProvider isLoggedIn={Boolean(subscriber)}>
+        <SyncHtmlAttributes lang={locale} dir={dir} />
+        <a href="#main-content" className="skip-link">
+          {dictionary.common.skipToContent}
+        </a>
+        <Header locale={locale} dictionary={dictionary} siteName={siteName} logoUrl={logoUrl} subscriber={subscriber} />
+        <main id="main-content">{children}</main>
+        <Footer
+          locale={locale}
+          dictionary={dictionary}
+          siteName={siteName}
+          logoUrl={logoUrl}
+          callNumber={settings?.callNumber ?? null}
+          whatsappNumber={settings?.whatsappNumber ?? null}
+          socialLinks={settings?.socialLinks || []}
+        />
+      </FavoritesProvider>
     </StoreProvider>
   );
 }

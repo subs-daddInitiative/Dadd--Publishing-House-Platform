@@ -6,9 +6,17 @@ const {
   findByEmail,
   findActiveByEmail,
   findById,
+  findAuthById,
   createSubscriber,
+  updateProfile,
+  updatePassword,
 } = require("./subscribers.repository");
-const { validateRegisterPayload, validateLoginPayload } = require("./subscribers.validation");
+const {
+  validateRegisterPayload,
+  validateLoginPayload,
+  validateProfilePayload,
+  validatePasswordPayload,
+} = require("./subscribers.validation");
 
 const SUBSCRIBER_COOKIE = "subscriber_session";
 
@@ -108,4 +116,54 @@ async function me(req, res, next) {
   }
 }
 
-module.exports = { register, login, logout, me, SUBSCRIBER_COOKIE };
+async function updateProfileHandler(req, res, next) {
+  try {
+    const { errors, value } = validateProfilePayload(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({ success: false, message: "Validation failed", errors });
+    }
+
+    const profileImage = req.file ? `/uploads/subscriber-avatars/${req.file.filename}` : undefined;
+    await updateProfile(req.subscriber.sub, { name: value.name, bio: value.bio, profileImage });
+
+    const subscriber = await findById(req.subscriber.sub);
+    res.json({ success: true, data: { subscriber } });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function changePasswordHandler(req, res, next) {
+  try {
+    const { errors, value } = validatePasswordPayload(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({ success: false, message: "Validation failed", errors });
+    }
+
+    const auth = await findAuthById(req.subscriber.sub);
+    if (!auth) {
+      return res.status(401).json({ success: false, message: "Not authenticated" });
+    }
+
+    const matches = await bcrypt.compare(value.currentPassword, auth.password_hash);
+    if (!matches) {
+      return res.status(400).json({ success: false, message: "Current password is incorrect" });
+    }
+
+    const passwordHash = await bcrypt.hash(value.newPassword, 12);
+    await updatePassword(req.subscriber.sub, passwordHash);
+    res.json({ success: true, data: null });
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = {
+  register,
+  login,
+  logout,
+  me,
+  updateProfileHandler,
+  changePasswordHandler,
+  SUBSCRIBER_COOKIE,
+};

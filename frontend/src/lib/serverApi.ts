@@ -476,6 +476,8 @@ export async function getAdminModerators(): Promise<Moderator[]> {
 export type Subscriber = {
   id: number;
   name: string;
+  bio: string | null;
+  profile_image: string | null;
   email: string;
   account_type: "reader" | "writer";
   current_tier: "none" | "beginner" | "verified";
@@ -598,4 +600,22 @@ export type PendingReviewBlog = {
 export async function getPendingReviewBlogs(): Promise<PendingReviewBlog[]> {
   const result = await backendFetch<PendingReviewBlog[]>("/api/admin/blogs/pending-review");
   return result.success ? result.data : [];
+}
+
+export type FavoriteItem = {
+  id: number;
+  title: string;
+  slug: string;
+  cover_image: string | null;
+  created_at: string;
+};
+
+export type FavoritesResult = {
+  blogs: FavoriteItem[];
+  studies: FavoriteItem[];
+};
+
+export async function getSubscriberFavorites(): Promise<FavoritesResult> {
+  const result = await backendFetch<FavoritesResult>("/api/subscriber/favorites");
+  return result.success ? result.data : { blogs: [], studies: [] };
 }

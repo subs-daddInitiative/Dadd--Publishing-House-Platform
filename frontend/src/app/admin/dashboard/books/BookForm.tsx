@@ -43,7 +43,7 @@ export function BookForm({
   const [categoryId, setCategoryId] = useState(initialBook?.category_id?.toString() || "");
   const [description, setDescription] = useState(initialBook?.description || "");
   const [price, setPrice] = useState(initialBook?.price?.toString() || "");
-  const [currency, setCurrency] = useState(initialBook?.currency || "SAR");
+  const [currency, setCurrency] = useState(initialBook?.currency || "USD");
   const [rating, setRating] = useState(initialBook?.rating?.toString() || "");
   const [reviewsCount, setReviewsCount] = useState(initialBook?.reviews_count?.toString() || "0");
   const [status, setStatus] = useState(initialBook?.status || "draft");

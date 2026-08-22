@@ -186,6 +186,243 @@
   font-size: 0.9rem;
 }
 
+.subscribePage {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-3);
+}
+
+.subscribeHeader {
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+
+.subscribeTitle {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  margin-bottom: var(--space-2);
+}
+
+.subscribeSubtitle {
+  color: var(--color-text-muted);
+  max-width: 34rem;
+  margin: 0 auto;
+}
+
+.subscribeActiveBanner {
+  border: 1px solid var(--color-success, #2f9e64);
+  border-radius: 0.75rem;
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+.subscribeCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-4);
+}
+
+.subscribeCard {
+  position: relative;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--duration-fast, 0.2s) ease, box-shadow var(--duration-fast, 0.2s) ease;
+}
+
+.subscribeCard:hover {
+  transform: translateY(-0.25rem);
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.08);
+}
+
+.subscribeCardHighlighted {
+  border-color: transparent;
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+}
+
+.subscribeCardHighlighted .subscribeCardPeriod,
+.subscribeCardHighlighted .subscribeCardFeatures {
+  color: inherit;
+  opacity: 0.9;
+}
+
+.subscribeCardBadge {
+  position: absolute;
+  top: -0.75rem;
+  inset-inline-end: 1.5rem;
+  background: var(--color-accent, #d0433a);
+  color: #fff;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.subscribeCardTitle {
+  font-size: 1.3rem;
+  margin-bottom: var(--space-2);
+}
+
+.subscribeCardPrice {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: var(--space-3);
+}
+
+.subscribeCardPeriod {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  margin-inline-start: 0.4rem;
+}
+
+.subscribeCardFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  flex: 1;
+}
+
+.subscribeCardFeatures li {
+  padding-inline-start: 1.4rem;
+  position: relative;
+}
+
+.subscribeCardFeatures li::before {
+  content: "✓";
+  position: absolute;
+  inset-inline-start: 0;
+  font-weight: 700;
+}
+
+.subscribeCardHighlighted .planButton {
+  background: #fff;
+  color: var(--color-primary);
+}
+
+.accountNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0 auto var(--space-4);
+  max-width: 60rem;
+  padding: 0 var(--space-3);
+}
+
+.accountNavLink {
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--duration-fast, 0.2s) ease, color var(--duration-fast, 0.2s) ease;
+}
+
+.accountNavLinkActive {
+  background: var(--gradient-primary);
+  border-color: transparent;
+  color: var(--color-on-primary);
+}
+
+.formTextarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.formStatusSuccess {
+  color: var(--color-success, #2f9e64);
+  margin-top: var(--space-2);
+  font-size: 0.9rem;
+}
+
+.avatarButton {
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  background: var(--gradient-surface);
+  margin-bottom: var(--space-3);
+}
+
+.avatarImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatarFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-on-primary);
+  background: var(--gradient-primary);
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
+.favoritesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.favoritesList {
+  list-style: none;
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.favoritesListItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+}
+
+.removeFavoriteButton {
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  flex-shrink: 0;
+}
+
 .resultPage {
   max-width: 26rem;
   margin: 0 auto;

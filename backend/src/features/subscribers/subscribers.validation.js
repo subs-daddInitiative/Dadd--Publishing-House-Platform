@@ -32,4 +32,35 @@ function validateLoginPayload(body) {
   return { errors, value: { email, password } };
 }
 
-module.exports = { validateRegisterPayload, validateLoginPayload };
+function validateProfilePayload(body) {
+  const errors = [];
+  const value = {};
+
+  const name = typeof body.name === "string" ? body.name.trim() : "";
+  if (!name) errors.push("Name is required");
+  value.name = name.slice(0, 150);
+
+  const bio = typeof body.bio === "string" ? body.bio.trim() : "";
+  value.bio = bio.slice(0, 1000);
+
+  return { errors, value };
+}
+
+function validatePasswordPayload(body) {
+  const errors = [];
+
+  const currentPassword = typeof body.current_password === "string" ? body.current_password : "";
+  if (!currentPassword) errors.push("Current password is required");
+
+  const newPassword = typeof body.new_password === "string" ? body.new_password : "";
+  if (newPassword.length < 8) errors.push("New password must be at least 8 characters");
+
+  return { errors, value: { currentPassword, newPassword } };
+}
+
+module.exports = {
+  validateRegisterPayload,
+  validateLoginPayload,
+  validateProfilePayload,
+  validatePasswordPayload,
+};

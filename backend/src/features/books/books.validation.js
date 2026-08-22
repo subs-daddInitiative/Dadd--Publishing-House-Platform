@@ -59,7 +59,7 @@ function validateBookPayload(body, { partial = false } = {}) {
 
   if (body.currency !== undefined) {
     const currency = String(body.currency).trim().slice(0, 6);
-    value.currency = currency || "SAR";
+    value.currency = currency || "USD";
   }
 
   if (body.rating !== undefined) {

@@ -94,18 +94,20 @@ async function checkout(req, res, next) {
   }
 }
 
-async function webhook(req, res, next) {
-  try {
-    const chargeId = req.body?.id;
-    if (!chargeId) {
-      return res.status(400).json({ success: false, message: "Missing charge id" });
-    }
+// Settles a TAP charge against whichever table it belongs to (writer-tier
+// subscription, content-access subscription, or study purchase). Used both
+// by the webhook (TAP calling us server-to-server) AND as a fallback from the
+// status-check endpoints below - useful when the webhook can't reach us yet
+// (e.g. running on localhost without a public tunnel), since the browser
+// redirect back from TAP still lets us actively re-verify the charge instead
+// of only passively waiting for a callback.
+async function settleCharge(chargeId) {
+  const charge = await retrieveCharge(chargeId);
+  const captured = charge.status === "CAPTURED";
 
-    const charge = await retrieveCharge(chargeId);
-    const captured = charge.status === "CAPTURED";
-
-    const subscription = await findByTapChargeId(charge.id);
-    if (subscription) {
+  const subscription = await findByTapChargeId(charge.id);
+  if (subscription) {
+    if (subscription.status === "pending") {
       if (captured) {
         const plan = await findPlanById(subscription.plan_id);
         const startsAt = new Date();
@@ -115,11 +117,13 @@ async function webhook(req, res, next) {
       } else {
         await markSubscriptionResult(subscription.id, "failed", null, null);
       }
-      return res.json({ success: true, data: null });
     }
+    return true;
+  }
 
-    const contentSub = await contentAccess.findByTapChargeId(charge.id);
-    if (contentSub) {
+  const contentSub = await contentAccess.findByTapChargeId(charge.id);
+  if (contentSub) {
+    if (contentSub.status === "pending") {
       if (captured) {
         const plan = await contentAccess.findPlanById(contentSub.plan_id);
         const startsAt = new Date();
@@ -129,16 +133,33 @@ async function webhook(req, res, next) {
       } else {
         await contentAccess.markResult(contentSub.id, "failed", null, null);
       }
-      return res.json({ success: true, data: null });
     }
+    return true;
+  }
 
-    const purchase = await studyPurchases.findByTapChargeId(charge.id);
-    if (purchase) {
+  const purchase = await studyPurchases.findByTapChargeId(charge.id);
+  if (purchase) {
+    if (purchase.status === "pending") {
       await studyPurchases.markResult(purchase.id, captured ? "completed" : "failed");
-      return res.json({ success: true, data: null });
+    }
+    return true;
+  }
+
+  return false;
+}
+
+async function webhook(req, res, next) {
+  try {
+    const chargeId = req.body?.id;
+    if (!chargeId) {
+      return res.status(400).json({ success: false, message: "Missing charge id" });
     }
 
-    res.status(404).json({ success: false, message: "Charge not found" });
+    const found = await settleCharge(chargeId);
+    if (!found) {
+      return res.status(404).json({ success: false, message: "Charge not found" });
+    }
+    res.json({ success: true, data: null });
   } catch (error) {
     next(error);
   }
@@ -147,13 +168,19 @@ async function webhook(req, res, next) {
 async function getCheckoutStatus(req, res, next) {
   try {
     const tapId = req.query.tap_id;
-    const subscription = tapId
+    let subscription = tapId
       ? await findByTapChargeId(tapId)
       : await findById(req.params.id, req.subscriber.sub);
 
     if (!subscription || subscription.subscriber_id !== req.subscriber.sub) {
       return res.status(404).json({ success: false, message: "Subscription not found" });
     }
+
+    if (subscription.status === "pending" && tapId) {
+      await settleCharge(tapId);
+      subscription = await findByTapChargeId(tapId);
+    }
+
     res.json({ success: true, data: subscription });
   } catch (error) {
     next(error);
@@ -198,4 +225,5 @@ module.exports = {
   webhook,
   getCheckoutStatus,
   updatePlanPriceHandler,
+  settleCharge,
 };

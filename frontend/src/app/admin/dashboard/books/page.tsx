@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAdminBooks, backendAssetUrl } from "@/lib/serverApi";
+import { formatCurrency } from "@/lib/currency";
 import { BookRowActions } from "./BookRowActions";
 import styles from "./books.module.css";
 
@@ -49,7 +50,7 @@ export default async function AdminBooksPage() {
                   <p className={styles.itemMeta}>
                     {book.category_name || "بدون تصنيف"}
                     {" · "}
-                    {book.price ? `${book.price} ${book.currency}` : "بدون سعر"}
+                    {book.price ? formatCurrency(Number(book.price), book.currency) : "بدون سعر"}
                     {" · "}
                     <span
                       className={

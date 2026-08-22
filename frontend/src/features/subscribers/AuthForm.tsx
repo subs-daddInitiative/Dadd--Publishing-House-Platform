@@ -31,19 +31,30 @@ export function AuthForm({ locale, dictionary, mode }: AuthFormProps) {
     const body =
       mode === "register" ? { name, email, password, account_type: accountType } : { email, password };
 
-    const response = await fetch(path, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const result = await response.json();
+    try {
+      const response = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
-    if (result.success) {
-      router.push(`/${locale}/account`);
-      router.refresh();
-    } else {
+      let result: { success: boolean; message?: string } | null = null;
+      try {
+        result = await response.json();
+      } catch {
+        result = null;
+      }
+
+      if (result?.success) {
+        router.push(`/${locale}/account`);
+        router.refresh();
+      } else {
+        setStatus("error");
+        setErrorMessage(result?.message || dictionary.authPage.errorGeneric);
+      }
+    } catch {
       setStatus("error");
-      setErrorMessage(result.message || dictionary.authPage.errorGeneric);
+      setErrorMessage(dictionary.authPage.errorGeneric);
     }
   }
 

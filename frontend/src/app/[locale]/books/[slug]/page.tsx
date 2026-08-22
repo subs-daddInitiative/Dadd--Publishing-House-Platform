@@ -4,6 +4,7 @@ import Link from "next/link";
 import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
 import { getPublicBookBySlug, getPublicSettings, backendAssetUrl } from "@/lib/serverApi";
+import { formatCurrency } from "@/lib/currency";
 import { notFound } from "next/navigation";
 import { StarRating } from "@/features/books/StarRating";
 import { BookCardActions } from "@/features/books/BookCardActions";
@@ -145,9 +146,7 @@ export default async function BookDetailPage({ params }: { params: Promise<PageP
           {book.author && <p className={styles.detailAuthor}>{dictionary.booksPage.by} {book.author}</p>}
           {rating !== null && <StarRating rating={rating} reviewsCount={book.reviews_count} />}
           {price !== null && (
-            <p className={styles.detailPrice}>
-              {price.toFixed(2)} {book.currency}
-            </p>
+            <p className={styles.detailPrice}>{formatCurrency(price, book.currency)}</p>
           )}
           {book.description && <p className={styles.detailDescription}>{book.description}</p>}
 
