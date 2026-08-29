@@ -474,7 +474,7 @@ html[dir="rtl"] .cardBody {
 .blockImage {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1 / 1;
   border-radius: 0.75rem;
   overflow: hidden;
 }
@@ -493,12 +493,20 @@ html[dir="rtl"] .cardBody {
   align-items: center;
 }
 
-.blockImageTextReversed {
-  direction: ltr;
+.blockImageText > .blockImage {
+  order: 0;
 }
 
-.blockImageTextReversed > * {
-  direction: inherit;
+.blockImageText > .postBody {
+  order: 1;
+}
+
+.blockImageTextReversed > .blockImage {
+  order: 1;
+}
+
+.blockImageTextReversed > .postBody {
+  order: 0;
 }
 
 .blockQuote {
@@ -544,6 +552,13 @@ html[dir="rtl"] .cardBody {
 .blockFileLocked {
   color: var(--color-text-muted);
   font-size: 0.9rem;
+}
+
+.blockVideo {
+  width: 100%;
+  max-height: 32rem;
+  border-radius: 0.5rem;
+  background: #000;
 }
 
 @media (max-width: 40rem) {

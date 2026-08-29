@@ -12,9 +12,12 @@ const MIME_TYPES = {
   "audio/mp4": { ext: ".m4a", dir: "blogs-blocks/audio" },
   "audio/wav": { ext: ".wav", dir: "blogs-blocks/audio" },
   "audio/ogg": { ext: ".ogg", dir: "blogs-blocks/audio" },
+  "video/mp4": { ext: ".mp4", dir: "blogs-blocks/videos" },
+  "video/webm": { ext: ".webm", dir: "blogs-blocks/videos" },
+  "video/ogg": { ext: ".ogv", dir: "blogs-blocks/videos" },
 };
 
-const MAX_FILE_SIZE = 25 * 1024 * 1024;
+const MAX_FILE_SIZE = 150 * 1024 * 1024;
 const uploadsRoot = path.join(__dirname, "..", "..", "..", "uploads");
 
 for (const { dir } of Object.values(MIME_TYPES)) {

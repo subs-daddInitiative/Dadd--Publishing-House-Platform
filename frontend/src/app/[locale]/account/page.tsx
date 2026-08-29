@@ -1,6 +1,11 @@
 import { isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
-import { getCurrentSubscriber, getPublicSubscriptionPlans, getWriterUpgradeStatus } from "@/lib/serverApi";
+import {
+  getCurrentSubscriber,
+  getPublicSubscriptionPlans,
+  getWriterUpgradeStatus,
+  getPaymentMethods,
+} from "@/lib/serverApi";
 import { AccountView } from "@/features/subscribers/AccountView";
 import { AccountNav } from "@/features/subscribers/AccountNav";
 import { notFound, redirect } from "next/navigation";
@@ -17,10 +22,11 @@ export default async function AccountPage({
   const subscriber = await getCurrentSubscriber();
   if (!subscriber) redirect(`/${locale}/login`);
 
-  const [dictionary, plans, upgradeStatus] = await Promise.all([
+  const [dictionary, plans, upgradeStatus, paymentMethods] = await Promise.all([
     getDictionary(locale),
     getPublicSubscriptionPlans(),
     subscriber.account_type === "writer" ? getWriterUpgradeStatus() : Promise.resolve(null),
+    getPaymentMethods(),
   ]);
 
   return (
@@ -32,6 +38,7 @@ export default async function AccountPage({
         subscriber={subscriber}
         plans={plans}
         upgradeStatus={upgradeStatus}
+        paymentMethods={paymentMethods}
       />
     </>
   );

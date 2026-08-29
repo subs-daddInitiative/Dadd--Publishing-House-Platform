@@ -10,18 +10,31 @@ type SubscribeResultViewProps = {
   locale: Locale;
   dictionary: Dictionary;
   tapId: string | null;
+  paypalOrderId?: string | null;
 };
 
-export function SubscribeResultView({ locale, dictionary, tapId }: SubscribeResultViewProps) {
+export function SubscribeResultView({ locale, dictionary, tapId, paypalOrderId }: SubscribeResultViewProps) {
   const [status, setStatus] = useState<"checking" | "active" | "failed">("checking");
 
   useEffect(() => {
-    if (!tapId) {
+    if (!tapId && !paypalOrderId) {
       setStatus("failed");
       return;
     }
 
     async function checkStatus() {
+      // PayPal orders only ever belong to the writer-tier subscriptions flow
+      // in this pass, so there's just one endpoint to check.
+      if (paypalOrderId) {
+        const result = await fetch(
+          `/api/subscriber/subscriptions/status?paypal_order_id=${encodeURIComponent(paypalOrderId)}`
+        )
+          .then((response) => response.json())
+          .catch(() => null);
+        setStatus(result?.success && result.data.status === "active" ? "active" : "failed");
+        return;
+      }
+
       const encodedId = encodeURIComponent(tapId!);
 
       // The charge could belong to a writer-tier subscription OR a
@@ -47,7 +60,7 @@ export function SubscribeResultView({ locale, dictionary, tapId }: SubscribeResu
     }
 
     checkStatus();
-  }, [tapId]);
+  }, [tapId, paypalOrderId]);
 
   return (
     <div className={styles.resultPage}>

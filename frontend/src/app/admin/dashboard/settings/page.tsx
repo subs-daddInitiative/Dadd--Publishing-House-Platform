@@ -6,6 +6,7 @@ import {
   getAdminAboutFeatures,
   getPublicSubscriptionPlans,
   getPublicContentAccessPlans,
+  getAdminBookPricingTiers,
   backendAssetUrl,
 } from "@/lib/serverApi";
 import { GeneralSettingsForm } from "./GeneralSettingsForm";
@@ -15,6 +16,7 @@ import { BannersManager } from "./BannersManager";
 import { AboutFeaturesManager } from "./AboutFeaturesManager";
 import { SubscriptionPlansForm } from "./SubscriptionPlansForm";
 import { ContentAccessPlansForm } from "./ContentAccessPlansForm";
+import { BookPricingTiersForm } from "./BookPricingTiersForm";
 
 export const metadata = { title: "الإعدادات" };
 
@@ -22,13 +24,15 @@ export default async function SettingsPage() {
   const admin = await getCurrentAdmin();
   if (!admin || admin.role !== "admin") redirect("/admin/dashboard");
 
-  const [settings, banners, aboutFeatures, subscriptionPlans, contentAccessPlans] = await Promise.all([
-    getAdminSettings(),
-    getAdminBanners(),
-    getAdminAboutFeatures(),
-    getPublicSubscriptionPlans(),
-    getPublicContentAccessPlans(),
-  ]);
+  const [settings, banners, aboutFeatures, subscriptionPlans, contentAccessPlans, bookPricingTiers] =
+    await Promise.all([
+      getAdminSettings(),
+      getAdminBanners(),
+      getAdminAboutFeatures(),
+      getPublicSubscriptionPlans(),
+      getPublicContentAccessPlans(),
+      getAdminBookPricingTiers(),
+    ]);
 
   const backendUrl = process.env.BACKEND_URL || "http://localhost:4000";
 
@@ -54,6 +58,8 @@ export default async function SettingsPage() {
       <SubscriptionPlansForm initialPlans={subscriptionPlans} />
 
       <ContentAccessPlansForm initialPlans={contentAccessPlans} />
+
+      <BookPricingTiersForm initialTiers={bookPricingTiers} />
     </section>
   );
 }

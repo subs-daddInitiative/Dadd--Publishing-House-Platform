@@ -5,6 +5,7 @@ import type { Dictionary } from "@/i18n/getDictionary";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { HeaderStoreActions } from "@/components/HeaderStoreActions";
 import { HeaderAccountLink } from "@/components/HeaderAccountLink";
+import { MobileNav } from "@/components/MobileNav";
 import type { Subscriber } from "@/lib/serverApi";
 import styles from "./Header.module.css";
 
@@ -36,7 +37,7 @@ export function Header({ locale, dictionary, siteName, logoUrl, subscriber }: He
             siteName
           )}
         </Link>
-        <nav aria-label={dictionary.nav.home}>
+        <nav className={styles.desktopNav} aria-label={dictionary.nav.home}>
           <ul className={styles.nav}>
             {navItems.map((item) => (
               <li key={item.href}>
@@ -60,6 +61,11 @@ export function Header({ locale, dictionary, siteName, logoUrl, subscriber }: He
             accountLabel={dictionary.header.accountLabel}
           />
           <LanguageSwitcher locale={locale} />
+          <MobileNav
+            navItems={navItems}
+            openLabel={dictionary.header.openMenuLabel}
+            closeLabel={dictionary.header.closeMenuLabel}
+          />
         </div>
       </div>
     </header>

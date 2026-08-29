@@ -22,6 +22,10 @@ const subscriptionsRoutes = require("./features/subscriptions/subscriptions.rout
 const contentAccessRoutes = require("./features/contentAccess/contentAccess.routes");
 const writerUpgradesRoutes = require("./features/writerUpgrades/writerUpgrades.routes");
 const favoritesRoutes = require("./features/favorites/favorites.routes");
+const newsletterRoutes = require("./features/newsletter/newsletter.routes");
+const bookPricingTiersRoutes = require("./features/bookPricingTiers/bookPricingTiers.routes");
+const writerTrialCouponsRoutes = require("./features/writerTrialCoupons/writerTrialCoupons.routes");
+const newsTickerRoutes = require("./features/newsTicker/newsTicker.routes");
 
 const app = express();
 
@@ -59,6 +63,10 @@ app.use("/api", subscriptionsRoutes.publicRouter);
 app.use("/api", contentAccessRoutes.publicRouter);
 app.use("/api", writerUpgradesRoutes.publicRouter);
 app.use("/api", favoritesRoutes.publicRouter);
+app.use("/api", newsletterRoutes.publicRouter);
+app.use("/api", bookPricingTiersRoutes.publicRouter);
+app.use("/api", writerTrialCouponsRoutes.publicRouter);
+app.use("/api", newsTickerRoutes.publicRouter);
 
 app.use("/api/admin", settingsRoutes.adminRouter);
 app.use("/api/admin", bannersRoutes.adminRouter);
@@ -71,6 +79,9 @@ app.use("/api/admin", usersRoutes.adminRouter);
 app.use("/api/admin", subscriptionsRoutes.adminRouter);
 app.use("/api/admin", contentAccessRoutes.adminRouter);
 app.use("/api/admin", writerUpgradesRoutes.adminRouter);
+app.use("/api/admin", bookPricingTiersRoutes.adminRouter);
+app.use("/api/admin", writerTrialCouponsRoutes.adminRouter);
+app.use("/api/admin", newsTickerRoutes.adminRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

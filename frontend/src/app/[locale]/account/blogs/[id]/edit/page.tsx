@@ -1,7 +1,11 @@
 import { isLocale, type Locale } from "@/i18n/config";
 import { getCurrentSubscriber, getPublicBlogCategories, getWriterBlogById, backendAssetUrl } from "@/lib/serverApi";
 import { WriterBlogForm } from "@/features/blogEditor/WriterBlogForm";
+import { CouponRedeemForm } from "@/features/subscribers/CouponRedeemForm";
+import { AccountNav } from "@/features/subscribers/AccountNav";
+import { getDictionary } from "@/i18n/getDictionary";
 import { notFound, redirect } from "next/navigation";
+import styles from "@/features/subscribers/subscribers.module.css";
 
 export default async function EditWriterBlogPage({
   params,
@@ -20,14 +24,35 @@ export default async function EditWriterBlogPage({
   if (!blog) notFound();
   if (blog.review_status === "approved") redirect(`/${locale}/account/blogs`);
 
+  const dictionary = await getDictionary(locale);
+
+  const tierExpired = Boolean(subscriber.tier_expires_at && new Date(subscriber.tier_expires_at) < new Date());
+  if (subscriber.current_tier === "none" || tierExpired) {
+    return (
+      <>
+        <AccountNav locale={locale} dictionary={dictionary} subscriber={subscriber} />
+        <div className={styles.accountPage}>
+          <h1 className={styles.accountTitle}>تعديل المقال</h1>
+          <div className={styles.accountCard}>
+            <p>تحتاج إلى باقة كاتب مفعّلة (أو تجربة مجانية) لتتمكن من تعديل المقالات وإرسالها للمراجعة.</p>
+            <CouponRedeemForm />
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
-    <WriterBlogForm
-      locale={locale}
-      mode="edit"
-      blogId={blog.id}
-      categories={categories}
-      initialBlog={blog}
-      currentCoverImageUrl={backendAssetUrl(blog.cover_image)}
-    />
+    <>
+      <AccountNav locale={locale} dictionary={dictionary} subscriber={subscriber} />
+      <WriterBlogForm
+        locale={locale}
+        mode="edit"
+        blogId={blog.id}
+        categories={categories}
+        initialBlog={blog}
+        currentCoverImageUrl={backendAssetUrl(blog.cover_image)}
+      />
+    </>
   );
 }

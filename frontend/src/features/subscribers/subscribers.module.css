@@ -156,6 +156,28 @@
   margin-bottom: var(--space-2);
 }
 
+.paymentMethodRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: var(--space-2);
+  text-align: start;
+}
+
+.paymentMethodOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.paymentMethodOption:has(input:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .planButton {
   display: inline-flex;
   align-items: center;
@@ -307,6 +329,24 @@
 .subscribeCardHighlighted .planButton {
   background: #fff;
   color: var(--color-primary);
+}
+
+.couponForm {
+  margin-top: var(--space-2);
+}
+
+.couponRow {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.couponRow .input {
+  flex: 1;
+}
+
+.couponRow .planButton {
+  width: auto;
+  padding-inline: 1.2rem;
 }
 
 .accountNav {

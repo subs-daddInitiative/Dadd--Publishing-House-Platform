@@ -62,6 +62,16 @@ function validateBookPayload(body, { partial = false } = {}) {
     value.currency = currency || "USD";
   }
 
+  if (body.pricing_tier_id !== undefined) {
+    const tierId = body.pricing_tier_id === "" || body.pricing_tier_id === null ? null : Number(body.pricing_tier_id);
+    value.pricing_tier_id = Number.isInteger(tierId) && tierId > 0 ? tierId : null;
+
+    // A tier and a fixed price are mutually exclusive - the tier's price wins.
+    if (value.pricing_tier_id) {
+      value.price = null;
+    }
+  }
+
   if (body.rating !== undefined) {
     const rating = body.rating === "" || body.rating === null ? null : Number(body.rating);
     value.rating = rating !== null && Number.isFinite(rating) && rating >= 0 && rating <= 5 ? rating : null;

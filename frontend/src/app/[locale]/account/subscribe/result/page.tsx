@@ -8,14 +8,22 @@ export default async function SubscribeResultPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ tap_id?: string }>;
+  searchParams: Promise<{ tap_id?: string; provider?: string; token?: string }>;
 }) {
   const { locale: rawLocale } = await params;
   if (!isLocale(rawLocale)) notFound();
   const locale = rawLocale as Locale;
 
-  const { tap_id: tapId } = await searchParams;
+  const { tap_id: tapId, provider, token } = await searchParams;
   const dictionary = await getDictionary(locale);
+  const paypalOrderId = provider === "paypal" ? (token ?? null) : null;
 
-  return <SubscribeResultView locale={locale} dictionary={dictionary} tapId={tapId ?? null} />;
+  return (
+    <SubscribeResultView
+      locale={locale}
+      dictionary={dictionary}
+      tapId={tapId ?? null}
+      paypalOrderId={paypalOrderId}
+    />
+  );
 }

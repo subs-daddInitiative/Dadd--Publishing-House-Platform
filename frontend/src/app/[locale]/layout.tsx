@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { locales, localeDirections, isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
-import { getPublicSettings, backendAssetUrl, getCurrentSubscriber } from "@/lib/serverApi";
+import { getPublicSettings, backendAssetUrl, getCurrentSubscriber, getPublicNewsTicker } from "@/lib/serverApi";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { NewsTicker } from "@/components/NewsTicker";
 import { SyncHtmlAttributes } from "@/components/SyncHtmlAttributes";
 import { StoreProvider } from "@/components/store/StoreProvider";
 import { FavoritesProvider } from "@/components/favorites/FavoritesProvider";
@@ -67,6 +68,8 @@ export default async function LocaleLayout({
   const dir = localeDirections[locale];
   const siteName = settings?.siteName || dictionary.common.siteName;
   const logoUrl = backendAssetUrl(settings?.logo);
+  const tickerAudience = subscriber?.account_type === "writer" ? "writer" : "reader";
+  const tickerItems = await getPublicNewsTicker(tickerAudience);
 
   return (
     <StoreProvider>
@@ -75,6 +78,7 @@ export default async function LocaleLayout({
         <a href="#main-content" className="skip-link">
           {dictionary.common.skipToContent}
         </a>
+        <NewsTicker items={tickerItems} />
         <Header locale={locale} dictionary={dictionary} siteName={siteName} logoUrl={logoUrl} subscriber={subscriber} />
         <main id="main-content">{children}</main>
         <Footer

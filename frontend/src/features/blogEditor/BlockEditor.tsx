@@ -10,7 +10,7 @@ export type ContentBlock =
   | { id: string; type: "image_text"; url: string; alt: string; html: string; layout: "image-left" | "image-right" }
   | { id: string; type: "quote"; text: string; author: string }
   | { id: string; type: "tags"; tags: string[] }
-  | { id: string; type: "pdf" | "voice"; url: string; label: string; access: "free" | "premium" };
+  | { id: string; type: "pdf" | "voice" | "video"; url: string; label: string; access: "free" | "premium" };
 
 const BLOCK_TYPE_LABELS: Record<ContentBlock["type"], string> = {
   text: "نص",
@@ -20,6 +20,7 @@ const BLOCK_TYPE_LABELS: Record<ContentBlock["type"], string> = {
   tags: "وسوم",
   pdf: "ملف PDF",
   voice: "تسجيل صوتي",
+  video: "فيديو",
 };
 
 function createBlock(type: ContentBlock["type"]): ContentBlock {
@@ -37,6 +38,7 @@ function createBlock(type: ContentBlock["type"]): ContentBlock {
       return { id, type, tags: [] };
     case "pdf":
     case "voice":
+    case "video":
       return { id, type, url: "", label: "", access: "free" };
   }
 }
@@ -133,6 +135,7 @@ export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: 
                 accept="image/png,image/jpeg,image/webp"
                 onChange={(event) => event.target.files?.[0] && handleFileSelect(block.id, event.target.files[0])}
               />
+              <p className={styles.itemMeta}>الصيغ المقبولة: PNG أو JPEG أو WEBP، بحجم أقصى 25 ميجابايت.</p>
               <input
                 className={styles.input}
                 placeholder="النص البديل (alt)"
@@ -159,6 +162,7 @@ export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: 
                 accept="image/png,image/jpeg,image/webp"
                 onChange={(event) => event.target.files?.[0] && handleFileSelect(block.id, event.target.files[0])}
               />
+              <p className={styles.itemMeta}>الصيغ المقبولة: PNG أو JPEG أو WEBP، بحجم أقصى 25 ميجابايت.</p>
               <input
                 className={styles.input}
                 placeholder="النص البديل (alt)"
@@ -207,13 +211,26 @@ export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: 
             />
           )}
 
-          {(block.type === "pdf" || block.type === "voice") && (
+          {(block.type === "pdf" || block.type === "voice" || block.type === "video") && (
             <>
               <input
                 type="file"
-                accept={block.type === "pdf" ? "application/pdf" : "audio/mpeg,audio/mp4,audio/wav,audio/ogg"}
+                accept={
+                  block.type === "pdf"
+                    ? "application/pdf"
+                    : block.type === "voice"
+                      ? "audio/mpeg,audio/mp4,audio/wav,audio/ogg"
+                      : "video/mp4,video/webm,video/ogg"
+                }
                 onChange={(event) => event.target.files?.[0] && handleFileSelect(block.id, event.target.files[0])}
               />
+              <p className={styles.itemMeta}>
+                {block.type === "pdf"
+                  ? "الصيغة المقبولة: PDF فقط، بحجم أقصى 25 ميجابايت."
+                  : block.type === "voice"
+                    ? "الصيغ المقبولة: MP3 أو M4A أو WAV أو OGG، بحجم أقصى 25 ميجابايت."
+                    : "الصيغ المقبولة: MP4 أو WEBM أو OGG، بحجم أقصى 150 ميجابايت."}
+              </p>
               {block.url && <p className={styles.itemMeta}>تم رفع الملف بنجاح</p>}
               <input
                 className={styles.input}

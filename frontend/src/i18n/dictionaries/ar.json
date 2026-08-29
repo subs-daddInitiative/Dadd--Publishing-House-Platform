@@ -36,7 +36,8 @@
     "noAccount": "ليس لديك حساب؟",
     "switchToLogin": "تسجيل الدخول",
     "switchToRegister": "إنشاء حساب جديد",
-    "errorGeneric": "حدث خطأ، حاول مرة أخرى."
+    "errorGeneric": "حدث خطأ، حاول مرة أخرى.",
+    "captchaRequired": "يرجى إكمال التحقق (CAPTCHA) قبل المتابعة."
   },
   "accountPage": {
     "title": "حسابي",
@@ -74,7 +75,9 @@
     "changePasswordTitle": "تغيير كلمة المرور",
     "currentPasswordLabel": "كلمة المرور الحالية",
     "newPasswordLabel": "كلمة المرور الجديدة",
-    "changePasswordButton": "تحديث كلمة المرور"
+    "changePasswordButton": "تحديث كلمة المرور",
+    "payWithTap": "الدفع عبر بطاقة (TAP)",
+    "paymentMethodComingSoon": "قريبًا"
   },
   "subscribeResultPage": {
     "title": "نتيجة الدفع",
@@ -221,6 +224,15 @@
     "remove": "إزالة",
     "continueShopping": "متابعة التسوق"
   },
+  "newsletterPopup": {
+    "title": "لا تفوّت الجديد",
+    "descriptionWithCategory": "اترك بريدك الإلكتروني لتصلك تحديثات جديدة حول: {category}",
+    "descriptionGeneric": "اترك بريدك الإلكتروني لتصلك تحديثات المقالات الجديدة",
+    "emailPlaceholder": "بريدك الإلكتروني",
+    "subscribeLabel": "أعلمني",
+    "dismissLabel": "إغلاق",
+    "successMessage": "تم تسجيل بريدك بنجاح، شكرًا لاهتمامك!"
+  },
   "favoritesPage": {
     "title": "المفضلة",
     "empty": "لم تقم بإضافة أي كتب إلى المفضلة بعد.",
@@ -234,6 +246,8 @@
     "cartLabel": "السلة",
     "favoritesLabel": "المفضلة",
     "loginLabel": "تسجيل الدخول",
-    "accountLabel": "حسابي"
+    "accountLabel": "حسابي",
+    "openMenuLabel": "فتح القائمة",
+    "closeMenuLabel": "إغلاق القائمة"
   }
 }

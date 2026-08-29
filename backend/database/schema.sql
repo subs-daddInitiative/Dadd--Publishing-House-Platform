@@ -37,6 +37,26 @@ CREATE TABLE IF NOT EXISTS books_categories (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
+-- book_pricing_tiers (admin-editable reusable price tiers: econ / pro / extra)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS book_pricing_tiers (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  tier_key VARCHAR(50) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  price DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  currency VARCHAR(6) NOT NULL DEFAULT 'USD',
+  sort_order TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_book_pricing_tier_key (tier_key)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO book_pricing_tiers (tier_key, name, price, currency, sort_order) VALUES
+  ('econ', 'اقتصادي', 0, 'USD', 1),
+  ('pro', 'احترافي', 0, 'USD', 2),
+  ('extra', 'مميز', 0, 'USD', 3);
+
+-- ---------------------------------------------------------------------------
 -- books
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS books (
@@ -47,6 +67,7 @@ CREATE TABLE IF NOT EXISTS books (
   author VARCHAR(190) NULL,
   description TEXT NULL,
   price DECIMAL(10,2) NULL,
+  pricing_tier_id INT UNSIGNED NULL,
   currency VARCHAR(6) NOT NULL DEFAULT 'USD',
   rating DECIMAL(2,1) NULL,
   reviews_count INT UNSIGNED NOT NULL DEFAULT 0,
@@ -61,6 +82,9 @@ CREATE TABLE IF NOT EXISTS books (
   KEY idx_books_status (status),
   CONSTRAINT fk_books_category
     FOREIGN KEY (category_id) REFERENCES books_categories (id)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT fk_books_pricing_tier
+    FOREIGN KEY (pricing_tier_id) REFERENCES book_pricing_tiers (id)
     ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -253,6 +277,20 @@ CREATE TABLE IF NOT EXISTS banners (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
+-- news_ticker_items (scrolling top-bar announcements, targetable by audience)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS news_ticker_items (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  message VARCHAR(500) NOT NULL,
+  target ENUM('all', 'reader', 'writer') NOT NULL DEFAULT 'all',
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
 -- contact_messages (submissions from the public contact form)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS contact_messages (
@@ -305,6 +343,19 @@ CREATE TABLE IF NOT EXISTS favorites (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
+-- newsletter_signups (emails collected from the "notify me" popup on blogs)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS newsletter_signups (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  email VARCHAR(190) NOT NULL,
+  category_slug VARCHAR(280) NULL,
+  category_name VARCHAR(190) NULL,
+  blog_slug VARCHAR(280) NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_newsletter_signup (email, category_slug)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
 -- subscription_plans (admin-editable prices for the two writer tiers)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS subscription_plans (
@@ -336,6 +387,8 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   plan_id INT UNSIGNED NOT NULL,
   status ENUM('pending', 'active', 'expired', 'cancelled', 'failed') NOT NULL DEFAULT 'pending',
   tap_charge_id VARCHAR(100) NULL,
+  payment_provider ENUM('tap', 'paypal') NOT NULL DEFAULT 'tap',
+  paypal_order_id VARCHAR(64) NULL,
   starts_at DATETIME NULL,
   ends_at DATETIME NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -415,6 +468,35 @@ CREATE TABLE IF NOT EXISTS writer_upgrade_requests (
   CONSTRAINT fk_writer_upgrade_subscriber FOREIGN KEY (subscriber_id) REFERENCES subscribers (id) ON DELETE CASCADE,
   CONSTRAINT fk_writer_upgrade_decided_by FOREIGN KEY (decided_by) REFERENCES users (id) ON DELETE SET NULL,
   KEY idx_writer_upgrade_subscriber (subscriber_id, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
+-- writer_trial_coupons / writer_trial_redemptions (free-trial coupons that
+-- grant a writer the beginner tier for N months without paying)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS writer_trial_coupons (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  code VARCHAR(32) NOT NULL,
+  months INT UNSIGNED NOT NULL,
+  max_redemptions INT UNSIGNED NOT NULL DEFAULT 1,
+  redemptions_count INT UNSIGNED NOT NULL DEFAULT 0,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  created_by INT UNSIGNED NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_writer_trial_coupon_code (code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS writer_trial_redemptions (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  coupon_id INT UNSIGNED NOT NULL,
+  subscriber_id INT UNSIGNED NOT NULL,
+  redeemed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_writer_trial_redemption_subscriber (subscriber_id),
+  CONSTRAINT fk_writer_trial_redemptions_coupon
+    FOREIGN KEY (coupon_id) REFERENCES writer_trial_coupons (id) ON DELETE CASCADE,
+  CONSTRAINT fk_writer_trial_redemptions_subscriber
+    FOREIGN KEY (subscriber_id) REFERENCES subscribers (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

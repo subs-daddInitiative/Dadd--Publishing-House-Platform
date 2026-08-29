@@ -71,7 +71,8 @@ export function BlockRenderer({ blocks, lockedFileLabel }: BlockRendererProps) {
             );
 
           case "pdf":
-          case "voice": {
+          case "voice":
+          case "video": {
             if (block.locked || !block.url) {
               return (
                 <div key={block.id} className={styles.blockFile}>
@@ -88,9 +89,12 @@ export function BlockRenderer({ blocks, lockedFileLabel }: BlockRendererProps) {
                   <a href={url || undefined} target="_blank" rel="noopener noreferrer">
                     عرض ملف PDF
                   </a>
-                ) : (
+                ) : block.type === "voice" ? (
                   // eslint-disable-next-line jsx-a11y/media-has-caption
                   <audio controls src={url || undefined} style={{ width: "100%" }} />
+                ) : (
+                  // eslint-disable-next-line jsx-a11y/media-has-caption
+                  <video controls src={url || undefined} className={styles.blockVideo} />
                 )}
               </div>
             );

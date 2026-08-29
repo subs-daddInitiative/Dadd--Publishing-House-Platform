@@ -107,6 +107,26 @@ export async function getAdminBanners(): Promise<Banner[]> {
   return result.success ? result.data : [];
 }
 
+export type NewsTickerTarget = "all" | "reader" | "writer";
+
+export type NewsTickerItem = {
+  id: number;
+  message: string;
+  target: NewsTickerTarget;
+  is_active?: number;
+  sort_order?: number;
+};
+
+export async function getPublicNewsTicker(audience: "reader" | "writer"): Promise<NewsTickerItem[]> {
+  const result = await backendFetch<NewsTickerItem[]>(`/api/news-ticker?audience=${audience}`);
+  return result.success ? result.data : [];
+}
+
+export async function getAdminNewsTicker(): Promise<NewsTickerItem[]> {
+  const result = await backendFetch<NewsTickerItem[]>("/api/admin/news-ticker");
+  return result.success ? result.data : [];
+}
+
 export type PublicStats = { books: number; studies: number; blogs: number };
 
 export async function getPublicStats(): Promise<PublicStats | null> {
@@ -164,7 +184,7 @@ export type BlogContentBlock =
   | { id: string; type: "image_text"; url: string; alt: string; html: string; layout: "image-left" | "image-right" }
   | { id: string; type: "quote"; text: string; author: string }
   | { id: string; type: "tags"; tags: string[] }
-  | { id: string; type: "pdf" | "voice"; url: string | null; label: string; access: "free" | "premium"; locked?: boolean };
+  | { id: string; type: "pdf" | "voice" | "video"; url: string | null; label: string; access: "free" | "premium"; locked?: boolean };
 
 export type BlogDetail = BlogSummary & {
   content_blocks: BlogContentBlock[];
@@ -366,6 +386,8 @@ export type BookSummary = {
   description: string | null;
   price: string | null;
   currency: string;
+  pricing_tier_id: number | null;
+  pricing_tier_name: string | null;
   rating: string | null;
   reviews_count: number;
   cover_image: string | null;
@@ -423,6 +445,8 @@ export type AdminBookSummary = {
   status: "draft" | "published";
   price: string | null;
   currency: string;
+  pricing_tier_id: number | null;
+  pricing_tier_name: string | null;
   cover_image: string | null;
   published_at: string | null;
   updated_at: string;
@@ -438,6 +462,8 @@ export type AdminBookDetail = {
   description: string | null;
   price: string | null;
   currency: string;
+  pricing_tier_id: number | null;
+  pricing_tier_name: string | null;
   rating: string | null;
   reviews_count: number;
   cover_image: string | null;
@@ -457,6 +483,25 @@ export async function getAdminBooks(): Promise<AdminBookSummary[]> {
 export async function getAdminBookById(id: string): Promise<AdminBookDetail | null> {
   const result = await backendFetch<AdminBookDetail>(`/api/admin/books/${id}`);
   return result.success ? result.data : null;
+}
+
+export type BookPricingTier = {
+  id: number;
+  tier_key: string;
+  name: string;
+  price: string;
+  currency: string;
+  sort_order: number;
+};
+
+export async function getPublicBookPricingTiers(): Promise<BookPricingTier[]> {
+  const result = await backendFetch<BookPricingTier[]>("/api/book-pricing-tiers");
+  return result.success ? result.data : [];
+}
+
+export async function getAdminBookPricingTiers(): Promise<BookPricingTier[]> {
+  const result = await backendFetch<BookPricingTier[]>("/api/admin/book-pricing-tiers");
+  return result.success ? result.data : [];
 }
 
 export type Moderator = {
@@ -508,6 +553,13 @@ export async function getPublicSubscriptionPlans(): Promise<SubscriptionPlan[]> 
   return result.success ? result.data : [];
 }
 
+export type PaymentMethods = { tap: boolean; paypal: boolean };
+
+export async function getPaymentMethods(): Promise<PaymentMethods> {
+  const result = await backendFetch<PaymentMethods>("/api/payment-methods");
+  return result.success ? result.data : { tap: false, paypal: false };
+}
+
 export type ContentAccessCategory = "blogs" | "studies";
 
 export type ContentAccessPlan = {
@@ -535,6 +587,21 @@ export type WriterUpgradeRequest = {
 
 export async function getPendingWriterUpgradeRequests(): Promise<WriterUpgradeRequest[]> {
   const result = await backendFetch<WriterUpgradeRequest[]>("/api/admin/writer-upgrade-requests");
+  return result.success ? result.data : [];
+}
+
+export type WriterTrialCoupon = {
+  id: number;
+  code: string;
+  months: number;
+  max_redemptions: number;
+  redemptions_count: number;
+  is_active: number;
+  created_at: string;
+};
+
+export async function getAdminWriterTrialCoupons(): Promise<WriterTrialCoupon[]> {
+  const result = await backendFetch<WriterTrialCoupon[]>("/api/admin/writer-trial-coupons");
   return result.success ? result.data : [];
 }
 

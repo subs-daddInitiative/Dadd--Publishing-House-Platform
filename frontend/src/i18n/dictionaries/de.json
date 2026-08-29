@@ -36,7 +36,8 @@
     "noAccount": "Noch kein Konto?",
     "switchToLogin": "Anmelden",
     "switchToRegister": "Neues Konto erstellen",
-    "errorGeneric": "Etwas ist schiefgelaufen, bitte versuchen Sie es erneut."
+    "errorGeneric": "Etwas ist schiefgelaufen, bitte versuchen Sie es erneut.",
+    "captchaRequired": "Bitte schließen Sie das CAPTCHA ab, bevor Sie fortfahren."
   },
   "accountPage": {
     "title": "Mein Konto",
@@ -74,7 +75,9 @@
     "changePasswordTitle": "Passwort ändern",
     "currentPasswordLabel": "Aktuelles Passwort",
     "newPasswordLabel": "Neues Passwort",
-    "changePasswordButton": "Passwort aktualisieren"
+    "changePasswordButton": "Passwort aktualisieren",
+    "payWithTap": "Mit Karte zahlen (TAP)",
+    "paymentMethodComingSoon": "demnächst"
   },
   "subscribeResultPage": {
     "title": "Zahlungsergebnis",
@@ -221,6 +224,15 @@
     "remove": "Entfernen",
     "continueShopping": "Weiter einkaufen"
   },
+  "newsletterPopup": {
+    "title": "Verpassen Sie nichts Neues",
+    "descriptionWithCategory": "Hinterlassen Sie Ihre E-Mail für Updates zu: {category}",
+    "descriptionGeneric": "Hinterlassen Sie Ihre E-Mail für Updates zu neuen Artikeln",
+    "emailPlaceholder": "Ihre E-Mail",
+    "subscribeLabel": "Benachrichtigen",
+    "dismissLabel": "Schließen",
+    "successMessage": "Sie sind angemeldet, danke für Ihr Interesse!"
+  },
   "favoritesPage": {
     "title": "Ihre Favoriten",
     "empty": "Sie haben noch keine Bücher favorisiert.",
@@ -234,6 +246,8 @@
     "cartLabel": "Warenkorb",
     "favoritesLabel": "Favoriten",
     "loginLabel": "Anmelden",
-    "accountLabel": "Mein Konto"
+    "accountLabel": "Mein Konto",
+    "openMenuLabel": "Menü öffnen",
+    "closeMenuLabel": "Menü schließen"
   }
 }

@@ -5,8 +5,11 @@ import { useRouter } from "next/navigation";
 import { BlockEditor, type ContentBlock } from "./BlockEditor";
 import type { Locale } from "@/i18n/config";
 import type { BlogCategory, WriterBlogDetail } from "@/lib/serverApi";
+import { TurnstileWidget } from "@/components/TurnstileWidget";
 import blockStyles from "./blockEditor.module.css";
 import styles from "@/features/subscribers/subscribers.module.css";
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
 type WriterBlogFormProps = {
   locale: Locale;
@@ -38,9 +41,19 @@ export function WriterBlogForm({ locale, mode, blogId, categories, initialBlog, 
   const [uploading, setUploading] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "saving" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
+
+  const captchaRequired = mode === "create" && Boolean(TURNSTILE_SITE_KEY);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (captchaRequired && !turnstileToken) {
+      setSubmitState("error");
+      setErrorMessage("يرجى إكمال التحقق (CAPTCHA) قبل المتابعة.");
+      return;
+    }
+
     setSubmitState("saving");
     setErrorMessage(null);
 
@@ -49,6 +62,7 @@ export function WriterBlogForm({ locale, mode, blogId, categories, initialBlog, 
     formData.append("category_id", categoryId);
     formData.append("excerpt", excerpt);
     formData.append("content_blocks", JSON.stringify(blocks));
+    if (mode === "create") formData.append("turnstile_token", turnstileToken);
 
     const file = fileInputRef.current?.files?.[0];
     if (file) formData.append("cover_image", file);
@@ -69,7 +83,8 @@ export function WriterBlogForm({ locale, mode, blogId, categories, initialBlog, 
   }
 
   return (
-    <form onSubmit={handleSubmit} className={styles.authPage}>
+    <form onSubmit={handleSubmit} className={blockStyles.formPage}>
+      <h1 className={blockStyles.formTitle}>{mode === "create" ? "كتابة مقال جديد" : "تعديل المقال"}</h1>
       {initialBlog?.review_status === "rejected" && (
         <div className={styles.accountCard}>
           <p>تم رفض هذه المقالة سابقًا. سيتم إعادة إرسالها للمراجعة بعد الحفظ.</p>
@@ -129,6 +144,7 @@ export function WriterBlogForm({ locale, mode, blogId, categories, initialBlog, 
           <img src={currentCoverImageUrl} alt="" className={blockStyles.blockImagePreview} />
         )}
         <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" />
+        <p className={blockStyles.itemMeta}>الصيغ المقبولة: PNG أو JPEG أو WEBP، بحجم أقصى 5 ميجابايت.</p>
       </div>
 
       <div className={blockStyles.field}>
@@ -141,7 +157,21 @@ export function WriterBlogForm({ locale, mode, blogId, categories, initialBlog, 
         />
       </div>
 
-      <button type="submit" className={styles.formSubmit} disabled={submitState === "saving" || uploading}>
+      {captchaRequired && (
+        <div className={blockStyles.field}>
+          <TurnstileWidget
+            siteKey={TURNSTILE_SITE_KEY}
+            onVerify={setTurnstileToken}
+            onExpire={() => setTurnstileToken("")}
+          />
+        </div>
+      )}
+
+      <button
+        type="submit"
+        className={styles.formSubmit}
+        disabled={submitState === "saving" || uploading || (captchaRequired && !turnstileToken)}
+      >
         {uploading ? "جارٍ رفع الملفات..." : submitState === "saving" ? "جارٍ الإرسال..." : "إرسال للمراجعة"}
       </button>
       {submitState === "error" && <p className={styles.formStatusError}>{errorMessage}</p>}

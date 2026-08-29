@@ -5,8 +5,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/getDictionary";
-import type { Subscriber, SubscriptionPlan, WriterUpgradeStatus } from "@/lib/serverApi";
+import type { Subscriber, SubscriptionPlan, WriterUpgradeStatus, PaymentMethods } from "@/lib/serverApi";
 import { formatCurrency } from "@/lib/currency";
+import { CouponRedeemForm } from "./CouponRedeemForm";
 import styles from "./subscribers.module.css";
 
 type AccountViewProps = {
@@ -15,6 +16,7 @@ type AccountViewProps = {
   subscriber: Subscriber;
   plans: SubscriptionPlan[];
   upgradeStatus: WriterUpgradeStatus;
+  paymentMethods: PaymentMethods;
 };
 
 const TIER_LABEL_KEY = {
@@ -23,10 +25,18 @@ const TIER_LABEL_KEY = {
   verified: "tierVerified",
 } as const;
 
-export function AccountView({ locale, dictionary, subscriber, plans, upgradeStatus }: AccountViewProps) {
+export function AccountView({
+  locale,
+  dictionary,
+  subscriber,
+  plans,
+  upgradeStatus,
+  paymentMethods,
+}: AccountViewProps) {
   const router = useRouter();
   const [pendingPlanId, setPendingPlanId] = useState<number | null>(null);
   const [error, setError] = useState("");
+  const [methodByPlan, setMethodByPlan] = useState<Record<number, "tap" | "paypal">>({});
 
   const isWriter = subscriber.account_type === "writer";
   const visiblePlans = plans.filter(
@@ -37,10 +47,11 @@ export function AccountView({ locale, dictionary, subscriber, plans, upgradeStat
     setPendingPlanId(planId);
     setError("");
 
+    const paymentMethod = methodByPlan[planId] || "tap";
     const response = await fetch("/api/subscriber/subscriptions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan_id: planId, locale }),
+      body: JSON.stringify({ plan_id: planId, locale, payment_method: paymentMethod }),
     });
     const result = await response.json();
 
@@ -83,11 +94,12 @@ export function AccountView({ locale, dictionary, subscriber, plans, upgradeStat
             <Link href={`/${locale}/account/blogs`} className={styles.planButton}>
               {dictionary.accountPage.myBlogs}
             </Link>
-            {subscriber.current_tier !== "verified" && (
+            {subscriber.current_tier !== "verified" && subscriber.current_tier !== "none" && (
               <Link href={`/${locale}/account/writer-upgrade`} className={styles.planButton}>
                 {dictionary.accountPage.navWriterUpgrade}
               </Link>
             )}
+            {subscriber.current_tier === "none" && <CouponRedeemForm />}
           </div>
 
           <h2 className={styles.accountTitle}>{dictionary.accountPage.choosePlanTitle}</h2>
@@ -104,6 +116,29 @@ export function AccountView({ locale, dictionary, subscriber, plans, upgradeStat
                   <div className={styles.planPrice}>
                     {price > 0 ? formatCurrency(price, plan.currency) : dictionary.accountPage.priceUnavailable}
                   </div>
+                  {price > 0 && (
+                    <div className={styles.paymentMethodRow}>
+                      <label className={styles.paymentMethodOption}>
+                        <input
+                          type="radio"
+                          name={`payment-method-${plan.id}`}
+                          checked={(methodByPlan[plan.id] || "tap") === "tap"}
+                          onChange={() => setMethodByPlan((prev) => ({ ...prev, [plan.id]: "tap" }))}
+                        />{" "}
+                        {dictionary.accountPage.payWithTap}
+                      </label>
+                      <label className={styles.paymentMethodOption}>
+                        <input
+                          type="radio"
+                          name={`payment-method-${plan.id}`}
+                          checked={methodByPlan[plan.id] === "paypal"}
+                          disabled={!paymentMethods.paypal}
+                          onChange={() => setMethodByPlan((prev) => ({ ...prev, [plan.id]: "paypal" }))}
+                        />{" "}
+                        PayPal{!paymentMethods.paypal && ` (${dictionary.accountPage.paymentMethodComingSoon})`}
+                      </label>
+                    </div>
+                  )}
                   <button
                     type="button"
                     className={styles.planButton}

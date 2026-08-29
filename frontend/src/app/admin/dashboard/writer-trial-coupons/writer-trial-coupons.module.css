@@ -1,0 +1,132 @@
+.pageHeader {
+  margin-bottom: var(--space-3);
+}
+
+.pageHeader p {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.createForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: var(--space-3);
+  background: var(--color-surface);
+  margin-bottom: var(--space-4);
+}
+
+.field {
+  min-width: 12rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  height: fit-content;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.successText {
+  color: var(--color-success, #2f9e64);
+  font-size: 0.85rem;
+  width: 100%;
+  margin: 0;
+}
+
+.errorText {
+  color: var(--color-danger, #d0433a);
+  font-size: 0.85rem;
+  width: 100%;
+  margin: 0;
+}
+
+.empty {
+  color: var(--color-text-muted);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.item {
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+}
+
+.itemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.itemCode {
+  font-weight: 700;
+  font-family: monospace;
+  font-size: 1.05rem;
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.itemMeta {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0.3rem 0 0;
+}
+
+.statusBadgeActive {
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-success, #2f9e64) 15%, transparent);
+  color: var(--color-success, #2f9e64);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.statusBadgeInactive {
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-text-muted) 15%, transparent);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}

@@ -5,7 +5,10 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/getDictionary";
+import { TurnstileWidget } from "@/components/TurnstileWidget";
 import styles from "./subscribers.module.css";
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "";
 
 type AuthFormProps = {
   locale: Locale;
@@ -21,15 +24,25 @@ export function AuthForm({ locale, dictionary, mode }: AuthFormProps) {
   const [accountType, setAccountType] = useState<"reader" | "writer">("reader");
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setStatus("error");
+      setErrorMessage(dictionary.authPage.captchaRequired);
+      return;
+    }
+
     setStatus("submitting");
     setErrorMessage("");
 
     const path = mode === "register" ? "/api/subscriber/register" : "/api/subscriber/login";
     const body =
-      mode === "register" ? { name, email, password, account_type: accountType } : { email, password };
+      mode === "register"
+        ? { name, email, password, account_type: accountType, turnstile_token: turnstileToken }
+        : { email, password, turnstile_token: turnstileToken };
 
     try {
       const response = await fetch(path, {
@@ -135,7 +148,21 @@ export function AuthForm({ locale, dictionary, mode }: AuthFormProps) {
           />
         </div>
 
-        <button type="submit" className={styles.formSubmit} disabled={status === "submitting"}>
+        {TURNSTILE_SITE_KEY && (
+          <div className={styles.formField}>
+            <TurnstileWidget
+              siteKey={TURNSTILE_SITE_KEY}
+              onVerify={setTurnstileToken}
+              onExpire={() => setTurnstileToken("")}
+            />
+          </div>
+        )}
+
+        <button
+          type="submit"
+          className={styles.formSubmit}
+          disabled={status === "submitting" || (Boolean(TURNSTILE_SITE_KEY) && !turnstileToken)}
+        >
           {status === "submitting"
             ? dictionary.authPage.submitting
             : mode === "register"

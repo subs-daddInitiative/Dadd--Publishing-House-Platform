@@ -21,6 +21,7 @@ const { validateBlogPayload, validateWriterBlogPayload, validateReviewPayload } 
 const { getSettings } = require("../settings/settings.repository");
 const { hasActiveBlogAccess, findById: findSubscriberById } = require("../subscribers/subscribers.repository");
 const { assetUrl } = require("./blockAssetUpload");
+const { verifyTurnstileToken } = require("../../utils/turnstile");
 
 const PAGE_SIZE = 9;
 
@@ -191,10 +192,30 @@ async function requireWriter(req, res) {
   return subscriber;
 }
 
+async function requireActiveWriter(req, res) {
+  const subscriber = await requireWriter(req, res);
+  if (!subscriber) return null;
+
+  const tierExpired = subscriber.tier_expires_at && new Date(subscriber.tier_expires_at) < new Date();
+  if (subscriber.current_tier === "none" || tierExpired) {
+    res.status(403).json({
+      success: false,
+      message: "You need an active writer subscription (or free trial) to submit blogs",
+    });
+    return null;
+  }
+  return subscriber;
+}
+
 async function submitWriterBlogHandler(req, res, next) {
   try {
-    const subscriber = await requireWriter(req, res);
+    const subscriber = await requireActiveWriter(req, res);
     if (!subscriber) return;
+
+    const captchaOk = await verifyTurnstileToken(req.body.turnstile_token, req.ip);
+    if (!captchaOk) {
+      return res.status(400).json({ success: false, message: "CAPTCHA verification failed" });
+    }
 
     const { errors, value } = validateWriterBlogPayload(req.body);
     if (errors.length > 0) {
@@ -247,7 +268,7 @@ async function getWriterBlogByIdHandler(req, res, next) {
 
 async function updateWriterBlogHandler(req, res, next) {
   try {
-    const subscriber = await requireWriter(req, res);
+    const subscriber = await requireActiveWriter(req, res);
     if (!subscriber) return;
 
     const existing = await findByIdForSubscriber(req.params.id, subscriber.id);

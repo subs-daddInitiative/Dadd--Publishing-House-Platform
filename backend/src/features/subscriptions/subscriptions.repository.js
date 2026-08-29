@@ -23,6 +23,21 @@ async function findByTapChargeId(tapChargeId) {
   return rows[0] || null;
 }
 
+async function attachPaypalOrder(subscriptionId, orderId) {
+  await pool.query("UPDATE subscriptions SET payment_provider = 'paypal', paypal_order_id = ? WHERE id = ?", [
+    orderId,
+    subscriptionId,
+  ]);
+}
+
+async function findByPaypalOrderId(orderId) {
+  const [rows] = await pool.query(
+    "SELECT * FROM subscriptions WHERE paypal_order_id = ? LIMIT 1",
+    [orderId]
+  );
+  return rows[0] || null;
+}
+
 async function findById(id, subscriberId) {
   const [rows] = await pool.query(
     "SELECT * FROM subscriptions WHERE id = ? AND subscriber_id = ? LIMIT 1",
@@ -42,6 +57,8 @@ module.exports = {
   createPendingSubscription,
   attachTapCharge,
   findByTapChargeId,
+  attachPaypalOrder,
+  findByPaypalOrderId,
   findById,
   markSubscriptionResult,
 };

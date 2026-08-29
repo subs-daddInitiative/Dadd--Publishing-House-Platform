@@ -2,7 +2,7 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import type { AdminBookDetail, BookCategory } from "@/lib/serverApi";
+import type { AdminBookDetail, BookCategory, BookPricingTier } from "@/lib/serverApi";
 import styles from "./books.module.css";
 
 type ExternalLinkRow = { label: string; url: string };
@@ -11,6 +11,7 @@ type BookFormProps = {
   mode: "create" | "edit";
   bookId?: number;
   categories: BookCategory[];
+  tiers: BookPricingTier[];
   initialBook?: AdminBookDetail;
   currentCoverImageUrl?: string | null;
   currentPdfUrl?: string | null;
@@ -28,6 +29,7 @@ export function BookForm({
   mode,
   bookId,
   categories,
+  tiers,
   initialBook,
   currentCoverImageUrl,
   currentPdfUrl,
@@ -42,7 +44,13 @@ export function BookForm({
   const [author, setAuthor] = useState(initialBook?.author || "");
   const [categoryId, setCategoryId] = useState(initialBook?.category_id?.toString() || "");
   const [description, setDescription] = useState(initialBook?.description || "");
+  const [pricingMode, setPricingMode] = useState<"fixed" | "tier">(
+    initialBook?.pricing_tier_id ? "tier" : "fixed"
+  );
   const [price, setPrice] = useState(initialBook?.price?.toString() || "");
+  const [pricingTierId, setPricingTierId] = useState(
+    initialBook?.pricing_tier_id?.toString() || tiers[0]?.id.toString() || ""
+  );
   const [currency, setCurrency] = useState(initialBook?.currency || "USD");
   const [rating, setRating] = useState(initialBook?.rating?.toString() || "");
   const [reviewsCount, setReviewsCount] = useState(initialBook?.reviews_count?.toString() || "0");
@@ -83,7 +91,13 @@ export function BookForm({
     formData.append("author", author);
     formData.append("category_id", categoryId);
     formData.append("description", description);
-    formData.append("price", price);
+    if (pricingMode === "tier") {
+      formData.append("pricing_tier_id", pricingTierId);
+      formData.append("price", "");
+    } else {
+      formData.append("pricing_tier_id", "");
+      formData.append("price", price);
+    }
     formData.append("currency", currency);
     formData.append("rating", rating);
     formData.append("reviews_count", reviewsCount);
@@ -204,33 +218,84 @@ export function BookForm({
         />
       </div>
 
+      <div className={styles.field}>
+        <label className={styles.label}>التسعير</label>
+        <div className={styles.pricingModeRow}>
+          <label className={styles.radioLabel}>
+            <input
+              type="radio"
+              name="pricingMode"
+              checked={pricingMode === "fixed"}
+              onChange={() => setPricingMode("fixed")}
+            />{" "}
+            سعر ثابت
+          </label>
+          <label className={styles.radioLabel}>
+            <input
+              type="radio"
+              name="pricingMode"
+              checked={pricingMode === "tier"}
+              onChange={() => setPricingMode("tier")}
+              disabled={tiers.length === 0}
+            />{" "}
+            اختيار باقة تسعير
+          </label>
+        </div>
+
+        {pricingMode === "fixed" ? (
+          <div className={styles.row}>
+            <div className={styles.field}>
+              <label htmlFor="bookPrice" className={styles.label}>
+                السعر
+              </label>
+              <input
+                id="bookPrice"
+                type="number"
+                step="0.01"
+                min="0"
+                className={styles.input}
+                value={price}
+                onChange={(event) => setPrice(event.target.value)}
+              />
+            </div>
+            <div className={styles.field}>
+              <label htmlFor="bookCurrency" className={styles.label}>
+                العملة
+              </label>
+              <input
+                id="bookCurrency"
+                className={styles.input}
+                value={currency}
+                onChange={(event) => setCurrency(event.target.value)}
+                maxLength={6}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className={styles.field}>
+            <label htmlFor="bookPricingTier" className={styles.label}>
+              الباقة
+            </label>
+            <select
+              id="bookPricingTier"
+              className={styles.select}
+              value={pricingTierId}
+              onChange={(event) => setPricingTierId(event.target.value)}
+            >
+              {tiers.map((tier) => (
+                <option key={tier.id} value={tier.id}>
+                  {tier.name} ({tier.price} {tier.currency})
+                </option>
+              ))}
+            </select>
+            <p className={styles.hintText}>
+              يتغيّر سعر هذا الكتاب تلقائيًا عند تعديل سعر الباقة من الإعدادات.
+            </p>
+          </div>
+        )}
+      </div>
+
       <div className={styles.row}>
-        <div className={styles.field}>
-          <label htmlFor="bookPrice" className={styles.label}>
-            السعر
-          </label>
-          <input
-            id="bookPrice"
-            type="number"
-            step="0.01"
-            min="0"
-            className={styles.input}
-            value={price}
-            onChange={(event) => setPrice(event.target.value)}
-          />
-        </div>
-        <div className={styles.field}>
-          <label htmlFor="bookCurrency" className={styles.label}>
-            العملة
-          </label>
-          <input
-            id="bookCurrency"
-            className={styles.input}
-            value={currency}
-            onChange={(event) => setCurrency(event.target.value)}
-            maxLength={6}
-          />
-        </div>
         <div className={styles.field}>
           <label htmlFor="bookRating" className={styles.label}>
             التقييم (0-5)

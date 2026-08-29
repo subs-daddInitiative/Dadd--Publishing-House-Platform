@@ -33,6 +33,14 @@ const env = {
     secretKey: process.env.TAP_SECRET_KEY || "",
     baseUrl: process.env.TAP_BASE_URL || "https://api.tap.company/v2",
   },
+  paypal: {
+    clientId: process.env.PAYPAL_CLIENT_ID || "",
+    clientSecret: process.env.PAYPAL_CLIENT_SECRET || "",
+    baseUrl: process.env.PAYPAL_BASE_URL || "https://api-m.sandbox.paypal.com",
+  },
+  turnstile: {
+    secretKey: process.env.TURNSTILE_SECRET_KEY || "",
+  },
 };
 
 module.exports = { env };

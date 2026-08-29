@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { env } = require("../../config/env");
 const { parseDurationToMs } = require("../../utils/parseDuration");
+const { verifyTurnstileToken } = require("../../utils/turnstile");
 const {
   findByEmail,
   findActiveByEmail,
@@ -38,6 +39,11 @@ function signToken(subscriberId) {
 
 async function register(req, res, next) {
   try {
+    const captchaOk = await verifyTurnstileToken(req.body.turnstile_token, req.ip);
+    if (!captchaOk) {
+      return res.status(400).json({ success: false, message: "CAPTCHA verification failed" });
+    }
+
     const { errors, value } = validateRegisterPayload(req.body);
     if (errors.length > 0) {
       return res.status(400).json({ success: false, message: "Validation failed", errors });
@@ -76,6 +82,11 @@ async function register(req, res, next) {
 
 async function login(req, res, next) {
   try {
+    const captchaOk = await verifyTurnstileToken(req.body.turnstile_token, req.ip);
+    if (!captchaOk) {
+      return res.status(400).json({ success: false, message: "CAPTCHA verification failed" });
+    }
+
     const { errors, value } = validateLoginPayload(req.body);
     if (errors.length > 0) {
       return res.status(400).json({ success: false, message: "Validation failed", errors });

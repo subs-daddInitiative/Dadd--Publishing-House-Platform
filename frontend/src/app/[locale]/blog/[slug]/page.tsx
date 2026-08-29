@@ -17,6 +17,7 @@ import { BlogCard } from "@/features/blog/BlogCard";
 import { BlockRenderer } from "@/features/blog/BlockRenderer";
 import { PremiumLock } from "@/features/subscribers/PremiumLock";
 import { Sidebar } from "@/components/Sidebar";
+import { NewsletterPopup } from "@/components/NewsletterPopup";
 import styles from "@/features/blog/blog.module.css";
 
 type PageParams = { locale: string; slug: string };
@@ -79,9 +80,10 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
 
   if (!blog) notFound();
 
-  const [subscriber, contentPlans] = blog.locked
-    ? await Promise.all([getCurrentSubscriber(), getPublicContentAccessPlans()])
-    : [null, []];
+  const [subscriber, contentPlans] = await Promise.all([
+    getCurrentSubscriber(),
+    blog.locked ? getPublicContentAccessPlans() : Promise.resolve([]),
+  ]);
   const blogPlans = contentPlans.filter((plan) => plan.category === "blogs");
   const sidebarRecentBlogs = recentBlogsResult.items.filter((item) => item.id !== blog.id).slice(0, 5);
 
@@ -189,6 +191,21 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
         recentStudies={recentStudiesResult.items.slice(0, 5)}
       />
       </div>
+
+      {!subscriber && (
+        <NewsletterPopup
+          categoryName={blog.category_name}
+          categorySlug={blog.category_slug}
+          blogSlug={blog.slug}
+          title={dictionary.newsletterPopup.title}
+          descriptionWithCategory={dictionary.newsletterPopup.descriptionWithCategory}
+          descriptionGeneric={dictionary.newsletterPopup.descriptionGeneric}
+          emailPlaceholder={dictionary.newsletterPopup.emailPlaceholder}
+          subscribeLabel={dictionary.newsletterPopup.subscribeLabel}
+          dismissLabel={dictionary.newsletterPopup.dismissLabel}
+          successMessage={dictionary.newsletterPopup.successMessage}
+        />
+      )}
     </div>
   );
 }

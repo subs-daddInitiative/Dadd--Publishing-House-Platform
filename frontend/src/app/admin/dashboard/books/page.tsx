@@ -51,6 +51,7 @@ export default async function AdminBooksPage() {
                     {book.category_name || "بدون تصنيف"}
                     {" · "}
                     {book.price ? formatCurrency(Number(book.price), book.currency) : "بدون سعر"}
+                    {book.pricing_tier_name && ` (باقة ${book.pricing_tier_name})`}
                     {" · "}
                     <span
                       className={

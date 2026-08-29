@@ -36,7 +36,8 @@
     "noAccount": "Don't have an account?",
     "switchToLogin": "Log In",
     "switchToRegister": "Create a new account",
-    "errorGeneric": "Something went wrong, please try again."
+    "errorGeneric": "Something went wrong, please try again.",
+    "captchaRequired": "Please complete the CAPTCHA before continuing."
   },
   "accountPage": {
     "title": "My Account",
@@ -74,7 +75,9 @@
     "changePasswordTitle": "Change Password",
     "currentPasswordLabel": "Current Password",
     "newPasswordLabel": "New Password",
-    "changePasswordButton": "Update Password"
+    "changePasswordButton": "Update Password",
+    "payWithTap": "Pay by card (TAP)",
+    "paymentMethodComingSoon": "coming soon"
   },
   "subscribeResultPage": {
     "title": "Payment Result",
@@ -221,6 +224,15 @@
     "remove": "Remove",
     "continueShopping": "Continue Shopping"
   },
+  "newsletterPopup": {
+    "title": "Don't miss what's new",
+    "descriptionWithCategory": "Leave your email to get updates about: {category}",
+    "descriptionGeneric": "Leave your email to get updates on new articles",
+    "emailPlaceholder": "Your email",
+    "subscribeLabel": "Notify me",
+    "dismissLabel": "Close",
+    "successMessage": "You're signed up, thanks for your interest!"
+  },
   "favoritesPage": {
     "title": "Your Favorites",
     "empty": "You haven't favorited any books yet.",
@@ -234,6 +246,8 @@
     "cartLabel": "Cart",
     "favoritesLabel": "Favorites",
     "loginLabel": "Log In",
-    "accountLabel": "My Account"
+    "accountLabel": "My Account",
+    "openMenuLabel": "Open menu",
+    "closeMenuLabel": "Close menu"
   }
 }

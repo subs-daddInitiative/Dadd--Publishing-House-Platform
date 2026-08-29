@@ -1,0 +1,56 @@
+.bar {
+  position: relative;
+  overflow: hidden;
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+  white-space: nowrap;
+  direction: ltr;
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  padding-block: 0.5rem;
+  animation: ticker-scroll 18s linear infinite;
+  will-change: transform;
+}
+
+.segment {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding-inline-end: 3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.item {
+  display: inline-flex;
+  flex-shrink: 0;
+  unicode-bidi: plaintext;
+}
+
+.item:not(:first-child) {
+  margin-inline-start: 2rem;
+}
+
+.item:not(:first-child)::before {
+  content: "•";
+  margin-inline-end: 2rem;
+  opacity: 0.7;
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation-duration: 180s;
+  }
+}

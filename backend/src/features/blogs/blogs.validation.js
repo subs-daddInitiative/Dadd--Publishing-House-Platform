@@ -2,7 +2,7 @@ const { slugify } = require("../../utils/slugify");
 const { sanitizeRichText } = require("../../utils/sanitizeRichText");
 
 const STATUSES = ["draft", "published"];
-const BLOCK_TYPES = ["text", "image", "image_text", "quote", "tags", "pdf", "voice"];
+const BLOCK_TYPES = ["text", "image", "image_text", "quote", "tags", "pdf", "voice", "video"];
 
 function sanitizePlainText(value, maxLength) {
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
@@ -65,6 +65,7 @@ function validateBlock(block, index, errors) {
       };
     case "pdf":
     case "voice":
+    case "video":
       if (!block.url) {
         errors.push(`Block ${index + 1}: file URL is required`);
         return null;
