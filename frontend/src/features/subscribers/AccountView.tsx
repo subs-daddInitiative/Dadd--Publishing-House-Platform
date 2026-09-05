@@ -7,7 +7,6 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/getDictionary";
 import type { Subscriber, SubscriptionPlan, WriterUpgradeStatus, PaymentMethods } from "@/lib/serverApi";
 import { formatCurrency } from "@/lib/currency";
-import { CouponRedeemForm } from "./CouponRedeemForm";
 import styles from "./subscribers.module.css";
 
 type AccountViewProps = {
@@ -99,7 +98,6 @@ export function AccountView({
                 {dictionary.accountPage.navWriterUpgrade}
               </Link>
             )}
-            {subscriber.current_tier === "none" && <CouponRedeemForm />}
           </div>
 
           <h2 className={styles.accountTitle}>{dictionary.accountPage.choosePlanTitle}</h2>

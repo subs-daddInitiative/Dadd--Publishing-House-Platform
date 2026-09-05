@@ -32,6 +32,7 @@ export function Footer({
     { href: `/${locale}/studies`, label: dictionary.nav.studies },
     { href: `/${locale}/blog`, label: dictionary.nav.blog },
     { href: `/${locale}/contact`, label: dictionary.nav.contact },
+    { href: `/${locale}/join`, label: dictionary.joinPage.title },
   ];
 
   return (
@@ -110,10 +111,18 @@ export function Footer({
       </div>
 
       <div className={styles.bottomBar}>
-        <div className="container">
+        <div className={`container ${styles.bottomBarInner}`}>
           <p className={styles.copyright}>
             © {new Date().getFullYear()} {siteName} — {dictionary.footer.rights}
           </p>
+          <div className={styles.legalLinks}>
+            <Link href={`/${locale}/privacy`} className={styles.legalLink}>
+              {dictionary.footer.privacyLink}
+            </Link>
+            <Link href={`/${locale}/terms`} className={styles.legalLink}>
+              {dictionary.footer.termsLink}
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

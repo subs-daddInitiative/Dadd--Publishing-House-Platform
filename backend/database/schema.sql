@@ -128,6 +128,7 @@ CREATE TABLE IF NOT EXISTS studies (
   description TEXT NULL,
   content_intro LONGTEXT NULL,
   content_body LONGTEXT NULL,
+  content_blocks LONGTEXT NULL,
   cover_image VARCHAR(255) NULL,
   main_image VARCHAR(255) NULL,
   pdf_file VARCHAR(255) NULL,
@@ -277,6 +278,26 @@ CREATE TABLE IF NOT EXISTS banners (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
+-- site_ads (site-wide popup ads/announcements, targetable by audience, queued)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS site_ads (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(190) NOT NULL,
+  message VARCHAR(500) NULL,
+  image VARCHAR(255) NULL,
+  link_url VARCHAR(255) NULL,
+  link_label VARCHAR(100) NULL,
+  target ENUM('all', 'guest', 'reader', 'writer') NOT NULL DEFAULT 'all',
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  sort_order INT UNSIGNED NOT NULL DEFAULT 0,
+  starts_at DATETIME NULL,
+  ends_at DATETIME NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
 -- news_ticker_items (scrolling top-bar announcements, targetable by audience)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS news_ticker_items (
@@ -306,6 +327,31 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   deleted_at DATETIME NULL,
   KEY idx_contact_messages_is_read (is_read),
   KEY idx_contact_messages_subject (subject)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
+-- join_requests (volunteer/institution join applications, complaints & suggestions)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS join_requests (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  request_type ENUM('volunteer', 'complaint', 'suggestion') NOT NULL DEFAULT 'volunteer',
+  participation_type ENUM('individual', 'institution') NULL,
+  institution_name VARCHAR(190) NULL,
+  institution_type VARCHAR(100) NULL,
+  institution_website VARCHAR(255) NULL,
+  full_name VARCHAR(150) NOT NULL,
+  email VARCHAR(190) NOT NULL,
+  phone VARCHAR(30) NULL,
+  location VARCHAR(150) NULL,
+  interest_areas TEXT NULL,
+  message TEXT NULL,
+  newsletter_opt_in TINYINT(1) NOT NULL DEFAULT 0,
+  is_read TINYINT(1) NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at DATETIME NULL,
+  KEY idx_join_requests_is_read (is_read),
+  KEY idx_join_requests_type (request_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
@@ -468,35 +514,6 @@ CREATE TABLE IF NOT EXISTS writer_upgrade_requests (
   CONSTRAINT fk_writer_upgrade_subscriber FOREIGN KEY (subscriber_id) REFERENCES subscribers (id) ON DELETE CASCADE,
   CONSTRAINT fk_writer_upgrade_decided_by FOREIGN KEY (decided_by) REFERENCES users (id) ON DELETE SET NULL,
   KEY idx_writer_upgrade_subscriber (subscriber_id, created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ---------------------------------------------------------------------------
--- writer_trial_coupons / writer_trial_redemptions (free-trial coupons that
--- grant a writer the beginner tier for N months without paying)
--- ---------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS writer_trial_coupons (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  code VARCHAR(32) NOT NULL,
-  months INT UNSIGNED NOT NULL,
-  max_redemptions INT UNSIGNED NOT NULL DEFAULT 1,
-  redemptions_count INT UNSIGNED NOT NULL DEFAULT 0,
-  is_active TINYINT(1) NOT NULL DEFAULT 1,
-  created_by INT UNSIGNED NULL,
-  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  UNIQUE KEY uq_writer_trial_coupon_code (code)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS writer_trial_redemptions (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  coupon_id INT UNSIGNED NOT NULL,
-  subscriber_id INT UNSIGNED NOT NULL,
-  redeemed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  UNIQUE KEY uq_writer_trial_redemption_subscriber (subscriber_id),
-  CONSTRAINT fk_writer_trial_redemptions_coupon
-    FOREIGN KEY (coupon_id) REFERENCES writer_trial_coupons (id) ON DELETE CASCADE,
-  CONSTRAINT fk_writer_trial_redemptions_subscriber
-    FOREIGN KEY (subscriber_id) REFERENCES subscribers (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

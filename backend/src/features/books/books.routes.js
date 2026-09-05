@@ -1,6 +1,8 @@
 const { Router } = require("express");
 const { requireAuth } = require("../../middlewares/requireAuth");
 const { booksUpload } = require("./booksUpload");
+const { compressImages } = require("../../middlewares/compressImage");
+const { enforceMediaLimits } = require("../../middlewares/enforceMediaLimits");
 const { createCategoryRepository } = require("../../utils/categoryRepository");
 const { createCategoryController } = require("../../utils/categoryController");
 const {
@@ -28,8 +30,8 @@ const adminRouter = Router();
 adminRouter.use(requireAuth);
 adminRouter.get("/books", getAdminBooks);
 adminRouter.get("/books/:id", getAdminBookById);
-adminRouter.post("/books", uploadFields, createBookHandler);
-adminRouter.put("/books/:id", uploadFields, updateBookHandler);
+adminRouter.post("/books", uploadFields, enforceMediaLimits, compressImages, createBookHandler);
+adminRouter.put("/books/:id", uploadFields, enforceMediaLimits, compressImages, updateBookHandler);
 adminRouter.delete("/books/:id", deleteBookHandler);
 
 adminRouter.get("/books-categories", bookCategories.list);

@@ -2,6 +2,7 @@ const { Router } = require("express");
 const rateLimit = require("express-rate-limit");
 const { requireSubscriberAuth } = require("../../middlewares/requireSubscriberAuth");
 const { createImageUpload } = require("../../middlewares/imageUpload");
+const { compressImages } = require("../../middlewares/compressImage");
 const {
   register,
   login,
@@ -30,6 +31,7 @@ publicRouter.put(
   "/subscriber/profile",
   requireSubscriberAuth,
   avatarUpload.single("profile_image"),
+  compressImages,
   updateProfileHandler
 );
 publicRouter.put("/subscriber/password", requireSubscriberAuth, changePasswordHandler);

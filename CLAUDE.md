@@ -614,3 +614,12 @@ When uncertain, ask for clarification instead of making assumptions.
 # Primary Objective
 
 Build a secure, scalable, premium publishing platform that is easy to maintain, optimized for Arabic users today, and ready for international expansion tomorrow.
+
+
+# commits
+
+Every change that is complete, working, and saved must be committed and pushed to GitHub automatically — do not wait to be asked each time.
+
+As soon as a feature or fix has been verified (tested/built successfully), stage the relevant files, write a focused commit message describing what changed and why, and push it to the remote right away. Never leave verified work sitting uncommitted at the end of a task.
+
+Exceptions: never commit secrets/.env files, and never commit personal reference/content files or design mockups kept at the project root (e.g. draft docs, canvas/design working files) unless explicitly asked to.

@@ -64,6 +64,32 @@
   color: var(--color-text);
 }
 
+.consentRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.6rem;
+  cursor: pointer;
+}
+
+.consentRow input {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.consentLink {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.errorText {
+  color: var(--color-danger, #d0433a);
+  font-size: 0.78rem;
+  margin: 0 0 0.6rem;
+}
+
 .submitButton {
   width: 100%;
   padding: 0.6rem;

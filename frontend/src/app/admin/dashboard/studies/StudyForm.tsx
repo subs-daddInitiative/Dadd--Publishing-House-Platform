@@ -1,10 +1,18 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { RichTextEditor } from "@/components/RichTextEditor";
+import { BlockEditor, type ContentBlock } from "@/features/blogEditor/BlockEditor";
+import { ImageCropper } from "@/components/ImageCropper";
 import type { AdminStudyDetail, StudyCategory } from "@/lib/serverApi";
 import styles from "./studies.module.css";
+
+const COVER_ASPECT_RATIO = 16 / 6;
+const COVER_ASPECT_LABEL = "16:6 (عريضة وقصيرة، مثال: 1600×600 بكسل)";
+const MAIN_ASPECT_RATIO = 16 / 8;
+const MAIN_ASPECT_LABEL = "2:1 (مثال: 1600×800 بكسل)";
+
+type CropTarget = "cover" | "main";
 
 type StudyFormProps = {
   mode: "create" | "edit";
@@ -24,6 +32,16 @@ function slugify(text: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function parseInitialBlocks(raw: string | null | undefined): ContentBlock[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 export function StudyForm({
   mode,
   studyId,
@@ -36,7 +54,11 @@ export function StudyForm({
   const router = useRouter();
   const coverInputRef = useRef<HTMLInputElement>(null);
   const mainImageInputRef = useRef<HTMLInputElement>(null);
-  const pdfInputRef = useRef<HTMLInputElement>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
+  const [mainFile, setMainFile] = useState<File | null>(null);
+  const [mainPreviewUrl, setMainPreviewUrl] = useState<string | null>(null);
+  const [cropRequest, setCropRequest] = useState<{ target: CropTarget; file: File } | null>(null);
 
   const [title, setTitle] = useState(initialStudy?.title || "");
   const [slug, setSlug] = useState(initialStudy?.slug || "");
@@ -44,19 +66,59 @@ export function StudyForm({
   const [author, setAuthor] = useState(initialStudy?.author || "");
   const [categoryId, setCategoryId] = useState(initialStudy?.category_id?.toString() || "");
   const [description, setDescription] = useState(initialStudy?.description || "");
-  const [contentIntro, setContentIntro] = useState(initialStudy?.content_intro || "");
-  const [contentBody, setContentBody] = useState(initialStudy?.content_body || "");
+  const [blocks, setBlocks] = useState<ContentBlock[]>(parseInitialBlocks(initialStudy?.content_blocks));
   const [status, setStatus] = useState(initialStudy?.status || "draft");
   const [isPremium, setIsPremium] = useState(Boolean(initialStudy?.is_premium));
   const [price, setPrice] = useState(initialStudy?.price || "");
+  const [uploading, setUploading] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "saving" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!coverFile) {
+      setCoverPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(coverFile);
+    setCoverPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [coverFile]);
+
+  useEffect(() => {
+    if (!mainFile) {
+      setMainPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(mainFile);
+    setMainPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [mainFile]);
 
   function handleTitleChange(value: string) {
     setTitle(value);
     if (!slugTouched) {
       setSlug(slugify(value));
     }
+  }
+
+  function handleCoverFileSelect(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (file) setCropRequest({ target: "cover", file });
+    event.target.value = "";
+  }
+
+  function handleMainFileSelect(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (file) setCropRequest({ target: "main", file });
+    event.target.value = "";
+  }
+
+  function handleCropConfirm(blob: Blob) {
+    if (!cropRequest) return;
+    const croppedFile = new File([blob], `${cropRequest.target}.jpg`, { type: "image/jpeg" });
+    if (cropRequest.target === "cover") setCoverFile(croppedFile);
+    else setMainFile(croppedFile);
+    setCropRequest(null);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -70,18 +132,13 @@ export function StudyForm({
     formData.append("author", author);
     formData.append("category_id", categoryId);
     formData.append("description", description);
-    formData.append("content_intro", contentIntro);
-    formData.append("content_body", contentBody);
+    formData.append("content_blocks", JSON.stringify(blocks));
     formData.append("status", status);
     formData.append("is_premium", String(isPremium));
     if (isPremium) formData.append("price", price);
 
-    const coverFile = coverInputRef.current?.files?.[0];
     if (coverFile) formData.append("cover_image", coverFile);
-    const mainFile = mainImageInputRef.current?.files?.[0];
     if (mainFile) formData.append("main_image", mainFile);
-    const pdfFile = pdfInputRef.current?.files?.[0];
-    if (pdfFile) formData.append("pdf_file", pdfFile);
 
     const url = mode === "create" ? "/api/admin/studies" : `/api/admin/studies/${studyId}`;
     const method = mode === "create" ? "POST" : "PUT";
@@ -191,14 +248,27 @@ export function StudyForm({
       </div>
 
       <div className={styles.field}>
-        <label className={styles.label}>
-          <input
-            type="checkbox"
-            checked={isPremium}
-            onChange={(event) => setIsPremium(event.target.checked)}
-          />{" "}
-          دراسة مميزة (تباع منفردة أو عبر اشتراك الدراسات السنوي)
-        </label>
+        <div className={styles.premiumToggleRow}>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={isPremium}
+            onClick={() => setIsPremium((prev) => !prev)}
+            className={`${styles.premiumToggle} ${isPremium ? styles.premiumToggleOn : ""}`}
+          >
+            <span className={styles.premiumToggleThumb} />
+          </button>
+          <div>
+            <p className={styles.premiumToggleLabel}>
+              {isPremium ? "دراسة مميزة" : "دراسة مجانية"}
+            </p>
+            <p className={styles.premiumToggleHint}>
+              {isPremium
+                ? "تباع منفردة أو عبر اشتراك الدراسات السنوي"
+                : "تظهر لجميع الزوار مجانًا"}
+            </p>
+          </div>
+        </div>
         {isPremium && (
           <input
             type="number"
@@ -215,52 +285,81 @@ export function StudyForm({
 
       <div className={styles.field}>
         <label className={styles.label}>صورة الغلاف (تظهر في الخلفية العلوية)</label>
-        {currentCoverImageUrl && (
+        {(coverPreviewUrl || currentCoverImageUrl) && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={currentCoverImageUrl} alt="" className={styles.imagePreview} />
+          <img src={coverPreviewUrl || currentCoverImageUrl || undefined} alt="" className={styles.imagePreview} />
         )}
-        <input ref={coverInputRef} type="file" accept="image/png,image/jpeg,image/webp" />
+        <input
+          ref={coverInputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          onChange={handleCoverFileSelect}
+        />
+        <p className={styles.itemMeta}>
+          النسبة المطلوبة: {COVER_ASPECT_LABEL} — بحجم أقصى 5 ميجابايت. بعد اختيار الصورة يمكنك تحريكها وتكبيرها
+          لاختيار الجزء الذي تريد إظهاره قبل الحفظ.
+        </p>
       </div>
 
       <div className={styles.field}>
         <label className={styles.label}>الصورة الرئيسية</label>
-        {currentMainImageUrl && (
+        {(mainPreviewUrl || currentMainImageUrl) && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={currentMainImageUrl} alt="" className={styles.imagePreview} />
+          <img src={mainPreviewUrl || currentMainImageUrl || undefined} alt="" className={styles.imagePreview} />
         )}
-        <input ref={mainImageInputRef} type="file" accept="image/png,image/jpeg,image/webp" />
+        <input
+          ref={mainImageInputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          onChange={handleMainFileSelect}
+        />
+        <p className={styles.itemMeta}>
+          النسبة المطلوبة: {MAIN_ASPECT_LABEL} — بحجم أقصى 5 ميجابايت. بعد اختيار الصورة يمكنك تحريكها وتكبيرها
+          لاختيار الجزء الذي تريد إظهاره قبل الحفظ.
+        </p>
       </div>
 
       <div className={styles.field}>
-        <label className={styles.label}>الفقرة الأولى</label>
-        <div className={styles.editorWrap}>
-          <RichTextEditor value={contentIntro} onChange={setContentIntro} />
-        </div>
-      </div>
-
-      <div className={styles.field}>
-        <label className={styles.label}>الفقرة الثانية</label>
-        <div className={styles.editorWrap}>
-          <RichTextEditor value={contentBody} onChange={setContentBody} />
-        </div>
-      </div>
-
-      <div className={styles.field}>
-        <label className={styles.label}>ملف PDF (اختياري)</label>
+        <label className={styles.label}>محتوى الدراسة (أقسام)</label>
+        <BlockEditor
+          blocks={blocks}
+          onChange={setBlocks}
+          onUploadingChange={setUploading}
+          uploadUrl="/api/admin/studies/upload-asset"
+        />
         {currentPdfUrl && (
-          <a href={currentPdfUrl} target="_blank" rel="noopener noreferrer" className={styles.currentFileLink}>
-            عرض الملف الحالي
-          </a>
+          <p className={styles.itemMeta}>
+            كانت الدراسة تحتوي سابقًا على ملف PDF منفصل:{" "}
+            <a href={currentPdfUrl} target="_blank" rel="noopener noreferrer" className={styles.currentFileLink}>
+              عرض الملف القديم
+            </a>{" "}
+            — يمكنك إضافة ملف PDF جديد كأحد أقسام المحتوى أعلاه.
+          </p>
         )}
-        <input ref={pdfInputRef} type="file" accept="application/pdf" />
       </div>
 
       <div className={styles.formActions}>
-        <button type="submit" className={styles.button} disabled={submitState === "saving"}>
-          {submitState === "saving" ? "جارٍ الحفظ..." : "حفظ"}
+        <button type="submit" className={styles.button} disabled={submitState === "saving" || uploading}>
+          {uploading ? "جارٍ رفع الملفات..." : submitState === "saving" ? "جارٍ الحفظ..." : "حفظ"}
         </button>
         {submitState === "error" && <p className={styles.statusError}>{errorMessage}</p>}
       </div>
+
+      {cropRequest && (
+        <ImageCropper
+          file={cropRequest.file}
+          aspectRatio={cropRequest.target === "cover" ? COVER_ASPECT_RATIO : MAIN_ASPECT_RATIO}
+          title={cropRequest.target === "cover" ? "قص صورة الغلاف" : "قص الصورة الرئيسية"}
+          hint={`النسبة المطلوبة: ${
+            cropRequest.target === "cover" ? COVER_ASPECT_LABEL : MAIN_ASPECT_LABEL
+          }. اسحب الصورة لتحريكها واستخدم شريط التكبير لاختيار الجزء الذي يظهر.`}
+          zoomLabel="التكبير"
+          cancelLabel="إلغاء"
+          confirmLabel="تم"
+          onCancel={() => setCropRequest(null)}
+          onConfirm={handleCropConfirm}
+        />
+      )}
     </form>
   );
 }

@@ -57,7 +57,7 @@ async function countPublicStudies({ categorySlug }) {
 async function findPublicStudyBySlug(slug) {
   const [rows] = await pool.query(
     `SELECT ${PUBLIC_LIST_FIELDS}, s.category_id, s.main_image, s.content_intro, s.content_body,
-            s.pdf_file, s.updated_at
+            s.content_blocks, s.pdf_file, s.updated_at
      FROM studies s
      LEFT JOIN studies_categories sc ON sc.id = s.category_id
      WHERE s.slug = ? AND s.status = 'published' AND s.deleted_at IS NULL
@@ -100,15 +100,27 @@ async function findRelatedStudies(categoryId, excludeId, limit = 3) {
   return [...sameCategory, ...padded].slice(0, limit);
 }
 
-async function listAdminStudies() {
-  const [rows] = await pool.query(
-    `SELECT s.id, s.title, s.slug, s.status, s.cover_image, s.published_at, s.updated_at,
-            sc.name AS category_name
+async function listAdminStudies({ search, premium } = {}) {
+  const params = [];
+  let query = `SELECT s.id, s.title, s.slug, s.status, s.cover_image, s.published_at, s.updated_at,
+            s.is_premium, sc.name AS category_name
      FROM studies s
      LEFT JOIN studies_categories sc ON sc.id = s.category_id
-     WHERE s.deleted_at IS NULL
-     ORDER BY s.created_at DESC`
-  );
+     WHERE s.deleted_at IS NULL`;
+
+  if (search) {
+    query += " AND s.title LIKE ?";
+    params.push(`%${search}%`);
+  }
+  if (premium === "premium") {
+    query += " AND s.is_premium = 1";
+  } else if (premium === "free") {
+    query += " AND s.is_premium = 0";
+  }
+
+  query += " ORDER BY s.created_at DESC";
+
+  const [rows] = await pool.query(query, params);
   return rows;
 }
 
@@ -154,9 +166,9 @@ async function createStudy(data) {
   const publishedAt = data.status === "published" ? new Date() : null;
   const [result] = await pool.query(
     `INSERT INTO studies
-       (category_id, title, slug, author, description, content_intro, content_body,
+       (category_id, title, slug, author, description, content_intro, content_body, content_blocks,
         cover_image, main_image, pdf_file, status, is_premium, price, currency, published_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.category_id || null,
       data.title,
@@ -165,6 +177,7 @@ async function createStudy(data) {
       data.description || null,
       data.content_intro || null,
       data.content_body || null,
+      data.content_blocks || null,
       data.cover_image || null,
       data.main_image || null,
       data.pdf_file || null,
@@ -187,6 +200,7 @@ async function updateStudy(id, fields) {
     "description",
     "content_intro",
     "content_body",
+    "content_blocks",
     "cover_image",
     "main_image",
     "pdf_file",

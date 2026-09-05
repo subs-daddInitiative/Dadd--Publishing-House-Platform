@@ -11,6 +11,7 @@ const {
   createSubscriber,
   updateProfile,
   updatePassword,
+  updateTier,
 } = require("./subscribers.repository");
 const {
   validateRegisterPayload,
@@ -62,6 +63,18 @@ async function register(req, res, next) {
       accountType: value.accountType,
     });
 
+    // New writer accounts get a free 1-month beginner-tier trial so they can
+    // try uploading blogs right away, without needing to subscribe first.
+    let currentTier = "none";
+    let tierExpiresAt = null;
+    if (value.accountType === "writer") {
+      const expiresAt = new Date();
+      expiresAt.setMonth(expiresAt.getMonth() + 1);
+      await updateTier(id, "beginner", expiresAt);
+      currentTier = "beginner";
+      tierExpiresAt = expiresAt.toISOString();
+    }
+
     const token = signToken(id);
     res.cookie(SUBSCRIBER_COOKIE, token, cookieOptions());
     res.status(201).json({
@@ -71,8 +84,8 @@ async function register(req, res, next) {
         name: value.name,
         email: value.email,
         account_type: value.accountType,
-        current_tier: "none",
-        tier_expires_at: null,
+        current_tier: currentTier,
+        tier_expires_at: tierExpiresAt,
       },
     });
   } catch (error) {

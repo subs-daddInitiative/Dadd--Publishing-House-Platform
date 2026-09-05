@@ -1,7 +1,8 @@
 {
   "common": {
     "siteName": "Publishing House",
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "close": "Close"
   },
   "sidebar": {
     "recentBlogsTitle": "Latest Articles",
@@ -153,7 +154,125 @@
     "tagline": "A publishing house dedicated to serious Arabic writing, from idea to page.",
     "quickLinksTitle": "Quick Links",
     "contactTitle": "Contact",
-    "followTitle": "Follow Us"
+    "followTitle": "Follow Us",
+    "privacyLink": "Privacy Policy",
+    "termsLink": "Terms & Conditions"
+  },
+  "joinPage": {
+    "title": "Join Us",
+    "subtitle": "Whether you'd like to volunteer with us, or you have a complaint or suggestion, we'd love to hear from you.",
+    "requestTypeLabel": "Request type",
+    "requestTypeVolunteer": "Join as a volunteer",
+    "requestTypeComplaint": "Complaint",
+    "requestTypeSuggestion": "Suggestion",
+    "participationTypeLabel": "How you'll participate",
+    "participationIndividual": "Individual volunteer",
+    "participationInstitution": "Institution / partner representative",
+    "institutionSectionTitle": "Institution details",
+    "institutionNameLabel": "Institution name",
+    "institutionTypeLabel": "Institution type",
+    "institutionTypePlaceholder": "Choose institution type",
+    "institutionTypeNgo": "Non-profit organization",
+    "institutionTypeSchool": "School",
+    "institutionTypeUniversity": "University",
+    "institutionTypeCompany": "Company",
+    "institutionTypeMedia": "Media outlet",
+    "institutionTypeOther": "Other",
+    "institutionWebsiteLabel": "Website (optional)",
+    "personalSectionTitle": "Personal information",
+    "fullNameLabel": "Full name",
+    "emailLabel": "Email address",
+    "phoneLabel": "Phone number (optional)",
+    "locationLabel": "Country / city (optional)",
+    "interestsSectionTitle": "Areas of interest",
+    "interestsGroupCreative": "Creative & linguistic skills",
+    "interestsGroupTechnical": "Technical & administrative support",
+    "interestsGroupPartnership": "Partnerships & support",
+    "interestChildrensLiterature": "Children's literature",
+    "interestTranslation": "Translation",
+    "interestWriting": "Writing / authoring",
+    "interestProofreading": "Proofreading",
+    "interestResearch": "Research",
+    "interestDesign": "Drawing / design",
+    "interestAudio": "Audio performance",
+    "interestWikipedia": "Wikipedia",
+    "interestWebDevelopment": "Web development",
+    "interestDigitalMarketing": "Digital marketing",
+    "interestCoordination": "Administrative coordination",
+    "interestPartnerships": "Institutional partnerships",
+    "interestDonations": "Donations",
+    "interestOther": "Other",
+    "messageLabel": "Tell us about yourself (optional)",
+    "messageLabelRequired": "Message",
+    "newsletterLabel": "I'd like to receive your newsletter",
+    "privacyLabel": "I agree to the",
+    "privacyAnd": "and",
+    "submitButton": "Send request",
+    "submitting": "Sending...",
+    "successMessage": "Your request was received, thank you for reaching out!",
+    "errorGeneric": "Something went wrong, please try again."
+  },
+  "privacyPage": {
+    "title": "Privacy Policy",
+    "updated": "Last updated: September 2026",
+    "intro": "We respect your privacy. This page briefly explains what information we collect from you and how we use it.",
+    "sections": [
+      {
+        "heading": "Information we collect",
+        "body": "When you create an account, we collect your name, email, and password (encrypted). If you sign up as a writer, we may also collect information related to your account and plan. If you leave your email in the \"notify me\" popup on a blog post, we only store that email and the category you were interested in."
+      },
+      {
+        "heading": "How we use your information",
+        "body": "We use your data to run your account, manage your subscriptions and purchases, send updates you requested (like blog alerts), and improve your experience on the site. We never sell your data to any third party."
+      },
+      {
+        "heading": "Cookies and local storage",
+        "body": "We use your browser's local storage to remember your book cart and favorites, and to remember that you've dismissed a particular ad or popup - without tracking your browsing across other sites."
+      },
+      {
+        "heading": "Third-party services",
+        "body": "We use external payment gateways (TAP and PayPal) to process payments securely, and Cloudflare Turnstile to verify you're not a bot when logging in, registering, or submitting an article. We only share the minimum data needed with these services to complete the relevant action."
+      },
+      {
+        "heading": "Your rights",
+        "body": "You can update your data or remove your profile photo at any time from your account page, or contact us to request full account deletion."
+      },
+      {
+        "heading": "Contact us",
+        "body": "For any question about your privacy, please reach out through our Contact page."
+      }
+    ]
+  },
+  "termsPage": {
+    "title": "Terms & Conditions",
+    "updated": "Last updated: September 2026",
+    "intro": "By using this website, you agree to the following terms.",
+    "sections": [
+      {
+        "heading": "Accounts",
+        "body": "Visitors may register as a reader or a writer. You're responsible for keeping your password confidential and for any activity under your account."
+      },
+      {
+        "heading": "Writer content",
+        "body": "Every article a writer submits goes through review by our team before publishing. We reserve the right to reject or remove content that violates our policies or applicable law. Writers retain ownership of their content while granting us the right to publish it on our platform."
+      },
+      {
+        "heading": "Subscriptions and payments",
+        "body": "Some features (writer plans, premium content, and study purchases) require a paid subscription through our approved payment providers. Prices may be changed by our team, and refunds are only issued in the case of a technical error on our end."
+      },
+      {
+        "heading": "Acceptable use",
+        "body": "You may not use the site for any unlawful purpose, attempt to abuse the system, impersonate another person, or publish content that is abusive or infringes on intellectual property rights."
+      },
+      {
+        "heading": "Disclaimer",
+        "body": "We work to keep published content accurate, but we don't guarantee the site is free of technical errors, and we aren't liable for any damages arising from your use of the site."
+      },
+      {
+        "heading": "Changes to these terms",
+        "body": "We may update these terms from time to time. Continuing to use the site after a change means you accept the updated terms."
+      }
+    ]
   },
   "blogPage": {
     "title": "Curated Selections",
@@ -191,7 +310,8 @@
     "breadcrumbHome": "Home",
     "breadcrumbStudies": "Studies",
     "heroBadge": "Exclusive studies for subscribers",
-    "subscribeCta": "Subscribe Now"
+    "subscribeCta": "Subscribe Now",
+    "lockedFile": "This file is only available to subscribers. Please subscribe to view it."
   },
   "booksPage": {
     "title": "Books Library",
@@ -231,7 +351,10 @@
     "emailPlaceholder": "Your email",
     "subscribeLabel": "Notify me",
     "dismissLabel": "Close",
-    "successMessage": "You're signed up, thanks for your interest!"
+    "successMessage": "You're signed up, thanks for your interest!",
+    "consentPrefix": "I agree to the",
+    "consentAnd": "and",
+    "consentRequired": "Please agree to the Privacy Policy and Terms first."
   },
   "favoritesPage": {
     "title": "Your Favorites",

@@ -1,9 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
+import type { Locale } from "@/i18n/config";
 import styles from "./NewsletterPopup.module.css";
 
 type NewsletterPopupProps = {
+  locale: Locale;
   categoryName: string | null;
   categorySlug: string | null;
   blogSlug: string;
@@ -14,6 +17,11 @@ type NewsletterPopupProps = {
   subscribeLabel: string;
   dismissLabel: string;
   successMessage: string;
+  consentPrefix: string;
+  consentAnd: string;
+  consentRequired: string;
+  privacyLabel: string;
+  termsLabel: string;
 };
 
 const STORAGE_KEY = "newsletter:handled";
@@ -40,6 +48,7 @@ function markHandled(key: string) {
 }
 
 export function NewsletterPopup({
+  locale,
   categoryName,
   categorySlug,
   blogSlug,
@@ -50,11 +59,18 @@ export function NewsletterPopup({
   subscribeLabel,
   dismissLabel,
   successMessage,
+  consentPrefix,
+  consentAnd,
+  consentRequired,
+  privacyLabel,
+  termsLabel,
 }: NewsletterPopupProps) {
   const key = categorySlug || `blog:${blogSlug}`;
   const [visible, setVisible] = useState(false);
   const [email, setEmail] = useState("");
+  const [consentChecked, setConsentChecked] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "done">("idle");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (getHandledSet().has(key)) return;
@@ -69,6 +85,12 @@ export function NewsletterPopup({
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+
+    if (!consentChecked) {
+      setError(consentRequired);
+      return;
+    }
+    setError("");
     setStatus("sending");
 
     try {
@@ -114,7 +136,31 @@ export function NewsletterPopup({
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
-          <button type="submit" className={styles.submitButton} disabled={status === "sending"}>
+
+          <label className={styles.consentRow}>
+            <input
+              type="checkbox"
+              checked={consentChecked}
+              onChange={(event) => {
+                setConsentChecked(event.target.checked);
+                if (event.target.checked) setError("");
+              }}
+            />
+            <span>
+              {consentPrefix}{" "}
+              <Link href={`/${locale}/privacy`} target="_blank" className={styles.consentLink}>
+                {privacyLabel}
+              </Link>{" "}
+              {consentAnd}{" "}
+              <Link href={`/${locale}/terms`} target="_blank" className={styles.consentLink}>
+                {termsLabel}
+              </Link>
+            </span>
+          </label>
+
+          {error && <p className={styles.errorText}>{error}</p>}
+
+          <button type="submit" className={styles.submitButton} disabled={status === "sending" || !consentChecked}>
             {subscribeLabel}
           </button>
         </form>

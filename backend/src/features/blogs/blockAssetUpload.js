@@ -17,7 +17,9 @@ const MIME_TYPES = {
   "video/ogg": { ext: ".ogv", dir: "blogs-blocks/videos" },
 };
 
-const MAX_FILE_SIZE = 150 * 1024 * 1024;
+// Multer-level backstop only — the real per-type caps (images 5MB, everything
+// else 25MB) are enforced by the enforceMediaLimits middleware after upload.
+const MAX_FILE_SIZE = 25 * 1024 * 1024;
 const uploadsRoot = path.join(__dirname, "..", "..", "..", "uploads");
 
 for (const { dir } of Object.values(MIME_TYPES)) {

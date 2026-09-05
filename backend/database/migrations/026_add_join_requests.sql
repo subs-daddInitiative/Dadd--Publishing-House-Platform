@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS join_requests (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  request_type ENUM('volunteer', 'complaint', 'suggestion') NOT NULL DEFAULT 'volunteer',
+  participation_type ENUM('individual', 'institution') NULL,
+  institution_name VARCHAR(190) NULL,
+  institution_type VARCHAR(100) NULL,
+  institution_website VARCHAR(255) NULL,
+  full_name VARCHAR(150) NOT NULL,
+  email VARCHAR(190) NOT NULL,
+  phone VARCHAR(30) NULL,
+  location VARCHAR(150) NULL,
+  interest_areas TEXT NULL,
+  message TEXT NULL,
+  newsletter_opt_in TINYINT(1) NOT NULL DEFAULT 0,
+  is_read TINYINT(1) NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at DATETIME NULL,
+  KEY idx_join_requests_is_read (is_read),
+  KEY idx_join_requests_type (request_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

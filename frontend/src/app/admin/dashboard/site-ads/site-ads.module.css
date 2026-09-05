@@ -5,32 +5,44 @@
 .pageHeader p {
   color: var(--color-text-muted);
   font-size: 0.9rem;
+  max-width: 60ch;
 }
 
 .createForm {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--space-3);
+  flex-direction: column;
+  gap: var(--space-2);
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: var(--space-3);
   background: var(--color-surface);
   margin-bottom: var(--space-4);
+  max-width: 34rem;
+}
+
+.row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.row .field {
+  flex: 1;
 }
 
 .field {
-  min-width: 12rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .label {
-  display: block;
   margin-bottom: 0.35rem;
   font-size: 0.85rem;
   color: var(--color-text-muted);
 }
 
-.input {
+.input,
+.textarea,
+.select {
   width: 100%;
   padding: 0.55rem 0.7rem;
   border: 1px solid var(--color-border);
@@ -41,7 +53,13 @@
   font-family: inherit;
 }
 
+.textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
 .button {
+  align-self: flex-start;
   padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 0.25rem;
@@ -50,7 +68,6 @@
   font-weight: 600;
   cursor: pointer;
   font-size: 0.9rem;
-  height: fit-content;
 }
 
 .button:disabled {
@@ -58,17 +75,15 @@
   cursor: not-allowed;
 }
 
-.successText {
-  color: var(--color-success, #2f9e64);
-  font-size: 0.85rem;
-  width: 100%;
-  margin: 0;
+.hint {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin: -0.25rem 0 0;
 }
 
-.errorText {
+.statusError {
   color: var(--color-danger, #d0433a);
   font-size: 0.85rem;
-  width: 100%;
   margin: 0;
 }
 
@@ -86,47 +101,64 @@
 }
 
 .item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: var(--space-2) var(--space-3);
   background: var(--color-surface);
 }
 
-.itemHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
+.thumb {
+  width: 4rem;
+  height: 3rem;
+  object-fit: cover;
+  border-radius: 0.35rem;
+  flex-shrink: 0;
 }
 
-.itemCode {
-  font-weight: 700;
-  font-family: monospace;
-  font-size: 1.05rem;
-  margin: 0;
-  letter-spacing: 0.05em;
+.itemBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-weight: 600;
+  margin: 0 0 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .itemMeta {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.itemActions {
+  display: flex;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.buttonSecondary {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
   font-size: 0.85rem;
-  color: var(--color-text-muted);
-  margin: 0.3rem 0 0;
 }
 
-.statusBadgeActive {
-  padding: 0.2rem 0.7rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-success, #2f9e64) 15%, transparent);
-  color: var(--color-success, #2f9e64);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.statusBadgeInactive {
-  padding: 0.2rem 0.7rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-text-muted) 15%, transparent);
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  font-weight: 600;
+.buttonDanger {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--color-accent);
+  cursor: pointer;
+  font-size: 0.85rem;
 }

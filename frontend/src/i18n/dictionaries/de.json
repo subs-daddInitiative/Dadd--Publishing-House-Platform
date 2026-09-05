@@ -1,7 +1,8 @@
 {
   "common": {
     "siteName": "Verlagshaus",
-    "skipToContent": "Zum Inhalt springen"
+    "skipToContent": "Zum Inhalt springen",
+    "close": "Schließen"
   },
   "sidebar": {
     "recentBlogsTitle": "Neueste Artikel",
@@ -153,7 +154,125 @@
     "tagline": "Ein Verlagshaus für ernsthafte arabische Literatur, von der Idee bis zur Seite.",
     "quickLinksTitle": "Schnellzugriff",
     "contactTitle": "Kontakt",
-    "followTitle": "Folgen Sie uns"
+    "followTitle": "Folgen Sie uns",
+    "privacyLink": "Datenschutzerklärung",
+    "termsLink": "Allgemeine Geschäftsbedingungen"
+  },
+  "joinPage": {
+    "title": "Mitmachen",
+    "subtitle": "Ob Sie sich freiwillig engagieren möchten oder eine Beschwerde oder einen Vorschlag haben - wir freuen uns, von Ihnen zu hören.",
+    "requestTypeLabel": "Art der Anfrage",
+    "requestTypeVolunteer": "Als Freiwilliger beitreten",
+    "requestTypeComplaint": "Beschwerde",
+    "requestTypeSuggestion": "Vorschlag",
+    "participationTypeLabel": "Art der Teilnahme",
+    "participationIndividual": "Einzelperson",
+    "participationInstitution": "Institution / Partnervertreter",
+    "institutionSectionTitle": "Angaben zur Institution",
+    "institutionNameLabel": "Name der Institution",
+    "institutionTypeLabel": "Art der Institution",
+    "institutionTypePlaceholder": "Institutionstyp wählen",
+    "institutionTypeNgo": "Gemeinnützige Organisation",
+    "institutionTypeSchool": "Schule",
+    "institutionTypeUniversity": "Universität",
+    "institutionTypeCompany": "Unternehmen",
+    "institutionTypeMedia": "Medienunternehmen",
+    "institutionTypeOther": "Andere",
+    "institutionWebsiteLabel": "Website (optional)",
+    "personalSectionTitle": "Persönliche Angaben",
+    "fullNameLabel": "Vollständiger Name",
+    "emailLabel": "E-Mail-Adresse",
+    "phoneLabel": "Telefonnummer (optional)",
+    "locationLabel": "Land / Stadt (optional)",
+    "interestsSectionTitle": "Interessengebiete",
+    "interestsGroupCreative": "Kreative und sprachliche Fähigkeiten",
+    "interestsGroupTechnical": "Technische und administrative Unterstützung",
+    "interestsGroupPartnership": "Partnerschaften und Unterstützung",
+    "interestChildrensLiterature": "Kinderliteratur",
+    "interestTranslation": "Übersetzung",
+    "interestWriting": "Schreiben / Autorenschaft",
+    "interestProofreading": "Korrekturlesen",
+    "interestResearch": "Forschung",
+    "interestDesign": "Zeichnen / Design",
+    "interestAudio": "Audio-Vorträge",
+    "interestWikipedia": "Wikipedia",
+    "interestWebDevelopment": "Webentwicklung",
+    "interestDigitalMarketing": "Digitales Marketing",
+    "interestCoordination": "Administrative Koordination",
+    "interestPartnerships": "Institutionelle Partnerschaften",
+    "interestDonations": "Spenden",
+    "interestOther": "Andere",
+    "messageLabel": "Erzählen Sie uns von sich (optional)",
+    "messageLabelRequired": "Nachricht",
+    "newsletterLabel": "Ich möchte Ihren Newsletter erhalten",
+    "privacyLabel": "Ich stimme der",
+    "privacyAnd": "und den",
+    "submitButton": "Anfrage senden",
+    "submitting": "Wird gesendet...",
+    "successMessage": "Ihre Anfrage wurde erhalten, vielen Dank für Ihre Kontaktaufnahme!",
+    "errorGeneric": "Etwas ist schiefgelaufen, bitte versuchen Sie es erneut."
+  },
+  "privacyPage": {
+    "title": "Datenschutzerklärung",
+    "updated": "Zuletzt aktualisiert: September 2026",
+    "intro": "Wir respektieren Ihre Privatsphäre. Diese Seite erklärt kurz, welche Informationen wir von Ihnen sammeln und wie wir sie verwenden.",
+    "sections": [
+      {
+        "heading": "Informationen, die wir sammeln",
+        "body": "Wenn Sie ein Konto erstellen, erfassen wir Ihren Namen, Ihre E-Mail-Adresse und Ihr (verschlüsseltes) Passwort. Wenn Sie sich als Autor registrieren, erfassen wir zusätzlich Informationen zu Ihrem Konto und Ihrem Plan. Wenn Sie Ihre E-Mail im \"Benachrichtigen\"-Popup auf einem Blogbeitrag hinterlassen, speichern wir nur diese E-Mail und die Kategorie, für die Sie sich interessiert haben."
+      },
+      {
+        "heading": "Wie wir Ihre Daten verwenden",
+        "body": "Wir verwenden Ihre Daten, um Ihr Konto zu betreiben, Ihre Abonnements und Käufe zu verwalten, angeforderte Updates (wie Blog-Benachrichtigungen) zu senden und Ihre Erfahrung auf der Website zu verbessern. Wir verkaufen Ihre Daten niemals an Dritte."
+      },
+      {
+        "heading": "Cookies und lokaler Speicher",
+        "body": "Wir nutzen den lokalen Speicher Ihres Browsers, um Ihren Bücherkorb und Favoriten zu merken sowie um zu merken, dass Sie eine bestimmte Anzeige oder ein Popup geschlossen haben - ohne Ihr Surfverhalten auf anderen Websites zu verfolgen."
+      },
+      {
+        "heading": "Dienste von Drittanbietern",
+        "body": "Wir nutzen externe Zahlungsanbieter (TAP und PayPal), um Zahlungen sicher zu verarbeiten, sowie Cloudflare Turnstile, um zu überprüfen, dass Sie kein Roboter sind, wenn Sie sich anmelden, registrieren oder einen Artikel einreichen. Wir teilen mit diesen Diensten nur die für den jeweiligen Vorgang unbedingt nötigen Daten."
+      },
+      {
+        "heading": "Ihre Rechte",
+        "body": "Sie können Ihre Daten jederzeit über Ihre Kontoseite aktualisieren oder Ihr Profilbild entfernen, oder uns kontaktieren, um die vollständige Löschung Ihres Kontos zu beantragen."
+      },
+      {
+        "heading": "Kontaktieren Sie uns",
+        "body": "Bei Fragen zu Ihrer Privatsphäre kontaktieren Sie uns bitte über unsere Kontaktseite."
+      }
+    ]
+  },
+  "termsPage": {
+    "title": "Allgemeine Geschäftsbedingungen",
+    "updated": "Zuletzt aktualisiert: September 2026",
+    "intro": "Durch die Nutzung dieser Website stimmen Sie den folgenden Bedingungen zu.",
+    "sections": [
+      {
+        "heading": "Konten",
+        "body": "Besucher können sich als Leser oder Autor registrieren. Sie sind für die Vertraulichkeit Ihres Passworts und für jegliche Aktivität unter Ihrem Konto verantwortlich."
+      },
+      {
+        "heading": "Inhalte von Autoren",
+        "body": "Jeder von einem Autor eingereichte Artikel wird von unserem Team geprüft, bevor er veröffentlicht wird. Wir behalten uns das Recht vor, Inhalte abzulehnen oder zu entfernen, die gegen unsere Richtlinien oder geltendes Recht verstoßen. Autoren behalten die Rechte an ihren Inhalten, gewähren uns jedoch das Recht, diese auf unserer Plattform zu veröffentlichen."
+      },
+      {
+        "heading": "Abonnements und Zahlungen",
+        "body": "Einige Funktionen (Autorenpläne, Premium-Inhalte und der Kauf von Studien) erfordern ein kostenpflichtiges Abonnement über unsere zugelassenen Zahlungsanbieter. Preise können von unserem Team geändert werden; Rückerstattungen erfolgen nur bei einem technischen Fehler unsererseits."
+      },
+      {
+        "heading": "Zulässige Nutzung",
+        "body": "Sie dürfen die Website nicht für rechtswidrige Zwecke nutzen, versuchen, das System zu missbrauchen, sich als eine andere Person ausgeben oder Inhalte veröffentlichen, die beleidigend sind oder Rechte am geistigen Eigentum verletzen."
+      },
+      {
+        "heading": "Haftungsausschluss",
+        "body": "Wir bemühen uns, veröffentlichte Inhalte korrekt zu halten, garantieren jedoch nicht, dass die Website frei von technischen Fehlern ist, und haften nicht für Schäden, die durch Ihre Nutzung der Website entstehen."
+      },
+      {
+        "heading": "Änderungen dieser Bedingungen",
+        "body": "Wir können diese Bedingungen von Zeit zu Zeit aktualisieren. Die fortgesetzte Nutzung der Website nach einer Änderung bedeutet, dass Sie die aktualisierten Bedingungen akzeptieren."
+      }
+    ]
   },
   "blogPage": {
     "title": "Ausgewählte Beiträge",
@@ -191,7 +310,8 @@
     "breadcrumbHome": "Startseite",
     "breadcrumbStudies": "Studien",
     "heroBadge": "Exklusive Studien für Abonnenten",
-    "subscribeCta": "Jetzt abonnieren"
+    "subscribeCta": "Jetzt abonnieren",
+    "lockedFile": "Diese Datei ist nur für Abonnenten verfügbar. Bitte abonnieren Sie, um sie anzuzeigen."
   },
   "booksPage": {
     "title": "Buchbibliothek",
@@ -231,7 +351,10 @@
     "emailPlaceholder": "Ihre E-Mail",
     "subscribeLabel": "Benachrichtigen",
     "dismissLabel": "Schließen",
-    "successMessage": "Sie sind angemeldet, danke für Ihr Interesse!"
+    "successMessage": "Sie sind angemeldet, danke für Ihr Interesse!",
+    "consentPrefix": "Ich stimme der",
+    "consentAnd": "und den",
+    "consentRequired": "Bitte stimmen Sie zuerst der Datenschutzerklärung und den AGB zu."
   },
   "favoritesPage": {
     "title": "Ihre Favoriten",

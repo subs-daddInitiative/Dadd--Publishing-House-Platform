@@ -2,10 +2,17 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { locales, localeDirections, isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
-import { getPublicSettings, backendAssetUrl, getCurrentSubscriber, getPublicNewsTicker } from "@/lib/serverApi";
+import {
+  getPublicSettings,
+  backendAssetUrl,
+  getCurrentSubscriber,
+  getPublicNewsTicker,
+  getPublicSiteAds,
+} from "@/lib/serverApi";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { NewsTicker } from "@/components/NewsTicker";
+import { AdsPopupManager } from "@/components/AdsPopupManager";
 import { SyncHtmlAttributes } from "@/components/SyncHtmlAttributes";
 import { StoreProvider } from "@/components/store/StoreProvider";
 import { FavoritesProvider } from "@/components/favorites/FavoritesProvider";
@@ -70,6 +77,9 @@ export default async function LocaleLayout({
   const logoUrl = backendAssetUrl(settings?.logo);
   const tickerAudience = subscriber?.account_type === "writer" ? "writer" : "reader";
   const tickerItems = await getPublicNewsTicker(tickerAudience);
+  const adsAudience = !subscriber ? "guest" : subscriber.account_type === "writer" ? "writer" : "reader";
+  const siteAdsRaw = await getPublicSiteAds(adsAudience);
+  const siteAds = siteAdsRaw.map((ad) => ({ ...ad, image: backendAssetUrl(ad.image) }));
 
   return (
     <StoreProvider>
@@ -90,6 +100,7 @@ export default async function LocaleLayout({
           whatsappNumber={settings?.whatsappNumber ?? null}
           socialLinks={settings?.socialLinks || []}
         />
+        <AdsPopupManager ads={siteAds} closeLabel={dictionary.common.close} />
       </FavoritesProvider>
     </StoreProvider>
   );

@@ -122,6 +122,32 @@ export async function getPublicNewsTicker(audience: "reader" | "writer"): Promis
   return result.success ? result.data : [];
 }
 
+export type SiteAdTarget = "all" | "guest" | "reader" | "writer";
+
+export type SiteAd = {
+  id: number;
+  title: string;
+  message: string | null;
+  image: string | null;
+  link_url: string | null;
+  link_label: string | null;
+  target: SiteAdTarget;
+  is_active?: number;
+  sort_order?: number;
+  starts_at?: string | null;
+  ends_at?: string | null;
+};
+
+export async function getPublicSiteAds(audience: "guest" | "reader" | "writer"): Promise<SiteAd[]> {
+  const result = await backendFetch<SiteAd[]>(`/api/site-ads?audience=${audience}`);
+  return result.success ? result.data : [];
+}
+
+export async function getAdminSiteAds(): Promise<SiteAd[]> {
+  const result = await backendFetch<SiteAd[]>("/api/admin/site-ads");
+  return result.success ? result.data : [];
+}
+
 export async function getAdminNewsTicker(): Promise<NewsTickerItem[]> {
   const result = await backendFetch<NewsTickerItem[]>("/api/admin/news-ticker");
   return result.success ? result.data : [];
@@ -160,6 +186,37 @@ export async function getAdminContactMessages(subject?: string): Promise<Contact
 
 export async function getUnreadContactCount(): Promise<number> {
   const result = await backendFetch<{ count: number }>("/api/admin/contact-messages/unread-count");
+  return result.success ? result.data.count : 0;
+}
+
+export type JoinRequestType = "volunteer" | "complaint" | "suggestion";
+
+export type JoinRequest = {
+  id: number;
+  request_type: JoinRequestType;
+  participation_type: "individual" | "institution" | null;
+  institution_name: string | null;
+  institution_type: string | null;
+  institution_website: string | null;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  location: string | null;
+  interest_areas: string | null;
+  message: string | null;
+  newsletter_opt_in: number;
+  is_read: number;
+  created_at: string;
+};
+
+export async function getAdminJoinRequests(requestType?: string): Promise<JoinRequest[]> {
+  const query = requestType ? `?request_type=${encodeURIComponent(requestType)}` : "";
+  const result = await backendFetch<JoinRequest[]>(`/api/admin/join-requests${query}`);
+  return result.success ? result.data : [];
+}
+
+export async function getUnreadJoinRequestCount(): Promise<number> {
+  const result = await backendFetch<{ count: number }>("/api/admin/join-requests/unread-count");
   return result.success ? result.data.count : 0;
 }
 
@@ -287,11 +344,14 @@ export type StudySummary = {
   currency: string;
 };
 
+export type StudyContentBlock = BlogContentBlock;
+
 export type StudyDetail = StudySummary & {
   category_id: number | null;
   main_image: string | null;
   content_intro: string | null;
   content_body: string | null;
+  content_blocks: StudyContentBlock[];
   pdf_file: string | null;
   updated_at: string;
   locked: boolean;
@@ -337,6 +397,7 @@ export type AdminStudySummary = {
   title: string;
   slug: string;
   status: "draft" | "published";
+  is_premium: number;
   cover_image: string | null;
   published_at: string | null;
   updated_at: string;
@@ -352,6 +413,7 @@ export type AdminStudyDetail = {
   description: string | null;
   content_intro: string | null;
   content_body: string | null;
+  content_blocks: string | null;
   cover_image: string | null;
   main_image: string | null;
   pdf_file: string | null;
@@ -364,8 +426,12 @@ export type AdminStudyDetail = {
   updated_at: string;
 };
 
-export async function getAdminStudies(): Promise<AdminStudySummary[]> {
-  const result = await backendFetch<AdminStudySummary[]>("/api/admin/studies");
+export async function getAdminStudies(options: { search?: string; premium?: "free" | "premium" } = {}): Promise<AdminStudySummary[]> {
+  const params = new URLSearchParams();
+  if (options.search) params.set("search", options.search);
+  if (options.premium) params.set("premium", options.premium);
+  const query = params.toString();
+  const result = await backendFetch<AdminStudySummary[]>(`/api/admin/studies${query ? `?${query}` : ""}`);
   return result.success ? result.data : [];
 }
 
@@ -590,20 +656,6 @@ export async function getPendingWriterUpgradeRequests(): Promise<WriterUpgradeRe
   return result.success ? result.data : [];
 }
 
-export type WriterTrialCoupon = {
-  id: number;
-  code: string;
-  months: number;
-  max_redemptions: number;
-  redemptions_count: number;
-  is_active: number;
-  created_at: string;
-};
-
-export async function getAdminWriterTrialCoupons(): Promise<WriterTrialCoupon[]> {
-  const result = await backendFetch<WriterTrialCoupon[]>("/api/admin/writer-trial-coupons");
-  return result.success ? result.data : [];
-}
 
 export type WriterUpgradeStatus = {
   status: "pending" | "invited" | "rejected";

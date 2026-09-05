@@ -1,0 +1,143 @@
+.page {
+  max-width: 42rem;
+  padding-block: var(--space-6);
+}
+
+.title {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  margin: 0 0 0.4rem;
+  text-wrap: balance;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+  margin: 0 0 var(--space-5);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.row {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.row .field {
+  flex: 1;
+}
+
+.label {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.choiceRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.choiceOption {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.choiceOption input {
+  margin-top: 0.2rem;
+}
+
+.subSection {
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.subSectionTitle {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.interestGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.interestGroupTitle {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.interestGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.5rem;
+}
+
+.inlineLink {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.submitButton {
+  align-self: flex-start;
+  padding: 0.75rem 1.6rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.successText {
+  font-size: 1.1rem;
+  color: var(--color-success, #2f9e64);
+  padding: var(--space-4) 0;
+}
+
+.errorText {
+  color: var(--color-danger, #d0433a);
+  font-size: 0.9rem;
+  margin: 0;
+}

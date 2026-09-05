@@ -14,7 +14,9 @@ const PDF_MIME_TYPES = {
 };
 
 const IMAGE_FIELDS = ["cover_image", "main_image"];
-const MAX_FILE_SIZE = 15 * 1024 * 1024;
+// Multer-level backstop only — the real per-type caps (images 5MB, PDF 25MB)
+// are enforced by the enforceMediaLimits middleware after upload.
+const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
 const imagesDir = path.join(__dirname, "..", "..", "..", "uploads", "studies");
 const pdfsDir = path.join(__dirname, "..", "..", "..", "uploads", "studies-pdfs");

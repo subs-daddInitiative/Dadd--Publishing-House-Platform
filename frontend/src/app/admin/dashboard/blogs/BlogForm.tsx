@@ -1,10 +1,14 @@
 "use client";
 
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { BlockEditor, type ContentBlock } from "@/features/blogEditor/BlockEditor";
+import { ImageCropper } from "@/components/ImageCropper";
 import type { AdminBlogDetail, BlogCategory } from "@/lib/serverApi";
 import styles from "./blogs.module.css";
+
+const COVER_ASPECT_RATIO = 16 / 8;
+const COVER_ASPECT_LABEL = "2:1 (مثال: 1600×800 بكسل)";
 
 type BlogFormProps = {
   mode: "create" | "edit";
@@ -43,6 +47,9 @@ export function BlogForm({
 }: BlogFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
 
   const [title, setTitle] = useState(initialBlog?.title || "");
   const [slug, setSlug] = useState(initialBlog?.slug || "");
@@ -58,11 +65,32 @@ export function BlogForm({
   const [submitState, setSubmitState] = useState<"idle" | "saving" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!coverFile) {
+      setCoverPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(coverFile);
+    setCoverPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [coverFile]);
+
   function handleTitleChange(value: string) {
     setTitle(value);
     if (!slugTouched) {
       setSlug(slugify(value));
     }
+  }
+
+  function handleCoverFileSelect(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (file) setCropFile(file);
+    event.target.value = "";
+  }
+
+  function handleCropConfirm(blob: Blob) {
+    setCoverFile(new File([blob], "cover.jpg", { type: "image/jpeg" }));
+    setCropFile(null);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -81,9 +109,8 @@ export function BlogForm({
     formData.append("status", status);
     formData.append("is_premium", String(isPremium));
 
-    const file = fileInputRef.current?.files?.[0];
-    if (file) {
-      formData.append("cover_image", file);
+    if (coverFile) {
+      formData.append("cover_image", coverFile);
     }
 
     const url = mode === "create" ? "/api/admin/blogs" : `/api/admin/blogs/${blogId}`;
@@ -220,11 +247,20 @@ export function BlogForm({
 
       <div className={styles.field}>
         <label className={styles.label}>صورة الغلاف</label>
-        {currentCoverImageUrl && (
+        {(coverPreviewUrl || currentCoverImageUrl) && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={currentCoverImageUrl} alt="" className={styles.coverPreview} />
+          <img src={coverPreviewUrl || currentCoverImageUrl || undefined} alt="" className={styles.coverPreview} />
         )}
-        <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" />
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          onChange={handleCoverFileSelect}
+        />
+        <p className={styles.itemMeta}>
+          النسبة المطلوبة: {COVER_ASPECT_LABEL} — بحجم أقصى 5 ميجابايت. بعد اختيار الصورة يمكنك تحريكها وتكبيرها
+          لاختيار الجزء الذي تريد إظهاره قبل الحفظ.
+        </p>
       </div>
 
       <div className={styles.field}>
@@ -256,6 +292,20 @@ export function BlogForm({
         </button>
         {submitState === "error" && <p className={styles.statusError}>{errorMessage}</p>}
       </div>
+
+      {cropFile && (
+        <ImageCropper
+          file={cropFile}
+          aspectRatio={COVER_ASPECT_RATIO}
+          title="قص صورة الغلاف"
+          hint={`النسبة المطلوبة: ${COVER_ASPECT_LABEL}. اسحب الصورة لتحريكها واستخدم شريط التكبير لاختيار الجزء الذي يظهر.`}
+          zoomLabel="التكبير"
+          cancelLabel="إلغاء"
+          confirmLabel="تم"
+          onCancel={() => setCropFile(null)}
+          onConfirm={handleCropConfirm}
+        />
+      )}
     </form>
   );
 }

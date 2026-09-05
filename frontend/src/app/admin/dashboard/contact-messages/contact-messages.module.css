@@ -99,3 +99,8 @@
 .empty {
   color: var(--color-text-muted);
 }
+
+.sectionTitle {
+  margin: var(--space-5) 0 var(--space-3);
+  font-size: 1.3rem;
+}

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getCurrentAdmin, getUnreadContactCount } from "@/lib/serverApi";
+import { getCurrentAdmin, getUnreadContactCount, getUnreadJoinRequestCount } from "@/lib/serverApi";
 import { LogoutButton } from "./LogoutButton";
 import styles from "./layout.module.css";
 
@@ -12,7 +12,10 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   if (!admin) redirect("/admin/login");
 
   const isAdmin = admin.role === "admin";
-  const unreadCount = isAdmin ? await getUnreadContactCount() : 0;
+  const [unreadContactCount, unreadJoinCount] = isAdmin
+    ? await Promise.all([getUnreadContactCount(), getUnreadJoinRequestCount()])
+    : [0, 0];
+  const unreadCount = unreadContactCount + unreadJoinCount;
 
   return (
     <div className={styles.shell}>
@@ -58,13 +61,13 @@ export default async function DashboardLayout({ children }: { children: ReactNod
                 </Link>
               </li>
               <li>
-                <Link href="/admin/dashboard/writer-trial-coupons" className={styles.navLink}>
-                  أكواد التجربة المجانية
+                <Link href="/admin/dashboard/news-ticker" className={styles.navLink}>
+                  الشريط الإخباري
                 </Link>
               </li>
               <li>
-                <Link href="/admin/dashboard/news-ticker" className={styles.navLink}>
-                  الشريط الإخباري
+                <Link href="/admin/dashboard/site-ads" className={styles.navLink}>
+                  الإعلانات المنبثقة
                 </Link>
               </li>
               <li>

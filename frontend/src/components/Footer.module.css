@@ -161,10 +161,33 @@
   border-top: 1px solid color-mix(in srgb, var(--color-on-primary) 15%, transparent);
 }
 
-.copyright {
+.bottomBarInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2) var(--space-4);
   padding-block: var(--space-2);
+}
+
+.copyright {
   margin: 0;
-  text-align: center;
   font-size: 0.8rem;
   color: color-mix(in srgb, var(--color-on-primary) 65%, transparent);
+}
+
+.legalLinks {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.legalLink {
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--color-on-primary) 65%, transparent);
+  text-decoration: none;
+}
+
+.legalLink:hover {
+  color: var(--color-on-primary);
+  text-decoration: underline;
 }

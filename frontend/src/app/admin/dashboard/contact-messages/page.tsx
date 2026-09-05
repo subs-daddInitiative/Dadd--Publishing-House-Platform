@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
-import { getCurrentAdmin, getAdminContactMessages } from "@/lib/serverApi";
+import { getCurrentAdmin, getAdminContactMessages, getAdminJoinRequests } from "@/lib/serverApi";
 import { MessageActions } from "./MessageActions";
+import { JoinRequestActions } from "./JoinRequestActions";
 import { SubjectFilter } from "./SubjectFilter";
 import styles from "./contact-messages.module.css";
 
@@ -13,6 +14,44 @@ const SUBJECT_LABELS: Record<string, string> = {
   issues: "مشكلة أو استفسار عام",
 };
 
+const REQUEST_TYPE_LABELS: Record<string, string> = {
+  volunteer: "طلب انضمام كمتطوع",
+  complaint: "شكوى",
+  suggestion: "اقتراح",
+};
+
+const PARTICIPATION_LABELS: Record<string, string> = {
+  individual: "متطوع فردي",
+  institution: "ممثل جهة",
+};
+
+const INTEREST_LABELS: Record<string, string> = {
+  childrens_literature: "أدب الأطفال",
+  translation: "الترجمة",
+  writing: "الكتابة والتأليف",
+  proofreading: "التدقيق اللغوي",
+  research: "البحث",
+  design: "الرسم والتصميم",
+  audio: "الأداء الصوتي",
+  wikipedia: "ويكيبيديا",
+  web_development: "تطوير الويب",
+  digital_marketing: "التسويق الرقمي",
+  coordination: "التنسيق الإداري",
+  partnerships: "الشراكات المؤسسية",
+  donations: "التبرعات",
+  other: "أخرى",
+};
+
+function parseInterestAreas(raw: string | null): string[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 export default async function ContactMessagesPage({
   searchParams,
 }: {
@@ -22,7 +61,7 @@ export default async function ContactMessagesPage({
   if (!admin || admin.role !== "admin") redirect("/admin/dashboard");
 
   const { subject } = await searchParams;
-  const messages = await getAdminContactMessages(subject);
+  const [messages, joinRequests] = await Promise.all([getAdminContactMessages(subject), getAdminJoinRequests()]);
 
   return (
     <section>
@@ -53,6 +92,55 @@ export default async function ContactMessagesPage({
               <MessageActions id={message.id} isRead={Boolean(message.is_read)} />
             </li>
           ))}
+        </ul>
+      )}
+
+      <h2 className={styles.sectionTitle}>طلبات الانضمام والشكاوى والاقتراحات</h2>
+      {joinRequests.length === 0 ? (
+        <p className={styles.empty}>لا توجد طلبات بعد.</p>
+      ) : (
+        <ul className={styles.list}>
+          {joinRequests.map((request) => {
+            const interestAreas = parseInterestAreas(request.interest_areas);
+            return (
+              <li key={request.id} className={request.is_read ? styles.item : styles.itemUnread}>
+                <div className={styles.itemHeader}>
+                  <span className={styles.name}>{request.full_name}</span>
+                  <span className={styles.date}>{request.created_at}</span>
+                </div>
+                <p className={styles.meta}>
+                  {request.email}
+                  {request.phone ? ` — ${request.phone}` : ""}
+                  {request.location ? ` — ${request.location}` : ""}
+                  {" · "}
+                  <span className={styles.subjectBadge}>
+                    {REQUEST_TYPE_LABELS[request.request_type] || request.request_type}
+                  </span>
+                  {request.participation_type && (
+                    <>
+                      {" "}
+                      <span className={styles.subjectBadge}>{PARTICIPATION_LABELS[request.participation_type]}</span>
+                    </>
+                  )}
+                </p>
+                {request.institution_name && (
+                  <p className={styles.meta}>
+                    الجهة: {request.institution_name}
+                    {request.institution_type ? ` (${request.institution_type})` : ""}
+                    {request.institution_website ? ` — ${request.institution_website}` : ""}
+                  </p>
+                )}
+                {interestAreas.length > 0 && (
+                  <p className={styles.meta}>
+                    مجالات الاهتمام: {interestAreas.map((area) => INTEREST_LABELS[area] || area).join("، ")}
+                  </p>
+                )}
+                {request.message && <p className={styles.message}>{request.message}</p>}
+                {request.newsletter_opt_in ? <p className={styles.meta}>مشترك في النشرة البريدية</p> : null}
+                <JoinRequestActions id={request.id} isRead={Boolean(request.is_read)} />
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>

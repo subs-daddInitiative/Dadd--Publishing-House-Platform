@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { RichTextEditor } from "@/components/RichTextEditor";
+import { ImageCropper } from "@/components/ImageCropper";
 import styles from "./blockEditor.module.css";
+
+const IMAGE_BLOCK_ASPECT_RATIO = 1;
+const IMAGE_BLOCK_ASPECT_LABEL = "1:1 (صورة مربعة)";
 
 export type ContentBlock =
   | { id: string; type: "text"; html: string }
@@ -62,6 +66,7 @@ async function uploadAsset(file: File, uploadUrl: string): Promise<string> {
 export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: BlockEditorProps) {
   const [addType, setAddType] = useState<ContentBlock["type"]>("text");
   const [previews, setPreviews] = useState<Record<string, string>>({});
+  const [cropRequest, setCropRequest] = useState<{ blockId: string; file: File } | null>(null);
 
   function update(id: string, patch: Partial<ContentBlock>) {
     onChange(blocks.map((block) => (block.id === id ? ({ ...block, ...patch } as ContentBlock) : block)));
@@ -79,6 +84,17 @@ export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: 
     next[index] = next[target]!;
     next[target] = temp;
     onChange(next);
+  }
+
+  function handleImageFileSelect(id: string, file: File) {
+    setCropRequest({ blockId: id, file });
+  }
+
+  function handleCropConfirm(blob: Blob) {
+    if (!cropRequest) return;
+    const croppedFile = new File([blob], "image.jpg", { type: "image/jpeg" });
+    setCropRequest(null);
+    handleFileSelect(cropRequest.blockId, croppedFile);
   }
 
   async function handleFileSelect(id: string, file: File) {
@@ -133,9 +149,15 @@ export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: 
               <input
                 type="file"
                 accept="image/png,image/jpeg,image/webp"
-                onChange={(event) => event.target.files?.[0] && handleFileSelect(block.id, event.target.files[0])}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) handleImageFileSelect(block.id, file);
+                  event.target.value = "";
+                }}
               />
-              <p className={styles.itemMeta}>الصيغ المقبولة: PNG أو JPEG أو WEBP، بحجم أقصى 25 ميجابايت.</p>
+              <p className={styles.itemMeta}>
+                الصيغ المقبولة: PNG أو JPEG أو WEBP، بحجم أقصى 5 ميجابايت. النسبة المطلوبة: {IMAGE_BLOCK_ASPECT_LABEL}.
+              </p>
               <input
                 className={styles.input}
                 placeholder="النص البديل (alt)"
@@ -160,9 +182,15 @@ export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: 
               <input
                 type="file"
                 accept="image/png,image/jpeg,image/webp"
-                onChange={(event) => event.target.files?.[0] && handleFileSelect(block.id, event.target.files[0])}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) handleImageFileSelect(block.id, file);
+                  event.target.value = "";
+                }}
               />
-              <p className={styles.itemMeta}>الصيغ المقبولة: PNG أو JPEG أو WEBP، بحجم أقصى 25 ميجابايت.</p>
+              <p className={styles.itemMeta}>
+                الصيغ المقبولة: PNG أو JPEG أو WEBP، بحجم أقصى 5 ميجابايت. النسبة المطلوبة: {IMAGE_BLOCK_ASPECT_LABEL}.
+              </p>
               <input
                 className={styles.input}
                 placeholder="النص البديل (alt)"
@@ -229,7 +257,7 @@ export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: 
                   ? "الصيغة المقبولة: PDF فقط، بحجم أقصى 25 ميجابايت."
                   : block.type === "voice"
                     ? "الصيغ المقبولة: MP3 أو M4A أو WAV أو OGG، بحجم أقصى 25 ميجابايت."
-                    : "الصيغ المقبولة: MP4 أو WEBM أو OGG، بحجم أقصى 150 ميجابايت."}
+                    : "الصيغ المقبولة: MP4 أو WEBM أو OGG، بحجم أقصى 25 ميجابايت."}
               </p>
               {block.url && <p className={styles.itemMeta}>تم رفع الملف بنجاح</p>}
               <input
@@ -263,6 +291,20 @@ export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: 
           إضافة قسم
         </button>
       </div>
+
+      {cropRequest && (
+        <ImageCropper
+          file={cropRequest.file}
+          aspectRatio={IMAGE_BLOCK_ASPECT_RATIO}
+          title="قص الصورة"
+          hint={`النسبة المطلوبة: ${IMAGE_BLOCK_ASPECT_LABEL}. اسحب الصورة لتحريكها واستخدم شريط التكبير لاختيار الجزء الذي يظهر.`}
+          zoomLabel="التكبير"
+          cancelLabel="إلغاء"
+          confirmLabel="تم"
+          onCancel={() => setCropRequest(null)}
+          onConfirm={handleCropConfirm}
+        />
+      )}
     </div>
   );
 }

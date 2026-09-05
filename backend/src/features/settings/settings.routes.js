@@ -2,6 +2,7 @@ const { Router } = require("express");
 const { requireAuth } = require("../../middlewares/requireAuth");
 const { requireAdmin } = require("../../middlewares/requireAdmin");
 const { createImageUpload } = require("../../middlewares/imageUpload");
+const { compressImages } = require("../../middlewares/compressImage");
 const {
   getPublicSettings,
   getAdminSettings,
@@ -21,7 +22,7 @@ const adminRouter = Router();
 adminRouter.use(requireAuth);
 adminRouter.get("/settings", requireAdmin, getAdminSettings);
 adminRouter.put("/settings", requireAdmin, updateGeneralSettings);
-adminRouter.post("/settings/logo", requireAdmin, logoUpload.single("logo"), uploadLogo);
+adminRouter.post("/settings/logo", requireAdmin, logoUpload.single("logo"), compressImages, uploadLogo);
 adminRouter.get("/settings/social-links", requireAdmin, listSocialLinks);
 adminRouter.put("/settings/social-links", requireAdmin, saveSocialLink);
 adminRouter.delete("/settings/social-links/:platform", requireAdmin, deleteSocialLink);

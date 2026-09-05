@@ -14,6 +14,7 @@ const {
 const { validateStudyPayload } = require("./studies.validation");
 const { hasActiveStudiesAccess } = require("../subscribers/subscribers.repository");
 const { findCompletedPurchase } = require("../contentAccess/studyPurchases.repository");
+const { assetUrl } = require("./studiesBlockAssetUpload");
 
 const PAGE_SIZE = 9;
 const SORTS = ["newest", "oldest"];
@@ -55,23 +56,33 @@ async function getPublicStudyBySlug(req, res, next) {
     }
     const related = await findRelatedStudies(study.category_id, study.id);
 
-    let locked = false;
-    if (study.is_premium) {
-      let entitled = false;
-      if (req.subscriber) {
-        entitled =
-          (await hasActiveStudiesAccess(req.subscriber.sub)) ||
-          Boolean(await findCompletedPurchase(req.subscriber.sub, study.id));
-      }
-      if (!entitled) {
-        locked = true;
-        study.content_intro = null;
-        study.content_body = null;
-        study.pdf_file = null;
-      }
+    let blocks = study.content_blocks ? JSON.parse(study.content_blocks) : [];
+    delete study.content_blocks;
+
+    let entitled = false;
+    if (study.is_premium && req.subscriber) {
+      entitled =
+        (await hasActiveStudiesAccess(req.subscriber.sub)) ||
+        Boolean(await findCompletedPurchase(req.subscriber.sub, study.id));
     }
 
-    res.json({ success: true, data: { ...study, locked, related } });
+    let locked = false;
+    if (study.is_premium && !entitled) {
+      locked = true;
+      study.content_intro = null;
+      study.content_body = null;
+      study.pdf_file = null;
+      blocks = [];
+    } else {
+      blocks = blocks.map((block) => {
+        if ((block.type === "pdf" || block.type === "voice") && block.access === "premium" && !entitled) {
+          return { ...block, url: null, locked: true };
+        }
+        return block;
+      });
+    }
+
+    res.json({ success: true, data: { ...study, content_blocks: blocks, locked, related } });
   } catch (error) {
     next(error);
   }
@@ -88,8 +99,21 @@ async function getStudyCategories(req, res, next) {
 
 async function getAdminStudies(req, res, next) {
   try {
-    const studies = await listAdminStudies();
+    const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
+    const premium = ["free", "premium"].includes(req.query.premium) ? req.query.premium : undefined;
+    const studies = await listAdminStudies({ search, premium });
     res.json({ success: true, data: studies });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function uploadBlockAssetHandler(req, res, next) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+    res.status(201).json({ success: true, data: { url: assetUrl(req.file) } });
   } catch (error) {
     next(error);
   }
@@ -186,4 +210,5 @@ module.exports = {
   createStudyHandler,
   updateStudyHandler,
   deleteStudyHandler,
+  uploadBlockAssetHandler,
 };

@@ -1,7 +1,7 @@
+import Link from "next/link";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getCurrentSubscriber, getPublicBlogCategories, getWriterBlogById, backendAssetUrl } from "@/lib/serverApi";
 import { WriterBlogForm } from "@/features/blogEditor/WriterBlogForm";
-import { CouponRedeemForm } from "@/features/subscribers/CouponRedeemForm";
 import { AccountNav } from "@/features/subscribers/AccountNav";
 import { getDictionary } from "@/i18n/getDictionary";
 import { notFound, redirect } from "next/navigation";
@@ -34,8 +34,10 @@ export default async function EditWriterBlogPage({
         <div className={styles.accountPage}>
           <h1 className={styles.accountTitle}>تعديل المقال</h1>
           <div className={styles.accountCard}>
-            <p>تحتاج إلى باقة كاتب مفعّلة (أو تجربة مجانية) لتتمكن من تعديل المقالات وإرسالها للمراجعة.</p>
-            <CouponRedeemForm />
+            <p>انتهت باقتك الحالية. يجب الاشتراك في باقة كاتب مفعّلة لتتمكن من تعديل المقالات وإرسالها للمراجعة.</p>
+            <Link href={`/${locale}/account`} className={styles.planButton}>
+              الذهاب إلى صفحة الاشتراك
+            </Link>
           </div>
         </div>
       </>

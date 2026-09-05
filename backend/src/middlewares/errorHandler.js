@@ -1,3 +1,4 @@
+const multer = require("multer");
 const { env } = require("../config/env");
 
 function notFoundHandler(req, res) {
@@ -8,6 +9,14 @@ function notFoundHandler(req, res) {
 }
 
 function errorHandler(err, req, res, next) {
+  if (err instanceof multer.MulterError) {
+    const message =
+      err.code === "LIMIT_FILE_SIZE"
+        ? "حجم الملف يتجاوز الحد المسموح به."
+        : "تعذر رفع الملف.";
+    return res.status(400).json({ success: false, message });
+  }
+
   const status = err.status || 500;
 
   if (env.nodeEnv !== "test") {

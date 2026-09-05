@@ -19,6 +19,7 @@ import { Banners } from "@/features/home/Banners";
 import { StudyCard } from "@/features/studies/StudyCard";
 import { PremiumLock } from "@/features/subscribers/PremiumLock";
 import { Sidebar } from "@/components/Sidebar";
+import { BlockRenderer } from "@/features/blog/BlockRenderer";
 import styles from "@/features/studies/studies.module.css";
 
 type PageParams = { locale: string; slug: string };
@@ -189,8 +190,12 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
         </div>
       )}
 
-      {study.content_intro && (
-        <div className={styles.contentBlock} dangerouslySetInnerHTML={{ __html: study.content_intro }} />
+      {study.content_blocks.length > 0 ? (
+        <BlockRenderer blocks={study.content_blocks} lockedFileLabel={dictionary.studiesPage.lockedFile} />
+      ) : (
+        study.content_intro && (
+          <div className={styles.contentBlock} dangerouslySetInnerHTML={{ __html: study.content_intro }} />
+        )
       )}
 
       {study.locked && (
@@ -212,7 +217,7 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
         backendUrl={backendUrl}
       />
 
-      {study.content_body && (
+      {study.content_blocks.length === 0 && study.content_body && (
         <div className={styles.contentBlock} dangerouslySetInnerHTML={{ __html: study.content_body }} />
       )}
 

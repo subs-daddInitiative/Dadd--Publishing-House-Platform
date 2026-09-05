@@ -194,6 +194,7 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
 
       {!subscriber && (
         <NewsletterPopup
+          locale={locale}
           categoryName={blog.category_name}
           categorySlug={blog.category_slug}
           blogSlug={blog.slug}
@@ -204,6 +205,11 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
           subscribeLabel={dictionary.newsletterPopup.subscribeLabel}
           dismissLabel={dictionary.newsletterPopup.dismissLabel}
           successMessage={dictionary.newsletterPopup.successMessage}
+          consentPrefix={dictionary.newsletterPopup.consentPrefix}
+          consentAnd={dictionary.newsletterPopup.consentAnd}
+          consentRequired={dictionary.newsletterPopup.consentRequired}
+          privacyLabel={dictionary.footer.privacyLink}
+          termsLabel={dictionary.footer.termsLink}
         />
       )}
     </div>
