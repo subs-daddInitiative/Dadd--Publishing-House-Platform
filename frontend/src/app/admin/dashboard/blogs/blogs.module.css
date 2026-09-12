@@ -122,6 +122,34 @@
   font-size: 0.75rem;
 }
 
+.highlightBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f6c453, #d68f1f);
+  color: #3a2600;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.headerStat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.headerStat strong {
+  color: var(--color-text);
+}
+
 .freeBadge {
   display: inline-flex;
   align-items: center;

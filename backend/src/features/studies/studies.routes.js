@@ -12,6 +12,7 @@ const {
   getPublicStudyBySlug,
   getStudyCategories,
   getAdminStudies,
+  getHighlightedStudiesCountHandler,
   getAdminStudyById,
   createStudyHandler,
   updateStudyHandler,
@@ -34,6 +35,7 @@ publicRouter.get("/studies/:slug", optionalSubscriberAuth, getPublicStudyBySlug)
 const adminRouter = Router();
 adminRouter.use(requireAuth);
 adminRouter.get("/studies", getAdminStudies);
+adminRouter.get("/studies/highlighted-count", getHighlightedStudiesCountHandler);
 adminRouter.get("/studies/:id", getAdminStudyById);
 adminRouter.post("/studies", uploadFields, enforceMediaLimits, compressImages, createStudyHandler);
 adminRouter.put("/studies/:id", uploadFields, enforceMediaLimits, compressImages, updateStudyHandler);

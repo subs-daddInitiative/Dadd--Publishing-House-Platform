@@ -150,6 +150,25 @@ function validateBlogPayload(body, { partial = false } = {}) {
     value.is_premium = body.is_premium === "true" || body.is_premium === true || body.is_premium === "1";
   }
 
+  if (body.is_highlighted !== undefined) {
+    value.is_highlighted =
+      body.is_highlighted === "true" || body.is_highlighted === true || body.is_highlighted === "1";
+  }
+
+  if (body.highlighted_until !== undefined) {
+    const raw = String(body.highlighted_until).trim();
+    if (!raw) {
+      value.highlighted_until = null;
+    } else {
+      const date = new Date(raw);
+      if (Number.isNaN(date.getTime())) {
+        errors.push("highlighted_until must be a valid date");
+      } else {
+        value.highlighted_until = date;
+      }
+    }
+  }
+
   return { errors, value };
 }
 

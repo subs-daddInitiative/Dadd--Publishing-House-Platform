@@ -9,6 +9,7 @@ export function AdminBlogsFilters() {
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const currentPremium = searchParams.get("premium") || "";
+  const currentHighlighted = searchParams.get("highlighted") || "";
 
   function pushParams(next: URLSearchParams) {
     const query = next.toString();
@@ -36,6 +37,16 @@ export function AdminBlogsFilters() {
     pushParams(params);
   }
 
+  function handleHighlightedChange(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set("highlighted", value);
+    } else {
+      params.delete("highlighted");
+    }
+    pushParams(params);
+  }
+
   return (
     <div className={styles.filtersRow}>
       <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
@@ -59,6 +70,15 @@ export function AdminBlogsFilters() {
         <option value="">كل المقالات</option>
         <option value="free">مجانية</option>
         <option value="premium">للمشتركين فقط</option>
+      </select>
+
+      <select
+        className={styles.select}
+        value={currentHighlighted}
+        onChange={(event) => handleHighlightedChange(event.target.value)}
+      >
+        <option value="">كل المقالات</option>
+        <option value="1">المميزة فقط</option>
       </select>
     </div>
   );

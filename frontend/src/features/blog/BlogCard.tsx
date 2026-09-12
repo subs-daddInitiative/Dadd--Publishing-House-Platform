@@ -18,9 +18,13 @@ export function BlogCard({ locale, blog, variant = "list", byLabel, favoriteLabe
   const href = `/${locale}/blog/${blog.slug}`;
   const coverImageUrl = backendAssetUrl(blog.cover_image);
   const isGrid = variant === "grid";
+  const isHighlighted = Boolean(blog.is_highlighted_active);
 
   return (
-    <Link href={href} className={`${styles.card} ${isGrid ? styles.cardGridItem : ""} hover-lift`}>
+    <Link
+      href={href}
+      className={`${styles.card} ${isGrid ? styles.cardGridItem : ""} ${isHighlighted ? styles.cardHighlighted : ""} hover-lift`}
+    >
       <div className={styles.cardImageWrap}>
         {favoriteLabel && (
           <FavoriteButton locale={locale} itemType="blog" itemId={blog.id} label={favoriteLabel} />
@@ -39,6 +43,7 @@ export function BlogCard({ locale, blog, variant = "list", byLabel, favoriteLabe
           </div>
         )}
         {blog.category_name && <span className={styles.cardCategoryTag}>{blog.category_name}</span>}
+        {isHighlighted && <span className={styles.cardHighlightBadge}>⭐ مميز</span>}
       </div>
 
       <div className={styles.cardBody}>

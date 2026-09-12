@@ -37,6 +37,16 @@ function parseInitialBlocks(raw: string | null | undefined): ContentBlock[] {
   }
 }
 
+// Converts a "YYYY-MM-DD HH:MM:SS" (MySQL) or ISO value into the
+// "YYYY-MM-DDTHH:MM" shape a <input type="datetime-local"> expects.
+function toDatetimeLocalValue(raw: string | null | undefined): string {
+  if (!raw) return "";
+  const date = new Date(raw.replace(" ", "T"));
+  if (Number.isNaN(date.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 export function BlogForm({
   mode,
   blogId,
@@ -61,6 +71,8 @@ export function BlogForm({
   const [seoKeywords, setSeoKeywords] = useState(initialBlog?.seo_keywords || "");
   const [status, setStatus] = useState(initialBlog?.status || "draft");
   const [isPremium, setIsPremium] = useState(Boolean(initialBlog?.is_premium));
+  const [isHighlighted, setIsHighlighted] = useState(Boolean(initialBlog?.is_highlighted));
+  const [highlightedUntil, setHighlightedUntil] = useState(toDatetimeLocalValue(initialBlog?.highlighted_until));
   const [uploading, setUploading] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "saving" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -108,6 +120,8 @@ export function BlogForm({
     formData.append("seo_keywords", seoKeywords);
     formData.append("status", status);
     formData.append("is_premium", String(isPremium));
+    formData.append("is_highlighted", String(isHighlighted));
+    formData.append("highlighted_until", isHighlighted ? highlightedUntil : "");
 
     if (coverFile) {
       formData.append("cover_image", coverFile);
@@ -243,6 +257,41 @@ export function BlogForm({
             </p>
           </div>
         </div>
+      </div>
+
+      <div className={styles.field}>
+        <div className={styles.premiumToggleRow}>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={isHighlighted}
+            onClick={() => setIsHighlighted((prev) => !prev)}
+            className={`${styles.premiumToggle} ${isHighlighted ? styles.premiumToggleOn : ""}`}
+          >
+            <span className={styles.premiumToggleThumb} />
+          </button>
+          <div>
+            <p className={styles.premiumToggleLabel}>
+              {isHighlighted ? "مقالة مميزة" : "غير مميزة"}
+            </p>
+            <p className={styles.premiumToggleHint}>تظهر في أعلى صفحة المدونة بتصميم مميز</p>
+          </div>
+        </div>
+        {isHighlighted && (
+          <div style={{ marginTop: "0.6rem" }}>
+            <label htmlFor="blogHighlightedUntil" className={styles.label}>
+              تنتهي الميزة في (اختياري)
+            </label>
+            <input
+              id="blogHighlightedUntil"
+              type="datetime-local"
+              className={styles.input}
+              value={highlightedUntil}
+              onChange={(event) => setHighlightedUntil(event.target.value)}
+            />
+            <p className={styles.itemMeta}>اتركه فارغًا لتبقى المقالة مميزة حتى تُلغى يدويًا.</p>
+          </div>
+        )}
       </div>
 
       <div className={styles.field}>

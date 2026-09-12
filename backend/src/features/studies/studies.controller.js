@@ -5,6 +5,7 @@ const {
   findPublicStudyBySlug,
   findRelatedStudies,
   listAdminStudies,
+  countActiveHighlightedStudies,
   findAdminStudyById,
   ensureUniqueSlug,
   createStudy,
@@ -101,8 +102,18 @@ async function getAdminStudies(req, res, next) {
   try {
     const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
     const premium = ["free", "premium"].includes(req.query.premium) ? req.query.premium : undefined;
-    const studies = await listAdminStudies({ search, premium });
+    const highlighted = req.query.highlighted === "1" ? "1" : undefined;
+    const studies = await listAdminStudies({ search, premium, highlighted });
     res.json({ success: true, data: studies });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getHighlightedStudiesCountHandler(req, res, next) {
+  try {
+    const count = await countActiveHighlightedStudies();
+    res.json({ success: true, data: { count } });
   } catch (error) {
     next(error);
   }
@@ -206,6 +217,7 @@ module.exports = {
   getPublicStudyBySlug,
   getStudyCategories,
   getAdminStudies,
+  getHighlightedStudiesCountHandler,
   getAdminStudyById,
   createStudyHandler,
   updateStudyHandler,

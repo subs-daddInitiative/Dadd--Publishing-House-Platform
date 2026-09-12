@@ -233,6 +233,9 @@ export type BlogSummary = {
   category_slug: string | null;
   author_name: string | null;
   is_premium: number;
+  is_highlighted: number;
+  highlighted_until: string | null;
+  is_highlighted_active: number;
 };
 
 export type BlogContentBlock =
@@ -287,6 +290,9 @@ export type AdminBlogSummary = {
   status: "draft" | "published";
   review_status: "none" | "pending" | "approved" | "rejected";
   is_premium: number;
+  is_highlighted: number;
+  highlighted_until: string | null;
+  is_highlighted_active: number;
   cover_image: string | null;
   published_at: string | null;
   updated_at: string;
@@ -308,15 +314,20 @@ export type AdminBlogDetail = {
   review_status: "none" | "pending" | "approved" | "rejected";
   review_reason: string | null;
   is_premium: number;
+  is_highlighted: number;
+  highlighted_until: string | null;
   published_at: string | null;
   created_at: string;
   updated_at: string;
 };
 
-export async function getAdminBlogs(options: { search?: string; premium?: "free" | "premium" } = {}): Promise<AdminBlogSummary[]> {
+export async function getAdminBlogs(
+  options: { search?: string; premium?: "free" | "premium"; highlighted?: "1" } = {}
+): Promise<AdminBlogSummary[]> {
   const params = new URLSearchParams();
   if (options.search) params.set("search", options.search);
   if (options.premium) params.set("premium", options.premium);
+  if (options.highlighted) params.set("highlighted", options.highlighted);
   const query = params.toString();
   const result = await backendFetch<AdminBlogSummary[]>(`/api/admin/blogs${query ? `?${query}` : ""}`);
   return result.success ? result.data : [];
@@ -325,6 +336,11 @@ export async function getAdminBlogs(options: { search?: string; premium?: "free"
 export async function getAdminBlogById(id: string): Promise<AdminBlogDetail | null> {
   const result = await backendFetch<AdminBlogDetail>(`/api/admin/blogs/${id}`);
   return result.success ? result.data : null;
+}
+
+export async function getAdminHighlightedBlogsCount(): Promise<number> {
+  const result = await backendFetch<{ count: number }>("/api/admin/blogs/highlighted-count");
+  return result.success ? result.data.count : 0;
 }
 
 export type StudyCategory = { id: number; name: string; slug: string };
@@ -342,6 +358,9 @@ export type StudySummary = {
   is_premium: number;
   price: string | null;
   currency: string;
+  is_highlighted: number;
+  highlighted_until: string | null;
+  is_highlighted_active: number;
 };
 
 export type StudyContentBlock = BlogContentBlock;
@@ -398,6 +417,9 @@ export type AdminStudySummary = {
   slug: string;
   status: "draft" | "published";
   is_premium: number;
+  is_highlighted: number;
+  highlighted_until: string | null;
+  is_highlighted_active: number;
   cover_image: string | null;
   published_at: string | null;
   updated_at: string;
@@ -419,6 +441,8 @@ export type AdminStudyDetail = {
   pdf_file: string | null;
   status: "draft" | "published";
   is_premium: number;
+  is_highlighted: number;
+  highlighted_until: string | null;
   price: string | null;
   currency: string;
   published_at: string | null;
@@ -426,10 +450,13 @@ export type AdminStudyDetail = {
   updated_at: string;
 };
 
-export async function getAdminStudies(options: { search?: string; premium?: "free" | "premium" } = {}): Promise<AdminStudySummary[]> {
+export async function getAdminStudies(
+  options: { search?: string; premium?: "free" | "premium"; highlighted?: "1" } = {}
+): Promise<AdminStudySummary[]> {
   const params = new URLSearchParams();
   if (options.search) params.set("search", options.search);
   if (options.premium) params.set("premium", options.premium);
+  if (options.highlighted) params.set("highlighted", options.highlighted);
   const query = params.toString();
   const result = await backendFetch<AdminStudySummary[]>(`/api/admin/studies${query ? `?${query}` : ""}`);
   return result.success ? result.data : [];
@@ -438,6 +465,11 @@ export async function getAdminStudies(options: { search?: string; premium?: "fre
 export async function getAdminStudyById(id: string): Promise<AdminStudyDetail | null> {
   const result = await backendFetch<AdminStudyDetail>(`/api/admin/studies/${id}`);
   return result.success ? result.data : null;
+}
+
+export async function getAdminHighlightedStudiesCount(): Promise<number> {
+  const result = await backendFetch<{ count: number }>("/api/admin/studies/highlighted-count");
+  return result.success ? result.data.count : 0;
 }
 
 export type BookCategory = { id: number; name: string; slug: string };

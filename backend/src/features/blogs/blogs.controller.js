@@ -5,6 +5,7 @@ const {
   findPublicBlogBySlug,
   findRelatedBlogs,
   listAdminBlogs,
+  countActiveHighlightedBlogs,
   listPendingReview,
   listBySubscriber,
   findByIdForSubscriber,
@@ -94,8 +95,18 @@ async function getAdminBlogs(req, res, next) {
   try {
     const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
     const premium = ["free", "premium"].includes(req.query.premium) ? req.query.premium : undefined;
-    const blogs = await listAdminBlogs({ search, premium });
+    const highlighted = req.query.highlighted === "1" ? "1" : undefined;
+    const blogs = await listAdminBlogs({ search, premium, highlighted });
     res.json({ success: true, data: blogs });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getHighlightedBlogsCountHandler(req, res, next) {
+  try {
+    const count = await countActiveHighlightedBlogs();
+    res.json({ success: true, data: { count } });
   } catch (error) {
     next(error);
   }
@@ -351,6 +362,7 @@ module.exports = {
   getPublicBlogBySlug,
   getBlogCategories,
   getAdminBlogs,
+  getHighlightedBlogsCountHandler,
   getAdminBlogById,
   createBlogHandler,
   updateBlogHandler,

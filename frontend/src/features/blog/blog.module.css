@@ -287,6 +287,26 @@ html[dir="rtl"] .cardGridItem .cardBody {
   font-weight: 600;
 }
 
+.cardHighlighted {
+  border-color: #e0a827;
+  box-shadow: 0 0 0 1px rgba(224, 168, 39, 0.4), 0 0.6rem 1.5rem -0.6rem rgba(224, 168, 39, 0.5);
+}
+
+.cardHighlightBadge {
+  position: absolute;
+  top: var(--space-2);
+  inset-inline-end: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f6c453, #d68f1f);
+  color: #3a2600;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .cardBody {
   display: flex;
   flex-direction: column;

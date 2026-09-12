@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAdminBlogs, backendAssetUrl } from "@/lib/serverApi";
+import { getAdminBlogs, getAdminHighlightedBlogsCount, backendAssetUrl } from "@/lib/serverApi";
 import { BlogRowActions } from "./BlogRowActions";
 import { AdminBlogsFilters } from "./AdminBlogsFilters";
 import styles from "./blogs.module.css";
@@ -14,17 +14,24 @@ const STATUS_LABELS: Record<string, string> = {
 export default async function AdminBlogsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; premium?: string }>;
+  searchParams: Promise<{ search?: string; premium?: string; highlighted?: string }>;
 }) {
-  const { search, premium: premiumParam } = await searchParams;
+  const { search, premium: premiumParam, highlighted: highlightedParam } = await searchParams;
   const premium = premiumParam === "free" || premiumParam === "premium" ? premiumParam : undefined;
-  const blogs = await getAdminBlogs({ search, premium });
+  const highlighted = highlightedParam === "1" ? "1" : undefined;
+  const [blogs, highlightedCount] = await Promise.all([
+    getAdminBlogs({ search, premium, highlighted }),
+    getAdminHighlightedBlogsCount(),
+  ]);
 
   return (
     <section>
       <div className={styles.pageHeader}>
         <h1>المدونة</h1>
         <div className={styles.actions}>
+          <span className={styles.headerStat}>
+            <strong>{highlightedCount}</strong> مميزة حاليًا
+          </span>
           <Link href="/admin/dashboard/blogs/categories" className={styles.buttonSecondary}>
             إدارة التصنيفات
           </Link>
@@ -69,6 +76,14 @@ export default async function AdminBlogsPage({
                     <span className={blog.is_premium ? styles.premiumBadge : styles.freeBadge}>
                       {blog.is_premium ? "للمشتركين فقط" : "مجانية"}
                     </span>
+                    {Boolean(blog.is_highlighted_active) && (
+                      <>
+                        {" · "}
+                        <span className={styles.highlightBadge}>
+                          ⭐ مميزة{blog.highlighted_until ? ` حتى ${blog.highlighted_until}` : ""}
+                        </span>
+                      </>
+                    )}
                     {" · "}
                     {blog.published_at || blog.updated_at}
                   </p>

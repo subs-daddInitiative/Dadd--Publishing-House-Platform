@@ -1,9 +1,12 @@
 const { pool } = require("../../config/db");
 const { slugify } = require("../../utils/slugify");
 
+const HIGHLIGHT_ACTIVE_EXPR = "(s.is_highlighted = 1 AND (s.highlighted_until IS NULL OR s.highlighted_until >= NOW()))";
+
 const PUBLIC_LIST_FIELDS = `
   s.id, s.title, s.slug, s.description, s.author, s.cover_image, s.published_at,
   s.is_premium, s.price, s.currency,
+  s.is_highlighted, s.highlighted_until, ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active,
   sc.name AS category_name, sc.slug AS category_slug
 `;
 
@@ -31,7 +34,7 @@ async function listPublicStudies({ limit, offset, categorySlug, sort }) {
     params.push(categorySlug);
   }
 
-  query += ` ORDER BY ${SORT_COLUMNS[sort] || SORT_COLUMNS.newest} LIMIT ? OFFSET ?`;
+  query += ` ORDER BY is_highlighted_active DESC, ${SORT_COLUMNS[sort] || SORT_COLUMNS.newest} LIMIT ? OFFSET ?`;
   params.push(limit, offset);
 
   const [rows] = await pool.query(query, params);
@@ -100,10 +103,11 @@ async function findRelatedStudies(categoryId, excludeId, limit = 3) {
   return [...sameCategory, ...padded].slice(0, limit);
 }
 
-async function listAdminStudies({ search, premium } = {}) {
+async function listAdminStudies({ search, premium, highlighted } = {}) {
   const params = [];
   let query = `SELECT s.id, s.title, s.slug, s.status, s.cover_image, s.published_at, s.updated_at,
-            s.is_premium, sc.name AS category_name
+            s.is_premium, s.is_highlighted, s.highlighted_until,
+            ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active, sc.name AS category_name
      FROM studies s
      LEFT JOIN studies_categories sc ON sc.id = s.category_id
      WHERE s.deleted_at IS NULL`;
@@ -117,11 +121,21 @@ async function listAdminStudies({ search, premium } = {}) {
   } else if (premium === "free") {
     query += " AND s.is_premium = 0";
   }
+  if (highlighted === "1") {
+    query += ` AND ${HIGHLIGHT_ACTIVE_EXPR}`;
+  }
 
   query += " ORDER BY s.created_at DESC";
 
   const [rows] = await pool.query(query, params);
   return rows;
+}
+
+async function countActiveHighlightedStudies() {
+  const [rows] = await pool.query(
+    `SELECT COUNT(*) AS count FROM studies s WHERE s.deleted_at IS NULL AND ${HIGHLIGHT_ACTIVE_EXPR}`
+  );
+  return rows[0].count;
 }
 
 async function findStudyById(id) {
@@ -167,8 +181,8 @@ async function createStudy(data) {
   const [result] = await pool.query(
     `INSERT INTO studies
        (category_id, title, slug, author, description, content_intro, content_body, content_blocks,
-        cover_image, main_image, pdf_file, status, is_premium, price, currency, published_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        cover_image, main_image, pdf_file, status, is_premium, is_highlighted, highlighted_until, price, currency, published_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.category_id || null,
       data.title,
@@ -183,6 +197,8 @@ async function createStudy(data) {
       data.pdf_file || null,
       data.status,
       data.is_premium ? 1 : 0,
+      data.is_highlighted ? 1 : 0,
+      data.highlighted_until || null,
       data.is_premium ? data.price || null : null,
       data.currency || "USD",
       publishedAt,
@@ -206,6 +222,8 @@ async function updateStudy(id, fields) {
     "pdf_file",
     "status",
     "is_premium",
+    "is_highlighted",
+    "highlighted_until",
     "price",
     "currency",
   ];
@@ -238,6 +256,7 @@ module.exports = {
   findPublicStudyBySlug,
   findRelatedStudies,
   listAdminStudies,
+  countActiveHighlightedStudies,
   findAdminStudyById,
   findStudyById,
   ensureUniqueSlug,

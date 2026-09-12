@@ -1,8 +1,11 @@
 const { pool } = require("../../config/db");
 const { slugify } = require("../../utils/slugify");
 
+const HIGHLIGHT_ACTIVE_EXPR = "(b.is_highlighted = 1 AND (b.highlighted_until IS NULL OR b.highlighted_until >= NOW()))";
+
 const PUBLIC_LIST_FIELDS = `
   b.id, b.title, b.slug, b.excerpt, b.cover_image, b.published_at, b.is_premium,
+  b.is_highlighted, b.highlighted_until, ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active,
   bc.name AS category_name, bc.slug AS category_slug,
   COALESCE(b.author_name, u.name) AS author_name
 `;
@@ -28,7 +31,7 @@ async function listPublicBlogs({ limit, offset, premium }) {
     query += " AND b.is_premium = 0";
   }
 
-  query += " ORDER BY b.published_at DESC LIMIT ? OFFSET ?";
+  query += " ORDER BY is_highlighted_active DESC, b.published_at DESC LIMIT ? OFFSET ?";
   params.push(limit, offset);
 
   const [rows] = await pool.query(query, params);
@@ -94,10 +97,11 @@ async function findRelatedBlogs(categoryId, excludeId, limit = 3) {
   return [...sameCategory, ...padded].slice(0, limit);
 }
 
-async function listAdminBlogs({ search, premium } = {}) {
+async function listAdminBlogs({ search, premium, highlighted } = {}) {
   const params = [];
   let query = `SELECT b.id, b.title, b.slug, b.status, b.review_status, b.cover_image, b.published_at, b.updated_at,
-            b.author_name, b.is_premium, bc.name AS category_name
+            b.author_name, b.is_premium, b.is_highlighted, b.highlighted_until,
+            ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active, bc.name AS category_name
      FROM blogs b
      LEFT JOIN blogs_categories bc ON bc.id = b.category_id
      WHERE b.deleted_at IS NULL`;
@@ -111,11 +115,21 @@ async function listAdminBlogs({ search, premium } = {}) {
   } else if (premium === "free") {
     query += " AND b.is_premium = 0";
   }
+  if (highlighted === "1") {
+    query += ` AND ${HIGHLIGHT_ACTIVE_EXPR}`;
+  }
 
   query += " ORDER BY b.created_at DESC";
 
   const [rows] = await pool.query(query, params);
   return rows;
+}
+
+async function countActiveHighlightedBlogs() {
+  const [rows] = await pool.query(
+    `SELECT COUNT(*) AS count FROM blogs b WHERE b.deleted_at IS NULL AND ${HIGHLIGHT_ACTIVE_EXPR}`
+  );
+  return rows[0].count;
 }
 
 async function listPendingReview() {
@@ -185,8 +199,8 @@ async function createBlog(data) {
   const publishedAt = data.status === "published" ? new Date() : null;
   const [result] = await pool.query(
     `INSERT INTO blogs
-       (category_id, author_id, author_name, title, slug, excerpt, content_blocks, seo_keywords, cover_image, status, is_premium, published_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (category_id, author_id, author_name, title, slug, excerpt, content_blocks, seo_keywords, cover_image, status, is_premium, is_highlighted, highlighted_until, published_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.category_id || null,
       data.author_id || null,
@@ -199,6 +213,8 @@ async function createBlog(data) {
       data.cover_image || null,
       data.status,
       data.is_premium ? 1 : 0,
+      data.is_highlighted ? 1 : 0,
+      data.highlighted_until || null,
       publishedAt,
     ]
   );
@@ -217,6 +233,8 @@ async function updateBlog(id, fields) {
     "cover_image",
     "status",
     "is_premium",
+    "is_highlighted",
+    "highlighted_until",
   ];
   const keys = Object.keys(fields).filter((key) => allowedKeys.includes(key));
   if (keys.length === 0) return findAdminBlogById(id);
@@ -301,6 +319,7 @@ module.exports = {
   findPublicBlogBySlug,
   findRelatedBlogs,
   listAdminBlogs,
+  countActiveHighlightedBlogs,
   listPendingReview,
   listBySubscriber,
   findByIdForSubscriber,

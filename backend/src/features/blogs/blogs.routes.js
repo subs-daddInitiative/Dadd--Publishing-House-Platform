@@ -13,6 +13,7 @@ const {
   getPublicBlogBySlug,
   getBlogCategories,
   getAdminBlogs,
+  getHighlightedBlogsCountHandler,
   getAdminBlogById,
   createBlogHandler,
   updateBlogHandler,
@@ -44,6 +45,7 @@ const adminRouter = Router();
 adminRouter.use(requireAuth);
 adminRouter.get("/blogs", getAdminBlogs);
 adminRouter.get("/blogs/pending-review", getPendingReviewBlogsHandler);
+adminRouter.get("/blogs/highlighted-count", getHighlightedBlogsCountHandler);
 adminRouter.post("/blogs/:id/review", reviewBlogHandler);
 adminRouter.get("/blogs/:id", getAdminBlogById);
 adminRouter.post("/blogs", blogUpload.single("cover_image"), enforceMediaLimits, compressImages, createBlogHandler);

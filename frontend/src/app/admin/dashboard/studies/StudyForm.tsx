@@ -9,10 +9,6 @@ import styles from "./studies.module.css";
 
 const COVER_ASPECT_RATIO = 16 / 6;
 const COVER_ASPECT_LABEL = "16:6 (عريضة وقصيرة، مثال: 1600×600 بكسل)";
-const MAIN_ASPECT_RATIO = 16 / 8;
-const MAIN_ASPECT_LABEL = "2:1 (مثال: 1600×800 بكسل)";
-
-type CropTarget = "cover" | "main";
 
 type StudyFormProps = {
   mode: "create" | "edit";
@@ -20,7 +16,6 @@ type StudyFormProps = {
   categories: StudyCategory[];
   initialStudy?: AdminStudyDetail;
   currentCoverImageUrl?: string | null;
-  currentMainImageUrl?: string | null;
   currentPdfUrl?: string | null;
 };
 
@@ -42,23 +37,29 @@ function parseInitialBlocks(raw: string | null | undefined): ContentBlock[] {
   }
 }
 
+// Converts a "YYYY-MM-DD HH:MM:SS" (MySQL) or ISO value into the
+// "YYYY-MM-DDTHH:MM" shape a <input type="datetime-local"> expects.
+function toDatetimeLocalValue(raw: string | null | undefined): string {
+  if (!raw) return "";
+  const date = new Date(raw.replace(" ", "T"));
+  if (Number.isNaN(date.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 export function StudyForm({
   mode,
   studyId,
   categories,
   initialStudy,
   currentCoverImageUrl,
-  currentMainImageUrl,
   currentPdfUrl,
 }: StudyFormProps) {
   const router = useRouter();
   const coverInputRef = useRef<HTMLInputElement>(null);
-  const mainImageInputRef = useRef<HTMLInputElement>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
-  const [mainFile, setMainFile] = useState<File | null>(null);
-  const [mainPreviewUrl, setMainPreviewUrl] = useState<string | null>(null);
-  const [cropRequest, setCropRequest] = useState<{ target: CropTarget; file: File } | null>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
 
   const [title, setTitle] = useState(initialStudy?.title || "");
   const [slug, setSlug] = useState(initialStudy?.slug || "");
@@ -69,6 +70,8 @@ export function StudyForm({
   const [blocks, setBlocks] = useState<ContentBlock[]>(parseInitialBlocks(initialStudy?.content_blocks));
   const [status, setStatus] = useState(initialStudy?.status || "draft");
   const [isPremium, setIsPremium] = useState(Boolean(initialStudy?.is_premium));
+  const [isHighlighted, setIsHighlighted] = useState(Boolean(initialStudy?.is_highlighted));
+  const [highlightedUntil, setHighlightedUntil] = useState(toDatetimeLocalValue(initialStudy?.highlighted_until));
   const [price, setPrice] = useState(initialStudy?.price || "");
   const [uploading, setUploading] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "saving" | "error">("idle");
@@ -84,16 +87,6 @@ export function StudyForm({
     return () => URL.revokeObjectURL(url);
   }, [coverFile]);
 
-  useEffect(() => {
-    if (!mainFile) {
-      setMainPreviewUrl(null);
-      return;
-    }
-    const url = URL.createObjectURL(mainFile);
-    setMainPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [mainFile]);
-
   function handleTitleChange(value: string) {
     setTitle(value);
     if (!slugTouched) {
@@ -103,22 +96,13 @@ export function StudyForm({
 
   function handleCoverFileSelect(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    if (file) setCropRequest({ target: "cover", file });
-    event.target.value = "";
-  }
-
-  function handleMainFileSelect(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (file) setCropRequest({ target: "main", file });
+    if (file) setCropFile(file);
     event.target.value = "";
   }
 
   function handleCropConfirm(blob: Blob) {
-    if (!cropRequest) return;
-    const croppedFile = new File([blob], `${cropRequest.target}.jpg`, { type: "image/jpeg" });
-    if (cropRequest.target === "cover") setCoverFile(croppedFile);
-    else setMainFile(croppedFile);
-    setCropRequest(null);
+    setCoverFile(new File([blob], "cover.jpg", { type: "image/jpeg" }));
+    setCropFile(null);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -136,9 +120,10 @@ export function StudyForm({
     formData.append("status", status);
     formData.append("is_premium", String(isPremium));
     if (isPremium) formData.append("price", price);
+    formData.append("is_highlighted", String(isHighlighted));
+    formData.append("highlighted_until", isHighlighted ? highlightedUntil : "");
 
     if (coverFile) formData.append("cover_image", coverFile);
-    if (mainFile) formData.append("main_image", mainFile);
 
     const url = mode === "create" ? "/api/admin/studies" : `/api/admin/studies/${studyId}`;
     const method = mode === "create" ? "POST" : "PUT";
@@ -284,6 +269,41 @@ export function StudyForm({
       </div>
 
       <div className={styles.field}>
+        <div className={styles.premiumToggleRow}>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={isHighlighted}
+            onClick={() => setIsHighlighted((prev) => !prev)}
+            className={`${styles.premiumToggle} ${isHighlighted ? styles.premiumToggleOn : ""}`}
+          >
+            <span className={styles.premiumToggleThumb} />
+          </button>
+          <div>
+            <p className={styles.premiumToggleLabel}>
+              {isHighlighted ? "دراسة مميزة" : "غير مميزة"}
+            </p>
+            <p className={styles.premiumToggleHint}>تظهر في أعلى صفحة الدراسات بتصميم مميز</p>
+          </div>
+        </div>
+        {isHighlighted && (
+          <div style={{ marginTop: "0.6rem" }}>
+            <label htmlFor="studyHighlightedUntil" className={styles.label}>
+              تنتهي الميزة في (اختياري)
+            </label>
+            <input
+              id="studyHighlightedUntil"
+              type="datetime-local"
+              className={styles.input}
+              value={highlightedUntil}
+              onChange={(event) => setHighlightedUntil(event.target.value)}
+            />
+            <p className={styles.itemMeta}>اتركه فارغًا لتبقى الدراسة مميزة حتى تُلغى يدويًا.</p>
+          </div>
+        )}
+      </div>
+
+      <div className={styles.field}>
         <label className={styles.label}>صورة الغلاف (تظهر في الخلفية العلوية)</label>
         {(coverPreviewUrl || currentCoverImageUrl) && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -297,24 +317,6 @@ export function StudyForm({
         />
         <p className={styles.itemMeta}>
           النسبة المطلوبة: {COVER_ASPECT_LABEL} — بحجم أقصى 5 ميجابايت. بعد اختيار الصورة يمكنك تحريكها وتكبيرها
-          لاختيار الجزء الذي تريد إظهاره قبل الحفظ.
-        </p>
-      </div>
-
-      <div className={styles.field}>
-        <label className={styles.label}>الصورة الرئيسية</label>
-        {(mainPreviewUrl || currentMainImageUrl) && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={mainPreviewUrl || currentMainImageUrl || undefined} alt="" className={styles.imagePreview} />
-        )}
-        <input
-          ref={mainImageInputRef}
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-          onChange={handleMainFileSelect}
-        />
-        <p className={styles.itemMeta}>
-          النسبة المطلوبة: {MAIN_ASPECT_LABEL} — بحجم أقصى 5 ميجابايت. بعد اختيار الصورة يمكنك تحريكها وتكبيرها
           لاختيار الجزء الذي تريد إظهاره قبل الحفظ.
         </p>
       </div>
@@ -345,18 +347,16 @@ export function StudyForm({
         {submitState === "error" && <p className={styles.statusError}>{errorMessage}</p>}
       </div>
 
-      {cropRequest && (
+      {cropFile && (
         <ImageCropper
-          file={cropRequest.file}
-          aspectRatio={cropRequest.target === "cover" ? COVER_ASPECT_RATIO : MAIN_ASPECT_RATIO}
-          title={cropRequest.target === "cover" ? "قص صورة الغلاف" : "قص الصورة الرئيسية"}
-          hint={`النسبة المطلوبة: ${
-            cropRequest.target === "cover" ? COVER_ASPECT_LABEL : MAIN_ASPECT_LABEL
-          }. اسحب الصورة لتحريكها واستخدم شريط التكبير لاختيار الجزء الذي يظهر.`}
+          file={cropFile}
+          aspectRatio={COVER_ASPECT_RATIO}
+          title="قص صورة الغلاف"
+          hint={`النسبة المطلوبة: ${COVER_ASPECT_LABEL}. اسحب الصورة لتحريكها واستخدم شريط التكبير لاختيار الجزء الذي يظهر.`}
           zoomLabel="التكبير"
           cancelLabel="إلغاء"
           confirmLabel="تم"
-          onCancel={() => setCropRequest(null)}
+          onCancel={() => setCropFile(null)}
           onConfirm={handleCropConfirm}
         />
       )}

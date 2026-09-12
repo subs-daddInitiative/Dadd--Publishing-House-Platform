@@ -19,7 +19,6 @@ export default async function EditStudyPage({ params }: { params: Promise<{ id: 
         categories={categories}
         initialStudy={study}
         currentCoverImageUrl={backendAssetUrl(study.cover_image)}
-        currentMainImageUrl={backendAssetUrl(study.main_image)}
         currentPdfUrl={backendAssetUrl(study.pdf_file)}
       />
     </section>

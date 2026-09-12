@@ -18,9 +18,13 @@ export function StudyCard({ locale, study, variant = "list", byLabel, favoriteLa
   const href = `/${locale}/studies/${study.slug}`;
   const coverImageUrl = backendAssetUrl(study.cover_image);
   const isGrid = variant === "grid";
+  const isHighlighted = Boolean(study.is_highlighted_active);
 
   return (
-    <Link href={href} className={`${styles.card} ${isGrid ? styles.cardGridItem : ""} hover-lift`}>
+    <Link
+      href={href}
+      className={`${styles.card} ${isGrid ? styles.cardGridItem : ""} ${isHighlighted ? styles.cardHighlighted : ""} hover-lift`}
+    >
       <div className={styles.cardImageWrap}>
         {favoriteLabel && (
           <FavoriteButton locale={locale} itemType="study" itemId={study.id} label={favoriteLabel} />
@@ -39,6 +43,7 @@ export function StudyCard({ locale, study, variant = "list", byLabel, favoriteLa
           </div>
         )}
         {study.category_name && <span className={styles.cardCategoryTag}>{study.category_name}</span>}
+        {isHighlighted && <span className={styles.cardHighlightBadge}>⭐ مميز</span>}
       </div>
 
       <div className={styles.cardBody}>

@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { getAdminStudies, backendAssetUrl } from "@/lib/serverApi";
+import { getAdminStudies, getAdminHighlightedStudiesCount, backendAssetUrl } from "@/lib/serverApi";
 import { StudyRowActions } from "./StudyRowActions";
+import { AdminStudiesFilters } from "./AdminStudiesFilters";
 import styles from "./studies.module.css";
 
 export const metadata = { title: "الدراسات" };
@@ -10,14 +11,26 @@ const STATUS_LABELS: Record<string, string> = {
   published: "منشور",
 };
 
-export default async function AdminStudiesPage() {
-  const studies = await getAdminStudies();
+export default async function AdminStudiesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ highlighted?: string }>;
+}) {
+  const { highlighted: highlightedParam } = await searchParams;
+  const highlighted = highlightedParam === "1" ? "1" : undefined;
+  const [studies, highlightedCount] = await Promise.all([
+    getAdminStudies({ highlighted }),
+    getAdminHighlightedStudiesCount(),
+  ]);
 
   return (
     <section>
       <div className={styles.pageHeader}>
         <h1>الدراسات</h1>
         <div className={styles.actions}>
+          <span className={styles.headerStat}>
+            <strong>{highlightedCount}</strong> مميزة حاليًا
+          </span>
           <Link href="/admin/dashboard/studies/categories" className={styles.buttonSecondary}>
             إدارة التصنيفات
           </Link>
@@ -26,6 +39,8 @@ export default async function AdminStudiesPage() {
           </Link>
         </div>
       </div>
+
+      <AdminStudiesFilters />
 
       {studies.length === 0 ? (
         <p className={styles.empty}>لا توجد دراسات بعد.</p>
@@ -56,6 +71,18 @@ export default async function AdminStudiesPage() {
                     >
                       {STATUS_LABELS[study.status]}
                     </span>
+                    {" · "}
+                    <span className={study.is_premium ? styles.premiumBadge : styles.freeBadge}>
+                      {study.is_premium ? "للمشتركين فقط" : "مجانية"}
+                    </span>
+                    {Boolean(study.is_highlighted_active) && (
+                      <>
+                        {" · "}
+                        <span className={styles.highlightBadge}>
+                          ⭐ مميزة{study.highlighted_until ? ` حتى ${study.highlighted_until}` : ""}
+                        </span>
+                      </>
+                    )}
                     {" · "}
                     {study.published_at || study.updated_at}
                   </p>
