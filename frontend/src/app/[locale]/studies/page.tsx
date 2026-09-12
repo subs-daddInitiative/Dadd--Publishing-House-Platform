@@ -41,20 +41,21 @@ export default async function StudiesPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ page?: string; category?: string; sort?: string }>;
+  searchParams: Promise<{ page?: string; category?: string; sort?: string; premium?: string; search?: string }>;
 }) {
   const { locale: rawLocale } = await params;
   if (!isLocale(rawLocale)) notFound();
 
   const locale = rawLocale as Locale;
-  const { page: pageParam, category, sort: sortParam } = await searchParams;
+  const { page: pageParam, category, sort: sortParam, premium: premiumParam, search } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
   const sort: StudySort = sortParam === "oldest" ? "oldest" : "newest";
+  const premium = premiumParam === "free" || premiumParam === "premium" ? premiumParam : undefined;
 
   const [dictionary, categories, studyList, recentBlogsResult] = await Promise.all([
     getDictionary(locale),
     getPublicStudyCategories(),
-    getPublicStudies({ page, category, sort }),
+    getPublicStudies({ page, category, sort, premium, search }),
     getPublicBlogs({ page: 1 }),
   ]);
 
@@ -65,6 +66,8 @@ export default async function StudiesPage({
     params.set("page", String(targetPage));
     if (category) params.set("category", category);
     if (sort !== "newest") params.set("sort", sort);
+    if (premium) params.set("premium", premium);
+    if (search) params.set("search", search);
     return `?${params.toString()}`;
   };
 
@@ -100,6 +103,12 @@ export default async function StudiesPage({
               allCategoriesLabel={dictionary.studiesPage.allCategories}
               sortNewestLabel={dictionary.studiesPage.sortNewest}
               sortOldestLabel={dictionary.studiesPage.sortOldest}
+              allLabel={dictionary.studiesPage.filterAll}
+              freeLabel={dictionary.studiesPage.filterFree}
+              premiumLabel={dictionary.studiesPage.filterPremium}
+              searchPlaceholder={dictionary.studiesPage.searchPlaceholder}
+              searchButtonLabel={dictionary.studiesPage.searchButton}
+              resetLabel={dictionary.studiesPage.resetFilters}
             />
           </Reveal>
         </div>

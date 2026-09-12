@@ -178,9 +178,14 @@ export type ContactMessage = {
   created_at: string;
 };
 
-export async function getAdminContactMessages(subject?: string): Promise<ContactMessage[]> {
-  const query = subject ? `?subject=${encodeURIComponent(subject)}` : "";
-  const result = await backendFetch<ContactMessage[]>(`/api/admin/contact-messages${query}`);
+export async function getAdminContactMessages(
+  options: { subject?: string; status?: "read" | "unread" } = {}
+): Promise<ContactMessage[]> {
+  const params = new URLSearchParams();
+  if (options.subject) params.set("subject", options.subject);
+  if (options.status) params.set("status", options.status);
+  const query = params.toString();
+  const result = await backendFetch<ContactMessage[]>(`/api/admin/contact-messages${query ? `?${query}` : ""}`);
   return result.success ? result.data : [];
 }
 
@@ -209,9 +214,14 @@ export type JoinRequest = {
   created_at: string;
 };
 
-export async function getAdminJoinRequests(requestType?: string): Promise<JoinRequest[]> {
-  const query = requestType ? `?request_type=${encodeURIComponent(requestType)}` : "";
-  const result = await backendFetch<JoinRequest[]>(`/api/admin/join-requests${query}`);
+export async function getAdminJoinRequests(
+  options: { requestType?: string; status?: "read" | "unread" } = {}
+): Promise<JoinRequest[]> {
+  const params = new URLSearchParams();
+  if (options.requestType) params.set("request_type", options.requestType);
+  if (options.status) params.set("status", options.status);
+  const query = params.toString();
+  const result = await backendFetch<JoinRequest[]>(`/api/admin/join-requests${query ? `?${query}` : ""}`);
   return result.success ? result.data : [];
 }
 
@@ -262,12 +272,23 @@ export type BlogListResult = {
   totalPages: number;
 };
 
+export type BlogSort = "newest" | "oldest";
+
 export async function getPublicBlogs(
-  options: { page?: number; premium?: "free" | "premium" } = {}
+  options: {
+    page?: number;
+    premium?: "free" | "premium";
+    category?: string;
+    search?: string;
+    sort?: BlogSort;
+  } = {}
 ): Promise<BlogListResult> {
-  const { page = 1, premium } = options;
+  const { page = 1, premium, category, search, sort } = options;
   const params = new URLSearchParams({ page: String(page) });
   if (premium) params.set("premium", premium);
+  if (category) params.set("category", category);
+  if (search) params.set("search", search);
+  if (sort) params.set("sort", sort);
 
   const result = await backendFetch<BlogListResult>(`/api/blogs?${params.toString()}`);
   return result.success ? result.data : { items: [], total: 0, page: 1, pageSize: 9, totalPages: 0 };
@@ -296,6 +317,7 @@ export type AdminBlogSummary = {
   cover_image: string | null;
   published_at: string | null;
   updated_at: string;
+  category_id: number | null;
   category_name: string | null;
 };
 
@@ -322,12 +344,20 @@ export type AdminBlogDetail = {
 };
 
 export async function getAdminBlogs(
-  options: { search?: string; premium?: "free" | "premium"; highlighted?: "1" } = {}
+  options: {
+    search?: string;
+    premium?: "free" | "premium";
+    highlighted?: "1";
+    category?: string;
+    status?: "draft" | "published";
+  } = {}
 ): Promise<AdminBlogSummary[]> {
   const params = new URLSearchParams();
   if (options.search) params.set("search", options.search);
   if (options.premium) params.set("premium", options.premium);
   if (options.highlighted) params.set("highlighted", options.highlighted);
+  if (options.category) params.set("category", options.category);
+  if (options.status) params.set("status", options.status);
   const query = params.toString();
   const result = await backendFetch<AdminBlogSummary[]>(`/api/admin/blogs${query ? `?${query}` : ""}`);
   return result.success ? result.data : [];
@@ -391,11 +421,15 @@ export async function getPublicStudies(options: {
   page?: number;
   category?: string;
   sort?: StudySort;
+  premium?: "free" | "premium";
+  search?: string;
 } = {}): Promise<StudyListResult> {
-  const { page = 1, category, sort } = options;
+  const { page = 1, category, sort, premium, search } = options;
   const params = new URLSearchParams({ page: String(page) });
   if (category) params.set("category", category);
   if (sort) params.set("sort", sort);
+  if (premium) params.set("premium", premium);
+  if (search) params.set("search", search);
 
   const result = await backendFetch<StudyListResult>(`/api/studies?${params.toString()}`);
   return result.success ? result.data : { items: [], total: 0, page: 1, pageSize: 9, totalPages: 0 };
@@ -423,6 +457,7 @@ export type AdminStudySummary = {
   cover_image: string | null;
   published_at: string | null;
   updated_at: string;
+  category_id: number | null;
   category_name: string | null;
 };
 
@@ -451,12 +486,20 @@ export type AdminStudyDetail = {
 };
 
 export async function getAdminStudies(
-  options: { search?: string; premium?: "free" | "premium"; highlighted?: "1" } = {}
+  options: {
+    search?: string;
+    premium?: "free" | "premium";
+    highlighted?: "1";
+    category?: string;
+    status?: "draft" | "published";
+  } = {}
 ): Promise<AdminStudySummary[]> {
   const params = new URLSearchParams();
   if (options.search) params.set("search", options.search);
   if (options.premium) params.set("premium", options.premium);
   if (options.highlighted) params.set("highlighted", options.highlighted);
+  if (options.category) params.set("category", options.category);
+  if (options.status) params.set("status", options.status);
   const query = params.toString();
   const result = await backendFetch<AdminStudySummary[]>(`/api/admin/studies${query ? `?${query}` : ""}`);
   return result.success ? result.data : [];

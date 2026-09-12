@@ -34,10 +34,12 @@ async function getPublicStudies(req, res, next) {
     const offset = (page - 1) * PAGE_SIZE;
     const categorySlug = typeof req.query.category === "string" ? req.query.category : undefined;
     const sort = SORTS.includes(req.query.sort) ? req.query.sort : "newest";
+    const premium = ["free", "premium"].includes(req.query.premium) ? req.query.premium : undefined;
+    const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
 
     const [items, total] = await Promise.all([
-      listPublicStudies({ limit: PAGE_SIZE, offset, categorySlug, sort }),
-      countPublicStudies({ categorySlug }),
+      listPublicStudies({ limit: PAGE_SIZE, offset, categorySlug, sort, premium, search }),
+      countPublicStudies({ categorySlug, premium, search }),
     ]);
 
     res.json({
@@ -103,7 +105,9 @@ async function getAdminStudies(req, res, next) {
     const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
     const premium = ["free", "premium"].includes(req.query.premium) ? req.query.premium : undefined;
     const highlighted = req.query.highlighted === "1" ? "1" : undefined;
-    const studies = await listAdminStudies({ search, premium, highlighted });
+    const category = Number(req.query.category) || undefined;
+    const status = ["draft", "published"].includes(req.query.status) ? req.query.status : undefined;
+    const studies = await listAdminStudies({ search, premium, highlighted, category, status });
     res.json({ success: true, data: studies });
   } catch (error) {
     next(error);

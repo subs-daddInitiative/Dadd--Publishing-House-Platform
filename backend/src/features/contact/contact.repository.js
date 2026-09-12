@@ -10,7 +10,7 @@ async function createMessage({ name, email, phone, subject, message }) {
   return result.insertId;
 }
 
-async function listMessages(subject) {
+async function listMessages({ subject, status } = {}) {
   const params = [];
   let query = `SELECT id, name, email, phone, subject, message, is_read, created_at
      FROM contact_messages
@@ -19,6 +19,11 @@ async function listMessages(subject) {
   if (subject && SUBJECTS.includes(subject)) {
     query += " AND subject = ?";
     params.push(subject);
+  }
+  if (status === "unread") {
+    query += " AND is_read = 0";
+  } else if (status === "read") {
+    query += " AND is_read = 1";
   }
 
   query += " ORDER BY created_at DESC";

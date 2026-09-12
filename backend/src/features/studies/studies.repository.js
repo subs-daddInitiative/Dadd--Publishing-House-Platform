@@ -22,7 +22,7 @@ async function listCategories() {
   return rows;
 }
 
-async function listPublicStudies({ limit, offset, categorySlug, sort }) {
+async function listPublicStudies({ limit, offset, categorySlug, sort, premium, search }) {
   const params = [];
   let query = `SELECT ${PUBLIC_LIST_FIELDS}
      FROM studies s
@@ -33,6 +33,15 @@ async function listPublicStudies({ limit, offset, categorySlug, sort }) {
     query += " AND sc.slug = ?";
     params.push(categorySlug);
   }
+  if (premium === "premium") {
+    query += " AND s.is_premium = 1";
+  } else if (premium === "free") {
+    query += " AND s.is_premium = 0";
+  }
+  if (search) {
+    query += " AND s.title LIKE ?";
+    params.push(`%${search}%`);
+  }
 
   query += ` ORDER BY is_highlighted_active DESC, ${SORT_COLUMNS[sort] || SORT_COLUMNS.newest} LIMIT ? OFFSET ?`;
   params.push(limit, offset);
@@ -41,7 +50,7 @@ async function listPublicStudies({ limit, offset, categorySlug, sort }) {
   return rows;
 }
 
-async function countPublicStudies({ categorySlug }) {
+async function countPublicStudies({ categorySlug, premium, search } = {}) {
   const params = [];
   let query = `SELECT COUNT(*) AS count
      FROM studies s
@@ -51,6 +60,15 @@ async function countPublicStudies({ categorySlug }) {
   if (categorySlug) {
     query += " AND sc.slug = ?";
     params.push(categorySlug);
+  }
+  if (premium === "premium") {
+    query += " AND s.is_premium = 1";
+  } else if (premium === "free") {
+    query += " AND s.is_premium = 0";
+  }
+  if (search) {
+    query += " AND s.title LIKE ?";
+    params.push(`%${search}%`);
   }
 
   const [rows] = await pool.query(query, params);
@@ -103,11 +121,11 @@ async function findRelatedStudies(categoryId, excludeId, limit = 3) {
   return [...sameCategory, ...padded].slice(0, limit);
 }
 
-async function listAdminStudies({ search, premium, highlighted } = {}) {
+async function listAdminStudies({ search, premium, highlighted, category, status } = {}) {
   const params = [];
   let query = `SELECT s.id, s.title, s.slug, s.status, s.cover_image, s.published_at, s.updated_at,
             s.is_premium, s.is_highlighted, s.highlighted_until,
-            ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active, sc.name AS category_name
+            ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active, s.category_id, sc.name AS category_name
      FROM studies s
      LEFT JOIN studies_categories sc ON sc.id = s.category_id
      WHERE s.deleted_at IS NULL`;
@@ -123,6 +141,14 @@ async function listAdminStudies({ search, premium, highlighted } = {}) {
   }
   if (highlighted === "1") {
     query += ` AND ${HIGHLIGHT_ACTIVE_EXPR}`;
+  }
+  if (category) {
+    query += " AND s.category_id = ?";
+    params.push(category);
+  }
+  if (status === "draft" || status === "published") {
+    query += " AND s.status = ?";
+    params.push(status);
   }
 
   query += " ORDER BY s.created_at DESC";

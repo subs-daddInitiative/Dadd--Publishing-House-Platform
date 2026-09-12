@@ -17,7 +17,12 @@ async function listCategories() {
   return rows;
 }
 
-async function listPublicBlogs({ limit, offset, premium }) {
+const PUBLIC_SORT_COLUMNS = {
+  newest: "b.published_at DESC",
+  oldest: "b.published_at ASC",
+};
+
+async function listPublicBlogs({ limit, offset, premium, categorySlug, search, sort }) {
   const params = [];
   let query = `SELECT ${PUBLIC_LIST_FIELDS}
      FROM blogs b
@@ -30,22 +35,42 @@ async function listPublicBlogs({ limit, offset, premium }) {
   } else if (premium === "free") {
     query += " AND b.is_premium = 0";
   }
+  if (categorySlug) {
+    query += " AND bc.slug = ?";
+    params.push(categorySlug);
+  }
+  if (search) {
+    query += " AND b.title LIKE ?";
+    params.push(`%${search}%`);
+  }
 
-  query += " ORDER BY is_highlighted_active DESC, b.published_at DESC LIMIT ? OFFSET ?";
+  query += ` ORDER BY is_highlighted_active DESC, ${PUBLIC_SORT_COLUMNS[sort] || PUBLIC_SORT_COLUMNS.newest} LIMIT ? OFFSET ?`;
   params.push(limit, offset);
 
   const [rows] = await pool.query(query, params);
   return rows;
 }
 
-async function countPublicBlogs({ premium } = {}) {
-  let query = "SELECT COUNT(*) AS count FROM blogs WHERE status = 'published' AND deleted_at IS NULL";
+async function countPublicBlogs({ premium, categorySlug, search } = {}) {
+  const params = [];
+  let query = `SELECT COUNT(*) AS count
+     FROM blogs b
+     LEFT JOIN blogs_categories bc ON bc.id = b.category_id
+     WHERE b.status = 'published' AND b.deleted_at IS NULL`;
   if (premium === "premium") {
-    query += " AND is_premium = 1";
+    query += " AND b.is_premium = 1";
   } else if (premium === "free") {
-    query += " AND is_premium = 0";
+    query += " AND b.is_premium = 0";
   }
-  const [rows] = await pool.query(query);
+  if (categorySlug) {
+    query += " AND bc.slug = ?";
+    params.push(categorySlug);
+  }
+  if (search) {
+    query += " AND b.title LIKE ?";
+    params.push(`%${search}%`);
+  }
+  const [rows] = await pool.query(query, params);
   return rows[0].count;
 }
 
@@ -97,11 +122,11 @@ async function findRelatedBlogs(categoryId, excludeId, limit = 3) {
   return [...sameCategory, ...padded].slice(0, limit);
 }
 
-async function listAdminBlogs({ search, premium, highlighted } = {}) {
+async function listAdminBlogs({ search, premium, highlighted, category, status } = {}) {
   const params = [];
   let query = `SELECT b.id, b.title, b.slug, b.status, b.review_status, b.cover_image, b.published_at, b.updated_at,
             b.author_name, b.is_premium, b.is_highlighted, b.highlighted_until,
-            ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active, bc.name AS category_name
+            ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active, b.category_id, bc.name AS category_name
      FROM blogs b
      LEFT JOIN blogs_categories bc ON bc.id = b.category_id
      WHERE b.deleted_at IS NULL`;
@@ -117,6 +142,14 @@ async function listAdminBlogs({ search, premium, highlighted } = {}) {
   }
   if (highlighted === "1") {
     query += ` AND ${HIGHLIGHT_ACTIVE_EXPR}`;
+  }
+  if (category) {
+    query += " AND b.category_id = ?";
+    params.push(category);
+  }
+  if (status === "draft" || status === "published") {
+    query += " AND b.status = ?";
+    params.push(status);
   }
 
   query += " ORDER BY b.created_at DESC";

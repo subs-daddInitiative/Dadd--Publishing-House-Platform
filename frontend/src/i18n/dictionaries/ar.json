@@ -290,7 +290,13 @@
     "lockedFile": "هذا الملف متاح فقط للمشتركين في المدونة المميزة.",
     "filterAll": "كل المقالات",
     "filterFree": "مجانية",
-    "filterPremium": "للمشتركين فقط"
+    "filterPremium": "للمشتركين فقط",
+    "allCategories": "كل التصنيفات",
+    "sortNewest": "الأحدث أولاً",
+    "sortOldest": "الأقدم أولاً",
+    "searchPlaceholder": "ابحث في المقالات...",
+    "searchButton": "بحث",
+    "resetFilters": "إعادة تعيين"
   },
   "studiesPage": {
     "title": "دراسات معمّقة",
@@ -311,7 +317,13 @@
     "breadcrumbStudies": "الدراسات",
     "heroBadge": "دراسات حصرية للمشتركين",
     "subscribeCta": "اشترك الآن",
-    "lockedFile": "هذا الملف متاح فقط للمشتركين، يرجى الاشتراك لعرضه."
+    "lockedFile": "هذا الملف متاح فقط للمشتركين، يرجى الاشتراك لعرضه.",
+    "filterAll": "كل الدراسات",
+    "filterFree": "مجانية",
+    "filterPremium": "للمشتركين فقط",
+    "searchPlaceholder": "ابحث في الدراسات...",
+    "searchButton": "بحث",
+    "resetFilters": "إعادة تعيين"
   },
   "booksPage": {
     "title": "مكتبة الكتب",

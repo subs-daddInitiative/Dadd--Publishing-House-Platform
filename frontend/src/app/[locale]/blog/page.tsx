@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
-import { getPublicBlogs, getPublicStudies } from "@/lib/serverApi";
+import { getPublicBlogs, getPublicStudies, getPublicBlogCategories, type BlogSort } from "@/lib/serverApi";
 import { BlogCard } from "@/features/blog/BlogCard";
 import { BlogsFilters } from "@/features/blog/BlogsFilters";
 import { Reveal } from "@/components/Reveal";
@@ -41,23 +41,41 @@ export default async function BlogPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ page?: string; premium?: string }>;
+  searchParams: Promise<{ page?: string; premium?: string; category?: string; search?: string; sort?: string }>;
 }) {
   const { locale: rawLocale } = await params;
   if (!isLocale(rawLocale)) notFound();
 
   const locale = rawLocale as Locale;
-  const { page: pageParam, premium: premiumParam } = await searchParams;
+  const {
+    page: pageParam,
+    premium: premiumParam,
+    category,
+    search,
+    sort: sortParam,
+  } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
   const premium = premiumParam === "free" || premiumParam === "premium" ? premiumParam : undefined;
+  const sort: BlogSort = sortParam === "oldest" ? "oldest" : "newest";
 
-  const [dictionary, blogList, recentStudiesResult] = await Promise.all([
+  const [dictionary, categories, blogList, recentStudiesResult] = await Promise.all([
     getDictionary(locale),
-    getPublicBlogs({ page, premium }),
+    getPublicBlogCategories(),
+    getPublicBlogs({ page, premium, category, search, sort }),
     getPublicStudies({ page: 1 }),
   ]);
 
   const { items, totalPages } = blogList;
+
+  const pageQuery = (targetPage: number) => {
+    const params = new URLSearchParams();
+    params.set("page", String(targetPage));
+    if (premium) params.set("premium", premium);
+    if (category) params.set("category", category);
+    if (search) params.set("search", search);
+    if (sort !== "newest") params.set("sort", sort);
+    return `?${params.toString()}`;
+  };
 
   return (
     <>
@@ -87,9 +105,16 @@ export default async function BlogPage({
             </Link>
             <BlogsFilters
               locale={locale}
+              categories={categories}
               allLabel={dictionary.blogPage.filterAll}
               freeLabel={dictionary.blogPage.filterFree}
               premiumLabel={dictionary.blogPage.filterPremium}
+              allCategoriesLabel={dictionary.blogPage.allCategories}
+              sortNewestLabel={dictionary.blogPage.sortNewest}
+              sortOldestLabel={dictionary.blogPage.sortOldest}
+              searchPlaceholder={dictionary.blogPage.searchPlaceholder}
+              searchButtonLabel={dictionary.blogPage.searchButton}
+              resetLabel={dictionary.blogPage.resetFilters}
             />
           </Reveal>
         </div>
@@ -117,20 +142,14 @@ export default async function BlogPage({
             {totalPages > 1 && (
               <nav className={styles.pagination} aria-label="pagination">
                 {page > 1 ? (
-                  <Link
-                    href={`/${locale}/blog?page=${page - 1}${premium ? `&premium=${premium}` : ""}`}
-                    className={styles.pageLink}
-                  >
+                  <Link href={`/${locale}/blog${pageQuery(page - 1)}`} className={styles.pageLink}>
                     {dictionary.blogPage.prev}
                   </Link>
                 ) : (
                   <span className={styles.pageLinkDisabled}>{dictionary.blogPage.prev}</span>
                 )}
                 {page < totalPages ? (
-                  <Link
-                    href={`/${locale}/blog?page=${page + 1}${premium ? `&premium=${premium}` : ""}`}
-                    className={styles.pageLink}
-                  >
+                  <Link href={`/${locale}/blog${pageQuery(page + 1)}`} className={styles.pageLink}>
                     {dictionary.blogPage.next}
                   </Link>
                 ) : (

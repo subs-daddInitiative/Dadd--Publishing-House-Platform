@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { getAdminBlogs, getAdminHighlightedBlogsCount, backendAssetUrl } from "@/lib/serverApi";
+import {
+  getAdminBlogs,
+  getAdminHighlightedBlogsCount,
+  getPublicBlogCategories,
+  backendAssetUrl,
+} from "@/lib/serverApi";
 import { BlogRowActions } from "./BlogRowActions";
 import { AdminBlogsFilters } from "./AdminBlogsFilters";
 import styles from "./blogs.module.css";
@@ -14,14 +19,28 @@ const STATUS_LABELS: Record<string, string> = {
 export default async function AdminBlogsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; premium?: string; highlighted?: string }>;
+  searchParams: Promise<{
+    search?: string;
+    premium?: string;
+    highlighted?: string;
+    category?: string;
+    status?: string;
+  }>;
 }) {
-  const { search, premium: premiumParam, highlighted: highlightedParam } = await searchParams;
+  const {
+    search,
+    premium: premiumParam,
+    highlighted: highlightedParam,
+    category,
+    status: statusParam,
+  } = await searchParams;
   const premium = premiumParam === "free" || premiumParam === "premium" ? premiumParam : undefined;
   const highlighted = highlightedParam === "1" ? "1" : undefined;
-  const [blogs, highlightedCount] = await Promise.all([
-    getAdminBlogs({ search, premium, highlighted }),
+  const status = statusParam === "draft" || statusParam === "published" ? statusParam : undefined;
+  const [blogs, highlightedCount, categories] = await Promise.all([
+    getAdminBlogs({ search, premium, highlighted, category, status }),
     getAdminHighlightedBlogsCount(),
+    getPublicBlogCategories(),
   ]);
 
   return (
@@ -41,7 +60,7 @@ export default async function AdminBlogsPage({
         </div>
       </div>
 
-      <AdminBlogsFilters />
+      <AdminBlogsFilters categories={categories} />
 
       {blogs.length === 0 ? (
         <p className={styles.empty}>لا توجد مقالات بعد.</p>

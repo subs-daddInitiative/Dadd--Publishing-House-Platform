@@ -290,7 +290,13 @@
     "lockedFile": "Diese Datei ist nur für Premium-Blog-Abonnenten verfügbar.",
     "filterAll": "Alle Artikel",
     "filterFree": "Kostenlos",
-    "filterPremium": "Nur für Abonnenten"
+    "filterPremium": "Nur für Abonnenten",
+    "allCategories": "Alle Kategorien",
+    "sortNewest": "Neueste zuerst",
+    "sortOldest": "Älteste zuerst",
+    "searchPlaceholder": "Artikel durchsuchen...",
+    "searchButton": "Suchen",
+    "resetFilters": "Zurücksetzen"
   },
   "studiesPage": {
     "title": "Vertiefende Studien",
@@ -311,7 +317,13 @@
     "breadcrumbStudies": "Studien",
     "heroBadge": "Exklusive Studien für Abonnenten",
     "subscribeCta": "Jetzt abonnieren",
-    "lockedFile": "Diese Datei ist nur für Abonnenten verfügbar. Bitte abonnieren Sie, um sie anzuzeigen."
+    "lockedFile": "Diese Datei ist nur für Abonnenten verfügbar. Bitte abonnieren Sie, um sie anzuzeigen.",
+    "filterAll": "Alle Studien",
+    "filterFree": "Kostenlos",
+    "filterPremium": "Nur für Abonnenten",
+    "searchPlaceholder": "Studien durchsuchen...",
+    "searchButton": "Suchen",
+    "resetFilters": "Zurücksetzen"
   },
   "booksPage": {
     "title": "Buchbibliothek",

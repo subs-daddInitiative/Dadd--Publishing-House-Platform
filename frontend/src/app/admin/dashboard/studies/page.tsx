@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { getAdminStudies, getAdminHighlightedStudiesCount, backendAssetUrl } from "@/lib/serverApi";
+import {
+  getAdminStudies,
+  getAdminHighlightedStudiesCount,
+  getPublicStudyCategories,
+  backendAssetUrl,
+} from "@/lib/serverApi";
 import { StudyRowActions } from "./StudyRowActions";
 import { AdminStudiesFilters } from "./AdminStudiesFilters";
 import styles from "./studies.module.css";
@@ -14,13 +19,28 @@ const STATUS_LABELS: Record<string, string> = {
 export default async function AdminStudiesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ highlighted?: string }>;
+  searchParams: Promise<{
+    search?: string;
+    premium?: string;
+    highlighted?: string;
+    category?: string;
+    status?: string;
+  }>;
 }) {
-  const { highlighted: highlightedParam } = await searchParams;
+  const {
+    search,
+    premium: premiumParam,
+    highlighted: highlightedParam,
+    category,
+    status: statusParam,
+  } = await searchParams;
+  const premium = premiumParam === "free" || premiumParam === "premium" ? premiumParam : undefined;
   const highlighted = highlightedParam === "1" ? "1" : undefined;
-  const [studies, highlightedCount] = await Promise.all([
-    getAdminStudies({ highlighted }),
+  const status = statusParam === "draft" || statusParam === "published" ? statusParam : undefined;
+  const [studies, highlightedCount, categories] = await Promise.all([
+    getAdminStudies({ search, premium, highlighted, category, status }),
     getAdminHighlightedStudiesCount(),
+    getPublicStudyCategories(),
   ]);
 
   return (
@@ -40,7 +60,7 @@ export default async function AdminStudiesPage({
         </div>
       </div>
 
-      <AdminStudiesFilters />
+      <AdminStudiesFilters categories={categories} />
 
       {studies.length === 0 ? (
         <p className={styles.empty}>لا توجد دراسات بعد.</p>

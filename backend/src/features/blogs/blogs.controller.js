@@ -31,15 +31,20 @@ async function defaultAuthorName() {
   return settings?.site_name || null;
 }
 
+const PUBLIC_SORTS = ["newest", "oldest"];
+
 async function getPublicBlogs(req, res, next) {
   try {
     const page = Math.max(1, Number(req.query.page) || 1);
     const offset = (page - 1) * PAGE_SIZE;
     const premium = ["free", "premium"].includes(req.query.premium) ? req.query.premium : undefined;
+    const categorySlug = typeof req.query.category === "string" ? req.query.category : undefined;
+    const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
+    const sort = PUBLIC_SORTS.includes(req.query.sort) ? req.query.sort : "newest";
 
     const [items, total] = await Promise.all([
-      listPublicBlogs({ limit: PAGE_SIZE, offset, premium }),
-      countPublicBlogs({ premium }),
+      listPublicBlogs({ limit: PAGE_SIZE, offset, premium, categorySlug, search, sort }),
+      countPublicBlogs({ premium, categorySlug, search }),
     ]);
 
     res.json({
@@ -96,7 +101,9 @@ async function getAdminBlogs(req, res, next) {
     const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
     const premium = ["free", "premium"].includes(req.query.premium) ? req.query.premium : undefined;
     const highlighted = req.query.highlighted === "1" ? "1" : undefined;
-    const blogs = await listAdminBlogs({ search, premium, highlighted });
+    const category = Number(req.query.category) || undefined;
+    const status = ["draft", "published"].includes(req.query.status) ? req.query.status : undefined;
+    const blogs = await listAdminBlogs({ search, premium, highlighted, category, status });
     res.json({ success: true, data: blogs });
   } catch (error) {
     next(error);

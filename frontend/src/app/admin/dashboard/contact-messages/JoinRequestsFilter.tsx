@@ -3,12 +3,11 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./contact-messages.module.css";
 
-const SUBJECTS = [
-  { value: "", label: "كل المواضيع" },
-  { value: "books", label: "الكتب" },
-  { value: "studies", label: "الدراسات" },
-  { value: "blogs", label: "المدونة" },
-  { value: "issues", label: "مشكلة أو استفسار عام" },
+const REQUEST_TYPES = [
+  { value: "", label: "كل الأنواع" },
+  { value: "volunteer", label: "طلب انضمام كمتطوع" },
+  { value: "complaint", label: "شكوى" },
+  { value: "suggestion", label: "اقتراح" },
 ];
 
 const STATUSES = [
@@ -17,11 +16,11 @@ const STATUSES = [
   { value: "read", label: "مقروءة" },
 ];
 
-export function SubjectFilter() {
+export function JoinRequestsFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const currentSubject = searchParams.get("subject") || "";
-  const currentStatus = searchParams.get("message_status") || "";
+  const currentType = searchParams.get("request_type") || "";
+  const currentStatus = searchParams.get("request_status") || "";
 
   function updateParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -38,12 +37,12 @@ export function SubjectFilter() {
     <div className={styles.filtersRow}>
       <select
         className={styles.filterSelect}
-        value={currentSubject}
-        onChange={(event) => updateParam("subject", event.target.value)}
+        value={currentType}
+        onChange={(event) => updateParam("request_type", event.target.value)}
       >
-        {SUBJECTS.map((subject) => (
-          <option key={subject.value} value={subject.value}>
-            {subject.label}
+        {REQUEST_TYPES.map((type) => (
+          <option key={type.value} value={type.value}>
+            {type.label}
           </option>
         ))}
       </select>
@@ -51,7 +50,7 @@ export function SubjectFilter() {
       <select
         className={styles.filterSelect}
         value={currentStatus}
-        onChange={(event) => updateParam("message_status", event.target.value)}
+        onChange={(event) => updateParam("request_status", event.target.value)}
       >
         {STATUSES.map((status) => (
           <option key={status.value} value={status.value}>

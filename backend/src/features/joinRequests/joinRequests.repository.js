@@ -26,13 +26,18 @@ async function createRequest(data) {
   return result.insertId;
 }
 
-async function listRequests(requestType) {
+async function listRequests({ requestType, status } = {}) {
   const params = [];
   let query = "SELECT * FROM join_requests WHERE deleted_at IS NULL";
 
   if (requestType && REQUEST_TYPES.includes(requestType)) {
     query += " AND request_type = ?";
     params.push(requestType);
+  }
+  if (status === "unread") {
+    query += " AND is_read = 0";
+  } else if (status === "read") {
+    query += " AND is_read = 1";
   }
 
   query += " ORDER BY created_at DESC";

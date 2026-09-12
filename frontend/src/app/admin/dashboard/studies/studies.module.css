@@ -168,6 +168,15 @@
   align-items: center;
 }
 
+.searchForm {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.searchForm .input {
+  width: 16rem;
+}
+
 .actions {
   display: flex;
   gap: var(--space-1);

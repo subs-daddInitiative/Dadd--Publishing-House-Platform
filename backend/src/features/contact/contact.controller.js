@@ -24,7 +24,9 @@ async function submitMessage(req, res, next) {
 
 async function getMessages(req, res, next) {
   try {
-    const messages = await listMessages(req.query.subject);
+    const subject = typeof req.query.subject === "string" ? req.query.subject : undefined;
+    const status = ["read", "unread"].includes(req.query.status) ? req.query.status : undefined;
+    const messages = await listMessages({ subject, status });
     res.json({ success: true, data: messages });
   } catch (error) {
     next(error);

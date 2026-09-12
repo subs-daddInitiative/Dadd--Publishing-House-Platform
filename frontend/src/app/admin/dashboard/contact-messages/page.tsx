@@ -3,6 +3,7 @@ import { getCurrentAdmin, getAdminContactMessages, getAdminJoinRequests } from "
 import { MessageActions } from "./MessageActions";
 import { JoinRequestActions } from "./JoinRequestActions";
 import { SubjectFilter } from "./SubjectFilter";
+import { JoinRequestsFilter } from "./JoinRequestsFilter";
 import styles from "./contact-messages.module.css";
 
 export const metadata = { title: "رسائل التواصل" };
@@ -55,13 +56,24 @@ function parseInterestAreas(raw: string | null): string[] {
 export default async function ContactMessagesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ subject?: string }>;
+  searchParams: Promise<{
+    subject?: string;
+    message_status?: string;
+    request_type?: string;
+    request_status?: string;
+  }>;
 }) {
   const admin = await getCurrentAdmin();
   if (!admin || admin.role !== "admin") redirect("/admin/dashboard");
 
-  const { subject } = await searchParams;
-  const [messages, joinRequests] = await Promise.all([getAdminContactMessages(subject), getAdminJoinRequests()]);
+  const { subject, message_status, request_type, request_status } = await searchParams;
+  const messageStatus = message_status === "read" || message_status === "unread" ? message_status : undefined;
+  const requestStatus = request_status === "read" || request_status === "unread" ? request_status : undefined;
+
+  const [messages, joinRequests] = await Promise.all([
+    getAdminContactMessages({ subject, status: messageStatus }),
+    getAdminJoinRequests({ requestType: request_type, status: requestStatus }),
+  ]);
 
   return (
     <section>
@@ -96,6 +108,7 @@ export default async function ContactMessagesPage({
       )}
 
       <h2 className={styles.sectionTitle}>طلبات الانضمام والشكاوى والاقتراحات</h2>
+      <JoinRequestsFilter />
       {joinRequests.length === 0 ? (
         <p className={styles.empty}>لا توجد طلبات بعد.</p>
       ) : (

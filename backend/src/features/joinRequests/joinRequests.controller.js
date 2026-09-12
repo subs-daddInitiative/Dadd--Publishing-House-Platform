@@ -24,7 +24,9 @@ async function submitRequest(req, res, next) {
 
 async function getRequests(req, res, next) {
   try {
-    const requests = await listRequests(req.query.request_type);
+    const requestType = typeof req.query.request_type === "string" ? req.query.request_type : undefined;
+    const status = ["read", "unread"].includes(req.query.status) ? req.query.status : undefined;
+    const requests = await listRequests({ requestType, status });
     res.json({ success: true, data: requests });
   } catch (error) {
     next(error);

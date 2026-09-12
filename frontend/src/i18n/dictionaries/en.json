@@ -290,7 +290,13 @@
     "lockedFile": "This file is only available to premium blog subscribers.",
     "filterAll": "All Articles",
     "filterFree": "Free",
-    "filterPremium": "Subscribers Only"
+    "filterPremium": "Subscribers Only",
+    "allCategories": "All Categories",
+    "sortNewest": "Newest First",
+    "sortOldest": "Oldest First",
+    "searchPlaceholder": "Search articles...",
+    "searchButton": "Search",
+    "resetFilters": "Reset"
   },
   "studiesPage": {
     "title": "In-Depth Studies",
@@ -311,7 +317,13 @@
     "breadcrumbStudies": "Studies",
     "heroBadge": "Exclusive studies for subscribers",
     "subscribeCta": "Subscribe Now",
-    "lockedFile": "This file is only available to subscribers. Please subscribe to view it."
+    "lockedFile": "This file is only available to subscribers. Please subscribe to view it.",
+    "filterAll": "All Studies",
+    "filterFree": "Free",
+    "filterPremium": "Subscribers Only",
+    "searchPlaceholder": "Search studies...",
+    "searchButton": "Search",
+    "resetFilters": "Reset"
   },
   "booksPage": {
     "title": "Books Library",
