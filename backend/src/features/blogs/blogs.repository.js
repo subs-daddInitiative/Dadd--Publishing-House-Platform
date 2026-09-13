@@ -3,8 +3,24 @@ const { slugify } = require("../../utils/slugify");
 
 const HIGHLIGHT_ACTIVE_EXPR = "(b.is_highlighted = 1 AND (b.highlighted_until IS NULL OR b.highlighted_until >= NOW()))";
 
+const TRANSLATABLE_LOCALES = ["en", "de"];
+
+function isTranslatableLocale(locale) {
+  return TRANSLATABLE_LOCALES.includes(locale);
+}
+
 const PUBLIC_LIST_FIELDS = `
   b.id, b.title, b.slug, b.excerpt, b.cover_image, b.published_at, b.is_premium,
+  b.is_highlighted, b.highlighted_until, ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active,
+  bc.name AS category_name, bc.slug AS category_slug,
+  COALESCE(b.author_name, u.name) AS author_name
+`;
+
+// Same shape as PUBLIC_LIST_FIELDS, but title/slug/excerpt come from the
+// translation row (bt) — used whenever locale is a non-Arabic locale, since a
+// blog only exists in that locale once a matching blog_translations row does.
+const PUBLIC_LIST_FIELDS_TRANSLATED = `
+  b.id, bt.title, bt.slug, bt.excerpt, b.cover_image, b.published_at, b.is_premium,
   b.is_highlighted, b.highlighted_until, ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active,
   bc.name AS category_name, bc.slug AS category_slug,
   COALESCE(b.author_name, u.name) AS author_name
@@ -22,13 +38,16 @@ const PUBLIC_SORT_COLUMNS = {
   oldest: "b.published_at ASC",
 };
 
-async function listPublicBlogs({ limit, offset, premium, categorySlug, search, sort }) {
+async function listPublicBlogs({ limit, offset, premium, categorySlug, search, sort, locale }) {
+  const translated = isTranslatableLocale(locale);
   const params = [];
-  let query = `SELECT ${PUBLIC_LIST_FIELDS}
+  let query = `SELECT ${translated ? PUBLIC_LIST_FIELDS_TRANSLATED : PUBLIC_LIST_FIELDS}
      FROM blogs b
+     ${translated ? "INNER JOIN blog_translations bt ON bt.blog_id = b.id AND bt.locale = ?" : ""}
      LEFT JOIN blogs_categories bc ON bc.id = b.category_id
      LEFT JOIN users u ON u.id = b.author_id
      WHERE b.status = 'published' AND b.deleted_at IS NULL`;
+  if (translated) params.push(locale);
 
   if (premium === "premium") {
     query += " AND b.is_premium = 1";
@@ -40,7 +59,7 @@ async function listPublicBlogs({ limit, offset, premium, categorySlug, search, s
     params.push(categorySlug);
   }
   if (search) {
-    query += " AND b.title LIKE ?";
+    query += ` AND ${translated ? "bt.title" : "b.title"} LIKE ?`;
     params.push(`%${search}%`);
   }
 
@@ -51,12 +70,16 @@ async function listPublicBlogs({ limit, offset, premium, categorySlug, search, s
   return rows;
 }
 
-async function countPublicBlogs({ premium, categorySlug, search } = {}) {
+async function countPublicBlogs({ premium, categorySlug, search, locale } = {}) {
+  const translated = isTranslatableLocale(locale);
   const params = [];
   let query = `SELECT COUNT(*) AS count
      FROM blogs b
+     ${translated ? "INNER JOIN blog_translations bt ON bt.blog_id = b.id AND bt.locale = ?" : ""}
      LEFT JOIN blogs_categories bc ON bc.id = b.category_id
      WHERE b.status = 'published' AND b.deleted_at IS NULL`;
+  if (translated) params.push(locale);
+
   if (premium === "premium") {
     query += " AND b.is_premium = 1";
   } else if (premium === "free") {
@@ -67,14 +90,30 @@ async function countPublicBlogs({ premium, categorySlug, search } = {}) {
     params.push(categorySlug);
   }
   if (search) {
-    query += " AND b.title LIKE ?";
+    query += ` AND ${translated ? "bt.title" : "b.title"} LIKE ?`;
     params.push(`%${search}%`);
   }
   const [rows] = await pool.query(query, params);
   return rows[0].count;
 }
 
-async function findPublicBlogBySlug(slug) {
+async function findPublicBlogBySlug(slug, locale) {
+  const translated = isTranslatableLocale(locale);
+
+  if (translated) {
+    const [rows] = await pool.query(
+      `SELECT ${PUBLIC_LIST_FIELDS_TRANSLATED}, b.category_id, bt.content_blocks, bt.seo_keywords, bt.updated_at
+       FROM blog_translations bt
+       INNER JOIN blogs b ON b.id = bt.blog_id
+       LEFT JOIN blogs_categories bc ON bc.id = b.category_id
+       LEFT JOIN users u ON u.id = b.author_id
+       WHERE bt.slug = ? AND bt.locale = ? AND b.status = 'published' AND b.deleted_at IS NULL
+       LIMIT 1`,
+      [slug, locale]
+    );
+    return rows[0] || null;
+  }
+
   const [rows] = await pool.query(
     `SELECT ${PUBLIC_LIST_FIELDS}, b.category_id, b.content_blocks, b.seo_keywords, b.updated_at
      FROM blogs b
@@ -87,33 +126,41 @@ async function findPublicBlogBySlug(slug) {
   return rows[0] || null;
 }
 
-async function findRelatedBlogs(categoryId, excludeId, limit = 3) {
+async function findRelatedBlogs(categoryId, excludeId, locale, limit = 3) {
+  const translated = isTranslatableLocale(locale);
+  const fields = translated ? PUBLIC_LIST_FIELDS_TRANSLATED : PUBLIC_LIST_FIELDS;
+  const translationJoin = translated ? "INNER JOIN blog_translations bt ON bt.blog_id = b.id AND bt.locale = ?" : "";
+
   let sameCategory = [];
   if (categoryId) {
+    const params = translated ? [locale, categoryId, excludeId, limit] : [categoryId, excludeId, limit];
     const [rows] = await pool.query(
-      `SELECT ${PUBLIC_LIST_FIELDS}
+      `SELECT ${fields}
        FROM blogs b
+       ${translationJoin}
        LEFT JOIN blogs_categories bc ON bc.id = b.category_id
        LEFT JOIN users u ON u.id = b.author_id
        WHERE b.category_id = ? AND b.id != ? AND b.status = 'published' AND b.deleted_at IS NULL
        ORDER BY b.published_at DESC
        LIMIT ?`,
-      [categoryId, excludeId, limit]
+      params
     );
     sameCategory = rows;
   }
 
   if (sameCategory.length >= limit) return sameCategory;
 
+  const latestParams = translated ? [locale, excludeId, limit] : [excludeId, limit];
   const [latest] = await pool.query(
-    `SELECT ${PUBLIC_LIST_FIELDS}
+    `SELECT ${fields}
      FROM blogs b
+     ${translationJoin}
      LEFT JOIN blogs_categories bc ON bc.id = b.category_id
      LEFT JOIN users u ON u.id = b.author_id
      WHERE b.id != ? AND b.status = 'published' AND b.deleted_at IS NULL
      ORDER BY b.published_at DESC
      LIMIT ?`,
-    [excludeId, limit]
+    latestParams
   );
 
   const seen = new Set(sameCategory.map((row) => row.id));
@@ -326,6 +373,68 @@ async function updateWriterSubmission(id, fields, wasRejected) {
   return findAdminBlogById(id);
 }
 
+async function listTranslations(blogId) {
+  const [rows] = await pool.query(
+    "SELECT locale, title, slug, excerpt, updated_at FROM blog_translations WHERE blog_id = ? ORDER BY locale ASC",
+    [blogId]
+  );
+  return rows;
+}
+
+async function findTranslation(blogId, locale) {
+  const [rows] = await pool.query(
+    "SELECT * FROM blog_translations WHERE blog_id = ? AND locale = ? LIMIT 1",
+    [blogId, locale]
+  );
+  return rows[0] || null;
+}
+
+async function translationSlugExists(locale, slug, excludeBlogId) {
+  const params = [locale, slug];
+  let query = "SELECT id FROM blog_translations WHERE locale = ? AND slug = ?";
+  if (excludeBlogId) {
+    query += " AND blog_id != ?";
+    params.push(excludeBlogId);
+  }
+  const [rows] = await pool.query(`${query} LIMIT 1`, params);
+  return rows.length > 0;
+}
+
+async function ensureUniqueTranslationSlug(locale, title, excludeBlogId) {
+  const base = slugify(title) || "post";
+  let candidate = base;
+  let suffix = 2;
+  while (await translationSlugExists(locale, candidate, excludeBlogId)) {
+    candidate = `${base}-${suffix}`;
+    suffix += 1;
+  }
+  return candidate;
+}
+
+async function upsertTranslation(blogId, locale, data) {
+  await pool.query(
+    `INSERT INTO blog_translations (blog_id, locale, title, slug, excerpt, content_blocks, seo_keywords)
+     VALUES (?, ?, ?, ?, ?, ?, ?)
+     ON DUPLICATE KEY UPDATE
+       title = VALUES(title), slug = VALUES(slug), excerpt = VALUES(excerpt),
+       content_blocks = VALUES(content_blocks), seo_keywords = VALUES(seo_keywords)`,
+    [
+      blogId,
+      locale,
+      data.title,
+      data.slug,
+      data.excerpt || null,
+      data.content_blocks || null,
+      data.seo_keywords || null,
+    ]
+  );
+  return findTranslation(blogId, locale);
+}
+
+async function deleteTranslation(blogId, locale) {
+  await pool.query("DELETE FROM blog_translations WHERE blog_id = ? AND locale = ?", [blogId, locale]);
+}
+
 async function reviewBlog(id, { decision, isPremium, reason, reviewerId }) {
   if (decision === "approved") {
     await pool.query(
@@ -364,4 +473,10 @@ module.exports = {
   createWriterSubmission,
   updateWriterSubmission,
   reviewBlog,
+  TRANSLATABLE_LOCALES,
+  listTranslations,
+  findTranslation,
+  ensureUniqueTranslationSlug,
+  upsertTranslation,
+  deleteTranslation,
 };

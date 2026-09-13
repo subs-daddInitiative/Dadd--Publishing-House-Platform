@@ -3,8 +3,24 @@ const { slugify } = require("../../utils/slugify");
 
 const HIGHLIGHT_ACTIVE_EXPR = "(s.is_highlighted = 1 AND (s.highlighted_until IS NULL OR s.highlighted_until >= NOW()))";
 
+const TRANSLATABLE_LOCALES = ["en", "de"];
+
+function isTranslatableLocale(locale) {
+  return TRANSLATABLE_LOCALES.includes(locale);
+}
+
 const PUBLIC_LIST_FIELDS = `
   s.id, s.title, s.slug, s.description, s.author, s.cover_image, s.published_at,
+  s.is_premium, s.price, s.currency,
+  s.is_highlighted, s.highlighted_until, ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active,
+  sc.name AS category_name, sc.slug AS category_slug
+`;
+
+// Same shape as PUBLIC_LIST_FIELDS, but title/slug/description come from the
+// translation row (st) — used whenever locale is a non-Arabic locale, since a
+// study only exists in that locale once a matching study_translations row does.
+const PUBLIC_LIST_FIELDS_TRANSLATED = `
+  s.id, st.title, st.slug, st.description, s.author, s.cover_image, s.published_at,
   s.is_premium, s.price, s.currency,
   s.is_highlighted, s.highlighted_until, ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active,
   sc.name AS category_name, sc.slug AS category_slug
@@ -22,12 +38,15 @@ async function listCategories() {
   return rows;
 }
 
-async function listPublicStudies({ limit, offset, categorySlug, sort, premium, search }) {
+async function listPublicStudies({ limit, offset, categorySlug, sort, premium, search, locale }) {
+  const translated = isTranslatableLocale(locale);
   const params = [];
-  let query = `SELECT ${PUBLIC_LIST_FIELDS}
+  let query = `SELECT ${translated ? PUBLIC_LIST_FIELDS_TRANSLATED : PUBLIC_LIST_FIELDS}
      FROM studies s
+     ${translated ? "INNER JOIN study_translations st ON st.study_id = s.id AND st.locale = ?" : ""}
      LEFT JOIN studies_categories sc ON sc.id = s.category_id
      WHERE s.status = 'published' AND s.deleted_at IS NULL`;
+  if (translated) params.push(locale);
 
   if (categorySlug) {
     query += " AND sc.slug = ?";
@@ -39,7 +58,7 @@ async function listPublicStudies({ limit, offset, categorySlug, sort, premium, s
     query += " AND s.is_premium = 0";
   }
   if (search) {
-    query += " AND s.title LIKE ?";
+    query += ` AND ${translated ? "st.title" : "s.title"} LIKE ?`;
     params.push(`%${search}%`);
   }
 
@@ -50,12 +69,15 @@ async function listPublicStudies({ limit, offset, categorySlug, sort, premium, s
   return rows;
 }
 
-async function countPublicStudies({ categorySlug, premium, search } = {}) {
+async function countPublicStudies({ categorySlug, premium, search, locale } = {}) {
+  const translated = isTranslatableLocale(locale);
   const params = [];
   let query = `SELECT COUNT(*) AS count
      FROM studies s
+     ${translated ? "INNER JOIN study_translations st ON st.study_id = s.id AND st.locale = ?" : ""}
      LEFT JOIN studies_categories sc ON sc.id = s.category_id
      WHERE s.status = 'published' AND s.deleted_at IS NULL`;
+  if (translated) params.push(locale);
 
   if (categorySlug) {
     query += " AND sc.slug = ?";
@@ -67,7 +89,7 @@ async function countPublicStudies({ categorySlug, premium, search } = {}) {
     query += " AND s.is_premium = 0";
   }
   if (search) {
-    query += " AND s.title LIKE ?";
+    query += ` AND ${translated ? "st.title" : "s.title"} LIKE ?`;
     params.push(`%${search}%`);
   }
 
@@ -75,7 +97,23 @@ async function countPublicStudies({ categorySlug, premium, search } = {}) {
   return rows[0].count;
 }
 
-async function findPublicStudyBySlug(slug) {
+async function findPublicStudyBySlug(slug, locale) {
+  const translated = isTranslatableLocale(locale);
+
+  if (translated) {
+    const [rows] = await pool.query(
+      `SELECT ${PUBLIC_LIST_FIELDS_TRANSLATED}, s.category_id, s.main_image,
+              st.content_blocks, st.updated_at
+       FROM study_translations st
+       INNER JOIN studies s ON s.id = st.study_id
+       LEFT JOIN studies_categories sc ON sc.id = s.category_id
+       WHERE st.slug = ? AND st.locale = ? AND s.status = 'published' AND s.deleted_at IS NULL
+       LIMIT 1`,
+      [slug, locale]
+    );
+    return rows[0] || null;
+  }
+
   const [rows] = await pool.query(
     `SELECT ${PUBLIC_LIST_FIELDS}, s.category_id, s.main_image, s.content_intro, s.content_body,
             s.content_blocks, s.pdf_file, s.updated_at
@@ -88,31 +126,39 @@ async function findPublicStudyBySlug(slug) {
   return rows[0] || null;
 }
 
-async function findRelatedStudies(categoryId, excludeId, limit = 3) {
+async function findRelatedStudies(categoryId, excludeId, locale, limit = 3) {
+  const translated = isTranslatableLocale(locale);
+  const fields = translated ? PUBLIC_LIST_FIELDS_TRANSLATED : PUBLIC_LIST_FIELDS;
+  const translationJoin = translated ? "INNER JOIN study_translations st ON st.study_id = s.id AND st.locale = ?" : "";
+
   let sameCategory = [];
   if (categoryId) {
+    const params = translated ? [locale, categoryId, excludeId, limit] : [categoryId, excludeId, limit];
     const [rows] = await pool.query(
-      `SELECT ${PUBLIC_LIST_FIELDS}
+      `SELECT ${fields}
        FROM studies s
+       ${translationJoin}
        LEFT JOIN studies_categories sc ON sc.id = s.category_id
        WHERE s.category_id = ? AND s.id != ? AND s.status = 'published' AND s.deleted_at IS NULL
        ORDER BY s.published_at DESC
        LIMIT ?`,
-      [categoryId, excludeId, limit]
+      params
     );
     sameCategory = rows;
   }
 
   if (sameCategory.length >= limit) return sameCategory;
 
+  const latestParams = translated ? [locale, excludeId, limit] : [excludeId, limit];
   const [latest] = await pool.query(
-    `SELECT ${PUBLIC_LIST_FIELDS}
+    `SELECT ${fields}
      FROM studies s
+     ${translationJoin}
      LEFT JOIN studies_categories sc ON sc.id = s.category_id
      WHERE s.id != ? AND s.status = 'published' AND s.deleted_at IS NULL
      ORDER BY s.published_at DESC
      LIMIT ?`,
-    [excludeId, limit]
+    latestParams
   );
 
   const seen = new Set(sameCategory.map((row) => row.id));
@@ -275,6 +321,60 @@ async function softDeleteStudy(id) {
   await pool.query("UPDATE studies SET deleted_at = NOW() WHERE id = ?", [id]);
 }
 
+async function listTranslations(studyId) {
+  const [rows] = await pool.query(
+    "SELECT locale, title, slug, description, updated_at FROM study_translations WHERE study_id = ? ORDER BY locale ASC",
+    [studyId]
+  );
+  return rows;
+}
+
+async function findTranslation(studyId, locale) {
+  const [rows] = await pool.query(
+    "SELECT * FROM study_translations WHERE study_id = ? AND locale = ? LIMIT 1",
+    [studyId, locale]
+  );
+  return rows[0] || null;
+}
+
+async function translationSlugExists(locale, slug, excludeStudyId) {
+  const params = [locale, slug];
+  let query = "SELECT id FROM study_translations WHERE locale = ? AND slug = ?";
+  if (excludeStudyId) {
+    query += " AND study_id != ?";
+    params.push(excludeStudyId);
+  }
+  const [rows] = await pool.query(`${query} LIMIT 1`, params);
+  return rows.length > 0;
+}
+
+async function ensureUniqueTranslationSlug(locale, title, excludeStudyId) {
+  const base = slugify(title) || "study";
+  let candidate = base;
+  let suffix = 2;
+  while (await translationSlugExists(locale, candidate, excludeStudyId)) {
+    candidate = `${base}-${suffix}`;
+    suffix += 1;
+  }
+  return candidate;
+}
+
+async function upsertTranslation(studyId, locale, data) {
+  await pool.query(
+    `INSERT INTO study_translations (study_id, locale, title, slug, description, content_blocks)
+     VALUES (?, ?, ?, ?, ?, ?)
+     ON DUPLICATE KEY UPDATE
+       title = VALUES(title), slug = VALUES(slug), description = VALUES(description),
+       content_blocks = VALUES(content_blocks)`,
+    [studyId, locale, data.title, data.slug, data.description || null, data.content_blocks || null]
+  );
+  return findTranslation(studyId, locale);
+}
+
+async function deleteTranslation(studyId, locale) {
+  await pool.query("DELETE FROM study_translations WHERE study_id = ? AND locale = ?", [studyId, locale]);
+}
+
 module.exports = {
   listCategories,
   listPublicStudies,
@@ -289,4 +389,10 @@ module.exports = {
   createStudy,
   updateStudy,
   softDeleteStudy,
+  TRANSLATABLE_LOCALES,
+  listTranslations,
+  findTranslation,
+  ensureUniqueTranslationSlug,
+  upsertTranslation,
+  deleteTranslation,
 };

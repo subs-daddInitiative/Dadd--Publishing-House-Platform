@@ -185,4 +185,35 @@ function validateStudyPayload(body, { partial = false } = {}) {
   return { errors, value };
 }
 
-module.exports = { validateStudyPayload, validateContentBlocks, STATUSES, BLOCK_TYPES };
+function validateTranslationPayload(body) {
+  const errors = [];
+  const value = {};
+
+  const title = typeof body.title === "string" ? body.title.trim() : "";
+  if (!title) errors.push("Title is required");
+  value.title = title;
+
+  if (body.slug !== undefined && String(body.slug).trim() !== "") {
+    value.slug = slugify(String(body.slug));
+  }
+
+  if (body.description !== undefined) {
+    value.description = String(body.description).trim().slice(0, 500);
+  }
+
+  if (body.content_blocks !== undefined) {
+    const { errors: blockErrors, blocks } = validateContentBlocks(body.content_blocks);
+    errors.push(...blockErrors);
+    value.content_blocks = JSON.stringify(blocks);
+  }
+
+  return { errors, value };
+}
+
+module.exports = {
+  validateStudyPayload,
+  validateTranslationPayload,
+  validateContentBlocks,
+  STATUSES,
+  BLOCK_TYPES,
+};

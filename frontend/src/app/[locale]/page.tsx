@@ -34,8 +34,8 @@ export default async function HomePage({
       getPublicSettings(),
       getPublicBanners(),
       getPublicStats(),
-      getPublicBlogs({ page: 1 }),
-      getPublicStudies({ page: 1 }),
+      getPublicBlogs({ page: 1, locale }),
+      getPublicStudies({ page: 1, locale }),
       getPublicAboutFeatures(),
       getPublicBooks({ page: 1 }),
     ]);

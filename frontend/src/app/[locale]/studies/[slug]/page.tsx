@@ -33,7 +33,7 @@ export async function generateMetadata({
   if (!isLocale(locale)) return {};
   const slug = decodeURIComponent(rawSlug);
 
-  const [study, settings] = await Promise.all([getPublicStudyBySlug(slug), getPublicSettings()]);
+  const [study, settings] = await Promise.all([getPublicStudyBySlug(slug, locale), getPublicSettings()]);
   if (!study) return {};
 
   const siteName = settings?.siteName || "";
@@ -73,11 +73,11 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
 
   const [dictionary, study, settings, banners, recentStudiesResult, recentBlogsResult] = await Promise.all([
     getDictionary(locale),
-    getPublicStudyBySlug(slug),
+    getPublicStudyBySlug(slug, locale),
     getPublicSettings(),
     getPublicBanners(),
-    getPublicStudies({ page: 1 }),
-    getPublicBlogs({ page: 1 }),
+    getPublicStudies({ page: 1, locale }),
+    getPublicBlogs({ page: 1, locale }),
   ]);
 
   if (!study) notFound();

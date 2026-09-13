@@ -281,21 +281,24 @@ export async function getPublicBlogs(
     category?: string;
     search?: string;
     sort?: BlogSort;
+    locale?: string;
   } = {}
 ): Promise<BlogListResult> {
-  const { page = 1, premium, category, search, sort } = options;
+  const { page = 1, premium, category, search, sort, locale } = options;
   const params = new URLSearchParams({ page: String(page) });
   if (premium) params.set("premium", premium);
   if (category) params.set("category", category);
   if (search) params.set("search", search);
   if (sort) params.set("sort", sort);
+  if (locale) params.set("locale", locale);
 
   const result = await backendFetch<BlogListResult>(`/api/blogs?${params.toString()}`);
   return result.success ? result.data : { items: [], total: 0, page: 1, pageSize: 9, totalPages: 0 };
 }
 
-export async function getPublicBlogBySlug(slug: string): Promise<BlogDetail | null> {
-  const result = await backendFetch<BlogDetail>(`/api/blogs/${encodeURIComponent(slug)}`);
+export async function getPublicBlogBySlug(slug: string, locale?: string): Promise<BlogDetail | null> {
+  const query = locale ? `?locale=${encodeURIComponent(locale)}` : "";
+  const result = await backendFetch<BlogDetail>(`/api/blogs/${encodeURIComponent(slug)}${query}`);
   return result.success ? result.data : null;
 }
 
@@ -368,6 +371,42 @@ export async function getAdminBlogById(id: string): Promise<AdminBlogDetail | nu
   return result.success ? result.data : null;
 }
 
+export type BlogTranslationSummary = {
+  locale: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  updated_at: string;
+};
+
+export type AdminBlogTranslation = {
+  id: number;
+  blog_id: number;
+  locale: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  content_blocks: string | null;
+  seo_keywords: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function getAdminBlogTranslations(blogId: string): Promise<BlogTranslationSummary[]> {
+  const result = await backendFetch<BlogTranslationSummary[]>(`/api/admin/blogs/${blogId}/translations`);
+  return result.success ? result.data : [];
+}
+
+export async function getAdminBlogTranslation(
+  blogId: string,
+  locale: string
+): Promise<AdminBlogTranslation | null> {
+  const result = await backendFetch<AdminBlogTranslation | null>(
+    `/api/admin/blogs/${blogId}/translations/${locale}`
+  );
+  return result.success ? result.data : null;
+}
+
 export async function getAdminHighlightedBlogsCount(): Promise<number> {
   const result = await backendFetch<{ count: number }>("/api/admin/blogs/highlighted-count");
   return result.success ? result.data.count : 0;
@@ -423,20 +462,23 @@ export async function getPublicStudies(options: {
   sort?: StudySort;
   premium?: "free" | "premium";
   search?: string;
+  locale?: string;
 } = {}): Promise<StudyListResult> {
-  const { page = 1, category, sort, premium, search } = options;
+  const { page = 1, category, sort, premium, search, locale } = options;
   const params = new URLSearchParams({ page: String(page) });
   if (category) params.set("category", category);
   if (sort) params.set("sort", sort);
   if (premium) params.set("premium", premium);
   if (search) params.set("search", search);
+  if (locale) params.set("locale", locale);
 
   const result = await backendFetch<StudyListResult>(`/api/studies?${params.toString()}`);
   return result.success ? result.data : { items: [], total: 0, page: 1, pageSize: 9, totalPages: 0 };
 }
 
-export async function getPublicStudyBySlug(slug: string): Promise<StudyDetail | null> {
-  const result = await backendFetch<StudyDetail>(`/api/studies/${encodeURIComponent(slug)}`);
+export async function getPublicStudyBySlug(slug: string, locale?: string): Promise<StudyDetail | null> {
+  const query = locale ? `?locale=${encodeURIComponent(locale)}` : "";
+  const result = await backendFetch<StudyDetail>(`/api/studies/${encodeURIComponent(slug)}${query}`);
   return result.success ? result.data : null;
 }
 
@@ -507,6 +549,41 @@ export async function getAdminStudies(
 
 export async function getAdminStudyById(id: string): Promise<AdminStudyDetail | null> {
   const result = await backendFetch<AdminStudyDetail>(`/api/admin/studies/${id}`);
+  return result.success ? result.data : null;
+}
+
+export type StudyTranslationSummary = {
+  locale: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  updated_at: string;
+};
+
+export type AdminStudyTranslation = {
+  id: number;
+  study_id: number;
+  locale: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  content_blocks: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export async function getAdminStudyTranslations(studyId: string): Promise<StudyTranslationSummary[]> {
+  const result = await backendFetch<StudyTranslationSummary[]>(`/api/admin/studies/${studyId}/translations`);
+  return result.success ? result.data : [];
+}
+
+export async function getAdminStudyTranslation(
+  studyId: string,
+  locale: string
+): Promise<AdminStudyTranslation | null> {
+  const result = await backendFetch<AdminStudyTranslation | null>(
+    `/api/admin/studies/${studyId}/translations/${locale}`
+  );
   return result.success ? result.data : null;
 }
 

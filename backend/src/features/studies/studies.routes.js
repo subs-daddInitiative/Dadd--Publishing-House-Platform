@@ -18,6 +18,10 @@ const {
   updateStudyHandler,
   deleteStudyHandler,
   uploadBlockAssetHandler,
+  getStudyTranslationsHandler,
+  getStudyTranslationHandler,
+  upsertStudyTranslationHandler,
+  deleteStudyTranslationHandler,
 } = require("./studies.controller");
 
 const uploadFields = studiesUpload.fields([
@@ -37,6 +41,10 @@ adminRouter.use(requireAuth);
 adminRouter.get("/studies", getAdminStudies);
 adminRouter.get("/studies/highlighted-count", getHighlightedStudiesCountHandler);
 adminRouter.get("/studies/:id", getAdminStudyById);
+adminRouter.get("/studies/:id/translations", getStudyTranslationsHandler);
+adminRouter.get("/studies/:id/translations/:locale", getStudyTranslationHandler);
+adminRouter.put("/studies/:id/translations/:locale", upsertStudyTranslationHandler);
+adminRouter.delete("/studies/:id/translations/:locale", deleteStudyTranslationHandler);
 adminRouter.post("/studies", uploadFields, enforceMediaLimits, compressImages, createStudyHandler);
 adminRouter.put("/studies/:id", uploadFields, enforceMediaLimits, compressImages, updateStudyHandler);
 adminRouter.delete("/studies/:id", deleteStudyHandler);

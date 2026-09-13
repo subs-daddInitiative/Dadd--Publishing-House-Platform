@@ -25,6 +25,10 @@ const {
   updateWriterBlogHandler,
   getPendingReviewBlogsHandler,
   reviewBlogHandler,
+  getBlogTranslationsHandler,
+  getBlogTranslationHandler,
+  upsertBlogTranslationHandler,
+  deleteBlogTranslationHandler,
 } = require("./blogs.controller");
 
 const blogUpload = createImageUpload("blogs");
@@ -48,6 +52,10 @@ adminRouter.get("/blogs/pending-review", getPendingReviewBlogsHandler);
 adminRouter.get("/blogs/highlighted-count", getHighlightedBlogsCountHandler);
 adminRouter.post("/blogs/:id/review", reviewBlogHandler);
 adminRouter.get("/blogs/:id", getAdminBlogById);
+adminRouter.get("/blogs/:id/translations", getBlogTranslationsHandler);
+adminRouter.get("/blogs/:id/translations/:locale", getBlogTranslationHandler);
+adminRouter.put("/blogs/:id/translations/:locale", upsertBlogTranslationHandler);
+adminRouter.delete("/blogs/:id/translations/:locale", deleteBlogTranslationHandler);
 adminRouter.post("/blogs", blogUpload.single("cover_image"), enforceMediaLimits, compressImages, createBlogHandler);
 adminRouter.put("/blogs/:id", blogUpload.single("cover_image"), enforceMediaLimits, compressImages, updateBlogHandler);
 adminRouter.delete("/blogs/:id", deleteBlogHandler);

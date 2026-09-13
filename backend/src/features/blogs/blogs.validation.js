@@ -200,6 +200,35 @@ function validateWriterBlogPayload(body, { partial = false } = {}) {
   return { errors, value };
 }
 
+function validateTranslationPayload(body) {
+  const errors = [];
+  const value = {};
+
+  const title = typeof body.title === "string" ? body.title.trim() : "";
+  if (!title) errors.push("Title is required");
+  value.title = title;
+
+  if (body.slug !== undefined && String(body.slug).trim() !== "") {
+    value.slug = slugify(String(body.slug));
+  }
+
+  if (body.excerpt !== undefined) {
+    value.excerpt = String(body.excerpt).trim().slice(0, 500);
+  }
+
+  if (body.content_blocks !== undefined) {
+    const { errors: blockErrors, blocks } = validateContentBlocks(body.content_blocks);
+    errors.push(...blockErrors);
+    value.content_blocks = JSON.stringify(blocks);
+  }
+
+  if (body.seo_keywords !== undefined) {
+    value.seo_keywords = sanitizePlainText(body.seo_keywords, 500);
+  }
+
+  return { errors, value };
+}
+
 function validateReviewPayload(body) {
   const errors = [];
   const value = {};
@@ -226,6 +255,7 @@ module.exports = {
   validateBlogPayload,
   validateWriterBlogPayload,
   validateReviewPayload,
+  validateTranslationPayload,
   validateContentBlocks,
   STATUSES,
   BLOCK_TYPES,

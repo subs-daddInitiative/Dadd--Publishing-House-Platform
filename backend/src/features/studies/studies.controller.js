@@ -11,8 +11,14 @@ const {
   createStudy,
   updateStudy,
   softDeleteStudy,
+  TRANSLATABLE_LOCALES,
+  listTranslations,
+  findTranslation,
+  ensureUniqueTranslationSlug,
+  upsertTranslation,
+  deleteTranslation,
 } = require("./studies.repository");
-const { validateStudyPayload } = require("./studies.validation");
+const { validateStudyPayload, validateTranslationPayload } = require("./studies.validation");
 const { hasActiveStudiesAccess } = require("../subscribers/subscribers.repository");
 const { findCompletedPurchase } = require("../contentAccess/studyPurchases.repository");
 const { assetUrl } = require("./studiesBlockAssetUpload");
@@ -36,10 +42,11 @@ async function getPublicStudies(req, res, next) {
     const sort = SORTS.includes(req.query.sort) ? req.query.sort : "newest";
     const premium = ["free", "premium"].includes(req.query.premium) ? req.query.premium : undefined;
     const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
+    const locale = typeof req.query.locale === "string" ? req.query.locale : undefined;
 
     const [items, total] = await Promise.all([
-      listPublicStudies({ limit: PAGE_SIZE, offset, categorySlug, sort, premium, search }),
-      countPublicStudies({ categorySlug, premium, search }),
+      listPublicStudies({ limit: PAGE_SIZE, offset, categorySlug, sort, premium, search, locale }),
+      countPublicStudies({ categorySlug, premium, search, locale }),
     ]);
 
     res.json({
@@ -53,11 +60,12 @@ async function getPublicStudies(req, res, next) {
 
 async function getPublicStudyBySlug(req, res, next) {
   try {
-    const study = await findPublicStudyBySlug(req.params.slug);
+    const locale = typeof req.query.locale === "string" ? req.query.locale : undefined;
+    const study = await findPublicStudyBySlug(req.params.slug, locale);
     if (!study) {
       return res.status(404).json({ success: false, message: "Study not found" });
     }
-    const related = await findRelatedStudies(study.category_id, study.id);
+    const related = await findRelatedStudies(study.category_id, study.id, locale);
 
     let blocks = study.content_blocks ? JSON.parse(study.content_blocks) : [];
     delete study.content_blocks;
@@ -118,6 +126,77 @@ async function getHighlightedStudiesCountHandler(req, res, next) {
   try {
     const count = await countActiveHighlightedStudies();
     res.json({ success: true, data: { count } });
+  } catch (error) {
+    next(error);
+  }
+}
+
+function requireValidLocale(req, res) {
+  if (!TRANSLATABLE_LOCALES.includes(req.params.locale)) {
+    res.status(400).json({ success: false, message: "Unsupported locale" });
+    return false;
+  }
+  return true;
+}
+
+async function getStudyTranslationsHandler(req, res, next) {
+  try {
+    const existing = await findAdminStudyById(req.params.id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Study not found" });
+    }
+    const translations = await listTranslations(req.params.id);
+    res.json({ success: true, data: translations });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getStudyTranslationHandler(req, res, next) {
+  try {
+    if (!requireValidLocale(req, res)) return;
+    const existing = await findAdminStudyById(req.params.id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Study not found" });
+    }
+    const translation = await findTranslation(req.params.id, req.params.locale);
+    res.json({ success: true, data: translation });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function upsertStudyTranslationHandler(req, res, next) {
+  try {
+    if (!requireValidLocale(req, res)) return;
+    const existing = await findAdminStudyById(req.params.id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Study not found" });
+    }
+
+    const { errors, value } = validateTranslationPayload(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({ success: false, message: "Validation failed", errors });
+    }
+
+    value.slug = await ensureUniqueTranslationSlug(req.params.locale, value.slug || value.title, existing.id);
+
+    const translation = await upsertTranslation(existing.id, req.params.locale, value);
+    res.json({ success: true, data: translation });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function deleteStudyTranslationHandler(req, res, next) {
+  try {
+    if (!requireValidLocale(req, res)) return;
+    const existing = await findAdminStudyById(req.params.id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Study not found" });
+    }
+    await deleteTranslation(req.params.id, req.params.locale);
+    res.json({ success: true, data: null });
   } catch (error) {
     next(error);
   }
@@ -227,4 +306,8 @@ module.exports = {
   updateStudyHandler,
   deleteStudyHandler,
   uploadBlockAssetHandler,
+  getStudyTranslationsHandler,
+  getStudyTranslationHandler,
+  upsertStudyTranslationHandler,
+  deleteStudyTranslationHandler,
 };

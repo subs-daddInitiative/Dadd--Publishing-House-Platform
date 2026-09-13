@@ -17,8 +17,19 @@ const {
   createWriterSubmission,
   updateWriterSubmission,
   reviewBlog,
+  TRANSLATABLE_LOCALES,
+  listTranslations,
+  findTranslation,
+  ensureUniqueTranslationSlug,
+  upsertTranslation,
+  deleteTranslation,
 } = require("./blogs.repository");
-const { validateBlogPayload, validateWriterBlogPayload, validateReviewPayload } = require("./blogs.validation");
+const {
+  validateBlogPayload,
+  validateWriterBlogPayload,
+  validateReviewPayload,
+  validateTranslationPayload,
+} = require("./blogs.validation");
 const { getSettings } = require("../settings/settings.repository");
 const { hasActiveBlogAccess, findById: findSubscriberById } = require("../subscribers/subscribers.repository");
 const { assetUrl } = require("./blockAssetUpload");
@@ -41,10 +52,11 @@ async function getPublicBlogs(req, res, next) {
     const categorySlug = typeof req.query.category === "string" ? req.query.category : undefined;
     const search = typeof req.query.search === "string" ? req.query.search.trim() : undefined;
     const sort = PUBLIC_SORTS.includes(req.query.sort) ? req.query.sort : "newest";
+    const locale = typeof req.query.locale === "string" ? req.query.locale : undefined;
 
     const [items, total] = await Promise.all([
-      listPublicBlogs({ limit: PAGE_SIZE, offset, premium, categorySlug, search, sort }),
-      countPublicBlogs({ premium, categorySlug, search }),
+      listPublicBlogs({ limit: PAGE_SIZE, offset, premium, categorySlug, search, sort, locale }),
+      countPublicBlogs({ premium, categorySlug, search, locale }),
     ]);
 
     res.json({
@@ -58,11 +70,12 @@ async function getPublicBlogs(req, res, next) {
 
 async function getPublicBlogBySlug(req, res, next) {
   try {
-    const blog = await findPublicBlogBySlug(req.params.slug);
+    const locale = typeof req.query.locale === "string" ? req.query.locale : undefined;
+    const blog = await findPublicBlogBySlug(req.params.slug, locale);
     if (!blog) {
       return res.status(404).json({ success: false, message: "Blog not found" });
     }
-    const related = await findRelatedBlogs(blog.category_id, blog.id);
+    const related = await findRelatedBlogs(blog.category_id, blog.id, locale);
 
     const entitled = Boolean(req.subscriber) && (await hasActiveBlogAccess(req.subscriber.sub));
     let blocks = blog.content_blocks ? JSON.parse(blog.content_blocks) : [];
@@ -181,6 +194,77 @@ async function updateBlogHandler(req, res, next) {
 
     const updated = await updateBlog(req.params.id, value);
     res.json({ success: true, data: updated });
+  } catch (error) {
+    next(error);
+  }
+}
+
+function requireValidLocale(req, res) {
+  if (!TRANSLATABLE_LOCALES.includes(req.params.locale)) {
+    res.status(400).json({ success: false, message: "Unsupported locale" });
+    return false;
+  }
+  return true;
+}
+
+async function getBlogTranslationsHandler(req, res, next) {
+  try {
+    const existing = await findAdminBlogById(req.params.id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Blog not found" });
+    }
+    const translations = await listTranslations(req.params.id);
+    res.json({ success: true, data: translations });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getBlogTranslationHandler(req, res, next) {
+  try {
+    if (!requireValidLocale(req, res)) return;
+    const existing = await findAdminBlogById(req.params.id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Blog not found" });
+    }
+    const translation = await findTranslation(req.params.id, req.params.locale);
+    res.json({ success: true, data: translation });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function upsertBlogTranslationHandler(req, res, next) {
+  try {
+    if (!requireValidLocale(req, res)) return;
+    const existing = await findAdminBlogById(req.params.id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Blog not found" });
+    }
+
+    const { errors, value } = validateTranslationPayload(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({ success: false, message: "Validation failed", errors });
+    }
+
+    value.slug = await ensureUniqueTranslationSlug(req.params.locale, value.slug || value.title, existing.id);
+
+    const translation = await upsertTranslation(existing.id, req.params.locale, value);
+    res.json({ success: true, data: translation });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function deleteBlogTranslationHandler(req, res, next) {
+  try {
+    if (!requireValidLocale(req, res)) return;
+    const existing = await findAdminBlogById(req.params.id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Blog not found" });
+    }
+    await deleteTranslation(req.params.id, req.params.locale);
+    res.json({ success: true, data: null });
   } catch (error) {
     next(error);
   }
@@ -381,4 +465,8 @@ module.exports = {
   updateWriterBlogHandler,
   getPendingReviewBlogsHandler,
   reviewBlogHandler,
+  getBlogTranslationsHandler,
+  getBlogTranslationHandler,
+  upsertBlogTranslationHandler,
+  deleteBlogTranslationHandler,
 };
