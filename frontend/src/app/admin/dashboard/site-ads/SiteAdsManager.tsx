@@ -3,6 +3,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { SiteAd, SiteAdTarget } from "@/lib/serverApi";
+import { SiteAdTranslationsPanel } from "./SiteAdTranslationsPanel";
 import styles from "./site-ads.module.css";
 
 const TARGET_LABELS: Record<SiteAdTarget, string> = {
@@ -20,6 +21,7 @@ export function SiteAdsManager({ initialAds }: SiteAdsManagerProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [ads, setAds] = useState(initialAds);
+  const [expandedAdId, setExpandedAdId] = useState<number | null>(null);
 
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -233,10 +235,18 @@ export function SiteAdsManager({ initialAds }: SiteAdsManagerProps) {
                 <button type="button" className={styles.buttonSecondary} onClick={() => handleToggleActive(ad)}>
                   {ad.is_active ? "إيقاف" : "تفعيل"}
                 </button>
+                <button
+                  type="button"
+                  className={styles.buttonSecondary}
+                  onClick={() => setExpandedAdId((current) => (current === ad.id ? null : ad.id))}
+                >
+                  {expandedAdId === ad.id ? "إخفاء الترجمات" : "الترجمات"}
+                </button>
                 <button type="button" className={styles.buttonDanger} onClick={() => handleDelete(ad.id)}>
                   حذف
                 </button>
               </div>
+              {expandedAdId === ad.id && <SiteAdTranslationsPanel adId={ad.id} />}
             </li>
           ))}
         </ul>

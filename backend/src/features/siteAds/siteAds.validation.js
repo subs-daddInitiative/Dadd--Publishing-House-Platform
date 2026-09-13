@@ -34,4 +34,23 @@ function validateAdPayload(body) {
   };
 }
 
-module.exports = { validateAdPayload };
+function validateAdTranslationPayload(body) {
+  const errors = [];
+
+  const title = typeof body.title === "string" ? body.title.trim().slice(0, 190) : "";
+  if (!title) errors.push("Title is required");
+
+  const message = body.message !== undefined ? String(body.message).trim().slice(0, 500) : null;
+  const linkLabel = body.link_label !== undefined ? String(body.link_label).trim().slice(0, 100) : null;
+
+  return {
+    errors,
+    value: {
+      title,
+      message: message || null,
+      link_label: linkLabel || null,
+    },
+  };
+}
+
+module.exports = { validateAdPayload, validateAdTranslationPayload };

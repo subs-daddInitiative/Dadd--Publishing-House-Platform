@@ -138,10 +138,23 @@ export type SiteAd = {
   ends_at?: string | null;
 };
 
-export async function getPublicSiteAds(audience: "guest" | "reader" | "writer"): Promise<SiteAd[]> {
-  const result = await backendFetch<SiteAd[]>(`/api/site-ads?audience=${audience}`);
+export async function getPublicSiteAds(
+  audience: "guest" | "reader" | "writer",
+  locale?: string
+): Promise<SiteAd[]> {
+  const params = new URLSearchParams({ audience });
+  if (locale) params.set("locale", locale);
+  const result = await backendFetch<SiteAd[]>(`/api/site-ads?${params.toString()}`);
   return result.success ? result.data : [];
 }
+
+export type SiteAdTranslation = {
+  locale: string;
+  title: string;
+  message: string | null;
+  link_label: string | null;
+  updated_at: string;
+};
 
 export async function getAdminSiteAds(): Promise<SiteAd[]> {
   const result = await backendFetch<SiteAd[]>("/api/admin/site-ads");

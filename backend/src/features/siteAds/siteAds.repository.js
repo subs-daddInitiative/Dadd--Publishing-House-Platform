@@ -1,6 +1,28 @@
 const { pool } = require("../../config/db");
 
-async function listActiveForAudience(audience) {
+const TRANSLATABLE_LOCALES = ["en", "de"];
+
+function isTranslatableLocale(locale) {
+  return TRANSLATABLE_LOCALES.includes(locale);
+}
+
+async function listActiveForAudience(audience, locale) {
+  if (isTranslatableLocale(locale)) {
+    const [rows] = await pool.query(
+      `SELECT a.id, sat.title, sat.message, a.image, a.link_url, sat.link_label, a.target
+       FROM site_ads a
+       INNER JOIN site_ad_translations sat ON sat.ad_id = a.id AND sat.locale = ?
+       WHERE a.is_active = 1
+         AND a.deleted_at IS NULL
+         AND (a.target = 'all' OR a.target = ?)
+         AND (a.starts_at IS NULL OR a.starts_at <= NOW())
+         AND (a.ends_at IS NULL OR a.ends_at >= NOW())
+       ORDER BY a.sort_order ASC, a.id ASC`,
+      [locale, audience]
+    );
+    return rows;
+  }
+
   const [rows] = await pool.query(
     `SELECT id, title, message, image, link_url, link_label, target
      FROM site_ads
@@ -74,4 +96,47 @@ async function softDeleteAd(id) {
   await pool.query("UPDATE site_ads SET deleted_at = NOW() WHERE id = ?", [id]);
 }
 
-module.exports = { listActiveForAudience, listAll, findById, createAd, updateAd, softDeleteAd };
+async function listTranslations(adId) {
+  const [rows] = await pool.query(
+    "SELECT locale, title, message, link_label, updated_at FROM site_ad_translations WHERE ad_id = ? ORDER BY locale ASC",
+    [adId]
+  );
+  return rows;
+}
+
+async function findTranslation(adId, locale) {
+  const [rows] = await pool.query(
+    "SELECT * FROM site_ad_translations WHERE ad_id = ? AND locale = ? LIMIT 1",
+    [adId, locale]
+  );
+  return rows[0] || null;
+}
+
+async function upsertTranslation(adId, locale, data) {
+  await pool.query(
+    `INSERT INTO site_ad_translations (ad_id, locale, title, message, link_label)
+     VALUES (?, ?, ?, ?, ?)
+     ON DUPLICATE KEY UPDATE
+       title = VALUES(title), message = VALUES(message), link_label = VALUES(link_label)`,
+    [adId, locale, data.title, data.message || null, data.link_label || null]
+  );
+  return findTranslation(adId, locale);
+}
+
+async function deleteTranslation(adId, locale) {
+  await pool.query("DELETE FROM site_ad_translations WHERE ad_id = ? AND locale = ?", [adId, locale]);
+}
+
+module.exports = {
+  listActiveForAudience,
+  listAll,
+  findById,
+  createAd,
+  updateAd,
+  softDeleteAd,
+  TRANSLATABLE_LOCALES,
+  listTranslations,
+  findTranslation,
+  upsertTranslation,
+  deleteTranslation,
+};

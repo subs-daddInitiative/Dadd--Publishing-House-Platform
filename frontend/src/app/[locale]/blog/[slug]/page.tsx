@@ -195,7 +195,7 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
       {!subscriber && (
         <NewsletterPopup
           locale={locale}
-          categoryName={blog.category_name}
+          categoryName={locale === "ar" ? blog.category_name : null}
           categorySlug={blog.category_slug}
           blogSlug={blog.slug}
           title={dictionary.newsletterPopup.title}

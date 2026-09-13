@@ -302,6 +302,25 @@ CREATE TABLE IF NOT EXISTS site_ads (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ---------------------------------------------------------------------------
+-- site_ad_translations (English/German copy; an ad only shows to visitors in
+-- a non-Arabic locale once a matching row exists here)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS site_ad_translations (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  ad_id INT UNSIGNED NOT NULL,
+  locale VARCHAR(5) NOT NULL,
+  title VARCHAR(190) NOT NULL,
+  message VARCHAR(500) NULL,
+  link_label VARCHAR(100) NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uq_site_ad_translations_ad_locale (ad_id, locale),
+  CONSTRAINT fk_site_ad_translations_ad
+    FOREIGN KEY (ad_id) REFERENCES site_ads (id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------------------------------------------------------------------------
 -- news_ticker_items (scrolling top-bar announcements, targetable by audience)
 -- ---------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS news_ticker_items (
