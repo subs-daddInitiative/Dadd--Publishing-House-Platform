@@ -23,7 +23,7 @@ export async function generateMetadata({
   if (!isLocale(locale)) return {};
   const slug = decodeURIComponent(rawSlug);
 
-  const [book, settings] = await Promise.all([getPublicBookBySlug(slug), getPublicSettings()]);
+  const [book, settings] = await Promise.all([getPublicBookBySlug(slug, locale), getPublicSettings()]);
   if (!book) return {};
 
   const siteName = settings?.siteName || "";
@@ -61,7 +61,7 @@ export default async function BookDetailPage({ params }: { params: Promise<PageP
 
   const [dictionary, book, settings] = await Promise.all([
     getDictionary(locale),
-    getPublicBookBySlug(slug),
+    getPublicBookBySlug(slug, locale),
     getPublicSettings(),
   ]);
 

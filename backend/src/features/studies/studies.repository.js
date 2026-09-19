@@ -23,20 +23,19 @@ const PUBLIC_LIST_FIELDS_TRANSLATED = `
   s.id, st.title, st.slug, st.description, s.author, s.cover_image, s.published_at,
   s.is_premium, s.price, s.currency,
   s.is_highlighted, s.highlighted_until, ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active,
-  sc.name AS category_name, sc.slug AS category_slug
+  sct.name AS category_name, sc.slug AS category_slug
 `;
+
+// Only added when locale is a non-Arabic locale — category_name comes back
+// NULL (hiding the tag) rather than falling back to the Arabic name.
+const CATEGORY_TRANSLATION_JOIN =
+  "LEFT JOIN studies_categories_translations sct ON sct.category_id = sc.id AND sct.locale = ?";
 
 const SORT_COLUMNS = {
   newest: "s.published_at DESC",
   oldest: "s.published_at ASC",
 };
 
-async function listCategories() {
-  const [rows] = await pool.query(
-    "SELECT id, name, slug FROM studies_categories WHERE deleted_at IS NULL ORDER BY name ASC"
-  );
-  return rows;
-}
 
 async function listPublicStudies({ limit, offset, categorySlug, sort, premium, search, locale }) {
   const translated = isTranslatableLocale(locale);
@@ -45,8 +44,9 @@ async function listPublicStudies({ limit, offset, categorySlug, sort, premium, s
      FROM studies s
      ${translated ? "INNER JOIN study_translations st ON st.study_id = s.id AND st.locale = ?" : ""}
      LEFT JOIN studies_categories sc ON sc.id = s.category_id
+     ${translated ? CATEGORY_TRANSLATION_JOIN : ""}
      WHERE s.status = 'published' AND s.deleted_at IS NULL`;
-  if (translated) params.push(locale);
+  if (translated) params.push(locale, locale);
 
   if (categorySlug) {
     query += " AND sc.slug = ?";
@@ -107,9 +107,10 @@ async function findPublicStudyBySlug(slug, locale) {
        FROM study_translations st
        INNER JOIN studies s ON s.id = st.study_id
        LEFT JOIN studies_categories sc ON sc.id = s.category_id
+       ${CATEGORY_TRANSLATION_JOIN}
        WHERE st.slug = ? AND st.locale = ? AND s.status = 'published' AND s.deleted_at IS NULL
        LIMIT 1`,
-      [slug, locale]
+      [locale, slug, locale]
     );
     return rows[0] || null;
   }
@@ -130,15 +131,17 @@ async function findRelatedStudies(categoryId, excludeId, locale, limit = 3) {
   const translated = isTranslatableLocale(locale);
   const fields = translated ? PUBLIC_LIST_FIELDS_TRANSLATED : PUBLIC_LIST_FIELDS;
   const translationJoin = translated ? "INNER JOIN study_translations st ON st.study_id = s.id AND st.locale = ?" : "";
+  const categoryJoin = translated ? CATEGORY_TRANSLATION_JOIN : "";
 
   let sameCategory = [];
   if (categoryId) {
-    const params = translated ? [locale, categoryId, excludeId, limit] : [categoryId, excludeId, limit];
+    const params = translated ? [locale, locale, categoryId, excludeId, limit] : [categoryId, excludeId, limit];
     const [rows] = await pool.query(
       `SELECT ${fields}
        FROM studies s
        ${translationJoin}
        LEFT JOIN studies_categories sc ON sc.id = s.category_id
+       ${categoryJoin}
        WHERE s.category_id = ? AND s.id != ? AND s.status = 'published' AND s.deleted_at IS NULL
        ORDER BY s.published_at DESC
        LIMIT ?`,
@@ -149,12 +152,13 @@ async function findRelatedStudies(categoryId, excludeId, locale, limit = 3) {
 
   if (sameCategory.length >= limit) return sameCategory;
 
-  const latestParams = translated ? [locale, excludeId, limit] : [excludeId, limit];
+  const latestParams = translated ? [locale, locale, excludeId, limit] : [excludeId, limit];
   const [latest] = await pool.query(
     `SELECT ${fields}
      FROM studies s
      ${translationJoin}
      LEFT JOIN studies_categories sc ON sc.id = s.category_id
+     ${categoryJoin}
      WHERE s.id != ? AND s.status = 'published' AND s.deleted_at IS NULL
      ORDER BY s.published_at DESC
      LIMIT ?`,
@@ -376,7 +380,6 @@ async function deleteTranslation(studyId, locale) {
 }
 
 module.exports = {
-  listCategories,
   listPublicStudies,
   countPublicStudies,
   findPublicStudyBySlug,

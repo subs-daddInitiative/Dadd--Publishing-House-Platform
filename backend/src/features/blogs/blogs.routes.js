@@ -11,7 +11,6 @@ const { createCategoryController } = require("../../utils/categoryController");
 const {
   getPublicBlogs,
   getPublicBlogBySlug,
-  getBlogCategories,
   getAdminBlogs,
   getHighlightedBlogsCountHandler,
   getAdminBlogById,
@@ -36,7 +35,7 @@ const blogCategories = createCategoryController(createCategoryRepository("blogs_
 
 const publicRouter = Router();
 publicRouter.get("/blogs", getPublicBlogs);
-publicRouter.get("/blogs-categories", getBlogCategories);
+publicRouter.get("/blogs-categories", blogCategories.listPublic);
 publicRouter.get("/blogs/:slug", optionalSubscriberAuth, getPublicBlogBySlug);
 
 publicRouter.post("/subscriber/blogs", requireSubscriberAuth, blogUpload.single("cover_image"), enforceMediaLimits, compressImages, submitWriterBlogHandler);
@@ -65,5 +64,8 @@ adminRouter.get("/blogs-categories", blogCategories.list);
 adminRouter.post("/blogs-categories", blogCategories.create);
 adminRouter.put("/blogs-categories/:id", blogCategories.update);
 adminRouter.delete("/blogs-categories/:id", blogCategories.remove);
+adminRouter.get("/blogs-categories/:id/translations", blogCategories.getTranslations);
+adminRouter.put("/blogs-categories/:id/translations/:locale", blogCategories.upsertTranslationHandler);
+adminRouter.delete("/blogs-categories/:id/translations/:locale", blogCategories.deleteTranslationHandler);
 
 module.exports = { publicRouter, adminRouter };

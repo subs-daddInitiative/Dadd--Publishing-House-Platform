@@ -105,4 +105,16 @@ function validateBookPayload(body, { partial = false } = {}) {
   return { errors, value, externalLinks };
 }
 
-module.exports = { validateBookPayload };
+// Every field is optional here — a book is Arabic content first, so leaving
+// a field blank in a translation means "keep showing the Arabic version of
+// just that field", not "reject the translation".
+function validateBookTranslationPayload(body) {
+  const value = {
+    title: typeof body.title === "string" ? body.title.trim().slice(0, 255) : "",
+    author: typeof body.author === "string" ? body.author.trim().slice(0, 190) : "",
+    description: typeof body.description === "string" ? body.description.trim() : "",
+  };
+  return { errors: [], value };
+}
+
+module.exports = { validateBookPayload, validateBookTranslationPayload };

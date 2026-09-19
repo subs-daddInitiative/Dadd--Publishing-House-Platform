@@ -60,7 +60,7 @@ export default async function BlogPage({
 
   const [dictionary, categories, blogList, recentStudiesResult] = await Promise.all([
     getDictionary(locale),
-    getPublicBlogCategories(),
+    getPublicBlogCategories(locale),
     getPublicBlogs({ page, premium, category, search, sort, locale }),
     getPublicStudies({ page: 1, locale }),
   ]);

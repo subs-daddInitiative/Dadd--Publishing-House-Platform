@@ -13,6 +13,9 @@ const {
   createBookHandler,
   updateBookHandler,
   deleteBookHandler,
+  getBookTranslationsHandler,
+  upsertBookTranslationHandler,
+  deleteBookTranslationHandler,
 } = require("./books.controller");
 
 const uploadFields = booksUpload.fields([
@@ -23,13 +26,16 @@ const bookCategories = createCategoryController(createCategoryRepository("books_
 
 const publicRouter = Router();
 publicRouter.get("/books", getPublicBooks);
-publicRouter.get("/books-categories", bookCategories.list);
+publicRouter.get("/books-categories", bookCategories.listPublic);
 publicRouter.get("/books/:slug", getPublicBookBySlug);
 
 const adminRouter = Router();
 adminRouter.use(requireAuth);
 adminRouter.get("/books", getAdminBooks);
 adminRouter.get("/books/:id", getAdminBookById);
+adminRouter.get("/books/:id/translations", getBookTranslationsHandler);
+adminRouter.put("/books/:id/translations/:locale", upsertBookTranslationHandler);
+adminRouter.delete("/books/:id/translations/:locale", deleteBookTranslationHandler);
 adminRouter.post("/books", uploadFields, enforceMediaLimits, compressImages, createBookHandler);
 adminRouter.put("/books/:id", uploadFields, enforceMediaLimits, compressImages, updateBookHandler);
 adminRouter.delete("/books/:id", deleteBookHandler);
@@ -38,5 +44,8 @@ adminRouter.get("/books-categories", bookCategories.list);
 adminRouter.post("/books-categories", bookCategories.create);
 adminRouter.put("/books-categories/:id", bookCategories.update);
 adminRouter.delete("/books-categories/:id", bookCategories.remove);
+adminRouter.get("/books-categories/:id/translations", bookCategories.getTranslations);
+adminRouter.put("/books-categories/:id/translations/:locale", bookCategories.upsertTranslationHandler);
+adminRouter.delete("/books-categories/:id/translations/:locale", bookCategories.deleteTranslationHandler);
 
 module.exports = { publicRouter, adminRouter };

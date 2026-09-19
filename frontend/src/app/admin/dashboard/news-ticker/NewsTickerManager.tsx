@@ -3,7 +3,10 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { NewsTickerItem, NewsTickerTarget } from "@/lib/serverApi";
+import { TranslationsPanel } from "@/components/admin/TranslationsPanel";
 import styles from "./news-ticker.module.css";
+
+const TRANSLATION_FIELDS = [{ key: "message", label: "نص الرسالة", multiline: true }];
 
 const TARGET_LABELS: Record<NewsTickerTarget, string> = {
   all: "الجميع",
@@ -18,6 +21,7 @@ type NewsTickerManagerProps = {
 export function NewsTickerManager({ initialItems }: NewsTickerManagerProps) {
   const router = useRouter();
   const [items, setItems] = useState(initialItems);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState<NewsTickerTarget>("all");
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
@@ -116,10 +120,20 @@ export function NewsTickerManager({ initialItems }: NewsTickerManagerProps) {
               <div className={styles.itemBody}>
                 <p className={styles.itemMessage}>{item.message}</p>
                 <p className={styles.itemMeta}>{TARGET_LABELS[item.target]}</p>
+                {expandedId === item.id && (
+                  <TranslationsPanel apiBase={`/api/admin/news-ticker/${item.id}`} fields={TRANSLATION_FIELDS} />
+                )}
               </div>
               <div className={styles.itemActions}>
                 <button type="button" className={styles.buttonSecondary} onClick={() => handleToggleActive(item)}>
                   {item.is_active ? "إيقاف" : "تفعيل"}
+                </button>
+                <button
+                  type="button"
+                  className={styles.buttonSecondary}
+                  onClick={() => setExpandedId((current) => (current === item.id ? null : item.id))}
+                >
+                  {expandedId === item.id ? "إخفاء الترجمات" : "الترجمات"}
                 </button>
                 <button type="button" className={styles.buttonDanger} onClick={() => handleDelete(item.id)}>
                   حذف

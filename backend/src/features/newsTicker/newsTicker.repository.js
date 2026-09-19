@@ -1,6 +1,26 @@
 const { pool } = require("../../config/db");
 
-async function listActiveForAudience(audience) {
+const TRANSLATABLE_LOCALES = ["en", "de"];
+
+function isTranslatableLocale(locale) {
+  return TRANSLATABLE_LOCALES.includes(locale);
+}
+
+// A ticker item only shows to visitors in a non-Arabic locale once an admin
+// has translated its message — no mixed-language fallback.
+async function listActiveForAudience(audience, locale) {
+  if (isTranslatableLocale(locale)) {
+    const [rows] = await pool.query(
+      `SELECT i.id, nit.message, i.target
+       FROM news_ticker_items i
+       INNER JOIN news_ticker_item_translations nit ON nit.item_id = i.id AND nit.locale = ?
+       WHERE i.is_active = 1 AND i.deleted_at IS NULL AND (i.target = 'all' OR i.target = ?)
+       ORDER BY i.sort_order ASC, i.id ASC`,
+      [locale, audience]
+    );
+    return rows;
+  }
+
   const [rows] = await pool.query(
     `SELECT id, message, target
      FROM news_ticker_items
@@ -49,6 +69,36 @@ async function softDeleteItem(id) {
   await pool.query("UPDATE news_ticker_items SET deleted_at = NOW() WHERE id = ?", [id]);
 }
 
+async function listTranslations(itemId) {
+  const [rows] = await pool.query(
+    "SELECT locale, message, updated_at FROM news_ticker_item_translations WHERE item_id = ? ORDER BY locale ASC",
+    [itemId]
+  );
+  return rows;
+}
+
+async function findTranslation(itemId, locale) {
+  const [rows] = await pool.query(
+    "SELECT * FROM news_ticker_item_translations WHERE item_id = ? AND locale = ? LIMIT 1",
+    [itemId, locale]
+  );
+  return rows[0] || null;
+}
+
+async function upsertTranslation(itemId, locale, data) {
+  await pool.query(
+    `INSERT INTO news_ticker_item_translations (item_id, locale, message)
+     VALUES (?, ?, ?)
+     ON DUPLICATE KEY UPDATE message = VALUES(message)`,
+    [itemId, locale, data.message]
+  );
+  return findTranslation(itemId, locale);
+}
+
+async function deleteTranslation(itemId, locale) {
+  await pool.query("DELETE FROM news_ticker_item_translations WHERE item_id = ? AND locale = ?", [itemId, locale]);
+}
+
 module.exports = {
   listActiveForAudience,
   listAll,
@@ -56,4 +106,9 @@ module.exports = {
   createItem,
   updateItem,
   softDeleteItem,
+  TRANSLATABLE_LOCALES,
+  listTranslations,
+  findTranslation,
+  upsertTranslation,
+  deleteTranslation,
 };

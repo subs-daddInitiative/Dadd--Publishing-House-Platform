@@ -7,6 +7,9 @@ const {
   createItemHandler,
   updateItemHandler,
   deleteItemHandler,
+  getItemTranslationsHandler,
+  upsertItemTranslationHandler,
+  deleteItemTranslationHandler,
 } = require("./newsTicker.controller");
 
 const publicRouter = Router();
@@ -18,5 +21,8 @@ adminRouter.get("/news-ticker", requireAdmin, getAdminTicker);
 adminRouter.post("/news-ticker", requireAdmin, createItemHandler);
 adminRouter.put("/news-ticker/:id", requireAdmin, updateItemHandler);
 adminRouter.delete("/news-ticker/:id", requireAdmin, deleteItemHandler);
+adminRouter.get("/news-ticker/:id/translations", requireAdmin, getItemTranslationsHandler);
+adminRouter.put("/news-ticker/:id/translations/:locale", requireAdmin, upsertItemTranslationHandler);
+adminRouter.delete("/news-ticker/:id/translations/:locale", requireAdmin, deleteItemTranslationHandler);
 
 module.exports = { publicRouter, adminRouter };

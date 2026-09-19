@@ -54,7 +54,7 @@ export default async function StudiesPage({
 
   const [dictionary, categories, studyList, recentBlogsResult] = await Promise.all([
     getDictionary(locale),
-    getPublicStudyCategories(),
+    getPublicStudyCategories(locale),
     getPublicStudies({ page, category, sort, premium, search, locale }),
     getPublicBlogs({ page: 1, locale }),
   ]);

@@ -2,7 +2,13 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { TranslationsPanel } from "@/components/admin/TranslationsPanel";
 import styles from "./settings.module.css";
+
+const TRANSLATION_FIELDS = [
+  { key: "title", label: "العنوان" },
+  { key: "description", label: "الوصف", multiline: true },
+];
 
 type AboutFeature = {
   id: number;
@@ -21,6 +27,7 @@ export function AboutFeaturesManager({ features }: AboutFeaturesManagerProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
   const [editIcon, setEditIcon] = useState("");
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
@@ -133,9 +140,22 @@ export function AboutFeaturesManager({ features }: AboutFeaturesManagerProps) {
                   {feature.icon} {feature.title}
                 </p>
                 <p className={styles.bannerMeta}>{feature.description}</p>
+                {expandedId === feature.id && (
+                  <TranslationsPanel
+                    apiBase={`/api/admin/about-features/${feature.id}`}
+                    fields={TRANSLATION_FIELDS}
+                  />
+                )}
               </div>
               <button type="button" className={styles.buttonSecondary} onClick={() => startEditing(feature)}>
                 تعديل
+              </button>
+              <button
+                type="button"
+                className={styles.buttonSecondary}
+                onClick={() => setExpandedId((current) => (current === feature.id ? null : feature.id))}
+              >
+                {expandedId === feature.id ? "إخفاء الترجمات" : "الترجمات"}
               </button>
               <button type="button" className={styles.buttonDanger} onClick={() => handleDelete(feature.id)}>
                 حذف

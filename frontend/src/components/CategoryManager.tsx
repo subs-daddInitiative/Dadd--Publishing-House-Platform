@@ -2,7 +2,13 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { TranslationsPanel } from "./admin/TranslationsPanel";
 import styles from "./CategoryManager.module.css";
+
+const TRANSLATION_FIELDS = [
+  { key: "name", label: "الاسم" },
+  { key: "description", label: "الوصف (اختياري)", multiline: true },
+];
 
 type Category = { id: number; name: string; slug: string };
 
@@ -17,6 +23,7 @@ export function CategoryManager({ apiBase, categories, deleteConfirmText }: Cate
   const [name, setName] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingName, setEditingName] = useState("");
+  const [expandedId, setExpandedId] = useState<number | null>(null);
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -112,10 +119,22 @@ export function CategoryManager({ apiBase, categories, deleteConfirmText }: Cate
                   <button type="button" className={styles.buttonSecondary} onClick={() => startEditing(category)}>
                     تعديل
                   </button>
+                  <button
+                    type="button"
+                    className={styles.buttonSecondary}
+                    onClick={() => setExpandedId((current) => (current === category.id ? null : category.id))}
+                  >
+                    {expandedId === category.id ? "إخفاء الترجمات" : "الترجمات"}
+                  </button>
                   <button type="button" className={styles.buttonDanger} onClick={() => handleDelete(category.id)}>
                     حذف
                   </button>
                 </div>
+                {expandedId === category.id && (
+                  <div className={styles.translationsWrap}>
+                    <TranslationsPanel apiBase={`${apiBase}/${category.id}`} fields={TRANSLATION_FIELDS} />
+                  </div>
+                )}
               </li>
             )
           )}

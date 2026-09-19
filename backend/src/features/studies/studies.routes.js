@@ -10,7 +10,6 @@ const { createCategoryController } = require("../../utils/categoryController");
 const {
   getPublicStudies,
   getPublicStudyBySlug,
-  getStudyCategories,
   getAdminStudies,
   getHighlightedStudiesCountHandler,
   getAdminStudyById,
@@ -33,7 +32,7 @@ const studyCategories = createCategoryController(createCategoryRepository("studi
 
 const publicRouter = Router();
 publicRouter.get("/studies", getPublicStudies);
-publicRouter.get("/studies-categories", getStudyCategories);
+publicRouter.get("/studies-categories", studyCategories.listPublic);
 publicRouter.get("/studies/:slug", optionalSubscriberAuth, getPublicStudyBySlug);
 
 const adminRouter = Router();
@@ -54,5 +53,8 @@ adminRouter.get("/studies-categories", studyCategories.list);
 adminRouter.post("/studies-categories", studyCategories.create);
 adminRouter.put("/studies-categories/:id", studyCategories.update);
 adminRouter.delete("/studies-categories/:id", studyCategories.remove);
+adminRouter.get("/studies-categories/:id/translations", studyCategories.getTranslations);
+adminRouter.put("/studies-categories/:id/translations/:locale", studyCategories.upsertTranslationHandler);
+adminRouter.delete("/studies-categories/:id/translations/:locale", studyCategories.deleteTranslationHandler);
 
 module.exports = { publicRouter, adminRouter };

@@ -70,10 +70,18 @@ export type AboutFeature = {
   description: string | null;
 };
 
-export async function getPublicAboutFeatures(): Promise<AboutFeature[]> {
-  const result = await backendFetch<AboutFeature[]>("/api/about-features");
+export async function getPublicAboutFeatures(locale?: string): Promise<AboutFeature[]> {
+  const query = locale ? `?locale=${encodeURIComponent(locale)}` : "";
+  const result = await backendFetch<AboutFeature[]>(`/api/about-features${query}`);
   return result.success ? result.data : [];
 }
+
+export type AboutFeatureTranslation = {
+  locale: string;
+  title: string;
+  description: string | null;
+  updated_at: string;
+};
 
 export async function getAdminAboutFeatures(): Promise<AboutFeature[]> {
   const result = await backendFetch<AboutFeature[]>("/api/admin/about-features");
@@ -117,10 +125,21 @@ export type NewsTickerItem = {
   sort_order?: number;
 };
 
-export async function getPublicNewsTicker(audience: "reader" | "writer"): Promise<NewsTickerItem[]> {
-  const result = await backendFetch<NewsTickerItem[]>(`/api/news-ticker?audience=${audience}`);
+export async function getPublicNewsTicker(
+  audience: "reader" | "writer",
+  locale?: string
+): Promise<NewsTickerItem[]> {
+  const params = new URLSearchParams({ audience });
+  if (locale) params.set("locale", locale);
+  const result = await backendFetch<NewsTickerItem[]>(`/api/news-ticker?${params.toString()}`);
   return result.success ? result.data : [];
 }
+
+export type NewsTickerItemTranslation = {
+  locale: string;
+  message: string;
+  updated_at: string;
+};
 
 export type SiteAdTarget = "all" | "guest" | "reader" | "writer";
 
@@ -315,8 +334,9 @@ export async function getPublicBlogBySlug(slug: string, locale?: string): Promis
   return result.success ? result.data : null;
 }
 
-export async function getPublicBlogCategories(): Promise<BlogCategory[]> {
-  const result = await backendFetch<BlogCategory[]>("/api/blogs-categories");
+export async function getPublicBlogCategories(locale?: string): Promise<BlogCategory[]> {
+  const query = locale ? `?locale=${encodeURIComponent(locale)}` : "";
+  const result = await backendFetch<BlogCategory[]>(`/api/blogs-categories${query}`);
   return result.success ? result.data : [];
 }
 
@@ -495,8 +515,9 @@ export async function getPublicStudyBySlug(slug: string, locale?: string): Promi
   return result.success ? result.data : null;
 }
 
-export async function getPublicStudyCategories(): Promise<StudyCategory[]> {
-  const result = await backendFetch<StudyCategory[]>("/api/studies-categories");
+export async function getPublicStudyCategories(locale?: string): Promise<StudyCategory[]> {
+  const query = locale ? `?locale=${encodeURIComponent(locale)}` : "";
+  const result = await backendFetch<StudyCategory[]>(`/api/studies-categories${query}`);
   return result.success ? result.data : [];
 }
 
@@ -649,25 +670,37 @@ export async function getPublicBooks(options: {
   page?: number;
   category?: string;
   sort?: BookSort;
+  locale?: string;
 } = {}): Promise<BookListResult> {
-  const { page = 1, category, sort } = options;
+  const { page = 1, category, sort, locale } = options;
   const params = new URLSearchParams({ page: String(page) });
   if (category) params.set("category", category);
   if (sort) params.set("sort", sort);
+  if (locale) params.set("locale", locale);
 
   const result = await backendFetch<BookListResult>(`/api/books?${params.toString()}`);
   return result.success ? result.data : { items: [], total: 0, page: 1, pageSize: 12, totalPages: 0 };
 }
 
-export async function getPublicBookBySlug(slug: string): Promise<BookDetail | null> {
-  const result = await backendFetch<BookDetail>(`/api/books/${encodeURIComponent(slug)}`);
+export async function getPublicBookBySlug(slug: string, locale?: string): Promise<BookDetail | null> {
+  const query = locale ? `?locale=${encodeURIComponent(locale)}` : "";
+  const result = await backendFetch<BookDetail>(`/api/books/${encodeURIComponent(slug)}${query}`);
   return result.success ? result.data : null;
 }
 
-export async function getPublicBookCategories(): Promise<BookCategory[]> {
-  const result = await backendFetch<BookCategory[]>("/api/books-categories");
+export async function getPublicBookCategories(locale?: string): Promise<BookCategory[]> {
+  const query = locale ? `?locale=${encodeURIComponent(locale)}` : "";
+  const result = await backendFetch<BookCategory[]>(`/api/books-categories${query}`);
   return result.success ? result.data : [];
 }
+
+export type BookTranslation = {
+  locale: string;
+  title: string | null;
+  author: string | null;
+  description: string | null;
+  updated_at: string;
+};
 
 export type AdminBookSummary = {
   id: number;

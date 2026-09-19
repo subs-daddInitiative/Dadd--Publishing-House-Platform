@@ -24,4 +24,15 @@ function validateAboutFeaturePayload(body, { partial = false } = {}) {
   return { errors, value };
 }
 
-module.exports = { validateAboutFeaturePayload };
+function validateAboutFeatureTranslationPayload(body) {
+  const errors = [];
+
+  const title = typeof body.title === "string" ? body.title.trim() : "";
+  if (!title) errors.push("Title is required");
+
+  const description = body.description !== undefined ? String(body.description).trim().slice(0, 500) : null;
+
+  return { errors, value: { title, description: description || null } };
+}
+
+module.exports = { validateAboutFeaturePayload, validateAboutFeatureTranslationPayload };

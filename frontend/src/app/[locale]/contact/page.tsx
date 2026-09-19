@@ -1,6 +1,29 @@
-import { isLocale, type Locale } from "@/i18n/config";
+import type { Metadata } from "next";
+import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
+import { getPublicSettings } from "@/lib/serverApi";
+import { Contact } from "@/features/home/Contact";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+
+  const dictionary = await getDictionary(locale);
+
+  return {
+    title: `${dictionary.nav.contact} | ${dictionary.common.siteName}`,
+    description: dictionary.home.contactIntro,
+    alternates: {
+      canonical: `/${locale}/contact`,
+      languages: Object.fromEntries(locales.map((loc) => [loc, `/${loc}/contact`])),
+    },
+  };
+}
 
 export default async function ContactPage({
   params,
@@ -9,12 +32,16 @@ export default async function ContactPage({
 }) {
   const { locale: rawLocale } = await params;
   if (!isLocale(rawLocale)) notFound();
+  const locale = rawLocale as Locale;
 
-  const dictionary = await getDictionary(rawLocale as Locale);
+  const [dictionary, settings] = await Promise.all([getDictionary(locale), getPublicSettings()]);
 
   return (
-    <section className="container">
-      <h1>{dictionary.nav.contact}</h1>
-    </section>
+    <Contact
+      dictionary={dictionary}
+      callNumber={settings?.callNumber ?? null}
+      whatsappNumber={settings?.whatsappNumber ?? null}
+      socialLinks={settings?.socialLinks || []}
+    />
   );
 }

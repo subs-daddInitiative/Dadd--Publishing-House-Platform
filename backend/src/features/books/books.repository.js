@@ -4,17 +4,27 @@ const { slugify } = require("../../utils/slugify");
 const PRICE_EXPR = "IF(b.pricing_tier_id IS NOT NULL, pt.price, b.price)";
 const CURRENCY_EXPR = "IF(b.pricing_tier_id IS NOT NULL, pt.currency, b.currency)";
 
+// Books are physical/Arabic-language items first — an English/German
+// translation is optional polish, not a gate. So unlike blogs/studies/ads,
+// an untranslated book (or category) never disappears in another locale;
+// it just falls back to showing its Arabic title/author/description/name.
+// `bt`/`bct` only match real rows when locale is 'en' or 'de' — for 'ar'
+// (the default) they never match anything, so COALESCE always picks the
+// base column and this single query path stays correct for every locale.
 const PUBLIC_LIST_FIELDS = `
-  b.id, b.title, b.slug, b.author, b.description,
+  b.id, COALESCE(bt.title, b.title) AS title, b.slug,
+  COALESCE(bt.author, b.author) AS author, COALESCE(bt.description, b.description) AS description,
   ${PRICE_EXPR} AS price, ${CURRENCY_EXPR} AS currency,
   b.pricing_tier_id, pt.name AS pricing_tier_name,
   b.rating, b.reviews_count, b.cover_image, b.published_at,
-  bc.name AS category_name, bc.slug AS category_slug
+  COALESCE(bct.name, bc.name) AS category_name, bc.slug AS category_slug
 `;
 
 const PUBLIC_JOINS = `
   LEFT JOIN books_categories bc ON bc.id = b.category_id
   LEFT JOIN book_pricing_tiers pt ON pt.id = b.pricing_tier_id
+  LEFT JOIN book_translations bt ON bt.book_id = b.id AND bt.locale = ?
+  LEFT JOIN books_categories_translations bct ON bct.category_id = bc.id AND bct.locale = ?
 `;
 
 const SORT_COLUMNS = {
@@ -24,8 +34,8 @@ const SORT_COLUMNS = {
   price_desc: `${PRICE_EXPR} DESC`,
 };
 
-async function listPublicBooks({ limit, offset, categorySlug, sort }) {
-  const params = [];
+async function listPublicBooks({ limit, offset, categorySlug, sort, locale = "ar" }) {
+  const params = [locale, locale];
   let query = `SELECT ${PUBLIC_LIST_FIELDS}
      FROM books b
      ${PUBLIC_JOINS}
@@ -67,14 +77,14 @@ async function listExternalLinks(bookId) {
   return rows;
 }
 
-async function findPublicBookBySlug(slug) {
+async function findPublicBookBySlug(slug, locale = "ar") {
   const [rows] = await pool.query(
     `SELECT ${PUBLIC_LIST_FIELDS}, b.category_id, b.pdf_file, b.updated_at
      FROM books b
      ${PUBLIC_JOINS}
      WHERE b.slug = ? AND b.status = 'published' AND b.deleted_at IS NULL
      LIMIT 1`,
-    [slug]
+    [locale, locale, slug]
   );
   const book = rows[0];
   if (!book) return null;
@@ -83,7 +93,7 @@ async function findPublicBookBySlug(slug) {
   return book;
 }
 
-async function findRelatedBooks(categoryId, excludeId, limit = 3) {
+async function findRelatedBooks(categoryId, excludeId, locale = "ar", limit = 3) {
   let sameCategory = [];
   if (categoryId) {
     const [rows] = await pool.query(
@@ -93,7 +103,7 @@ async function findRelatedBooks(categoryId, excludeId, limit = 3) {
        WHERE b.category_id = ? AND b.id != ? AND b.status = 'published' AND b.deleted_at IS NULL
        ORDER BY b.published_at DESC
        LIMIT ?`,
-      [categoryId, excludeId, limit]
+      [locale, locale, categoryId, excludeId, limit]
     );
     sameCategory = rows;
   }
@@ -107,7 +117,7 @@ async function findRelatedBooks(categoryId, excludeId, limit = 3) {
      WHERE b.id != ? AND b.status = 'published' AND b.deleted_at IS NULL
      ORDER BY b.published_at DESC
      LIMIT ?`,
-    [excludeId, limit]
+    [locale, locale, excludeId, limit]
   );
 
   const seen = new Set(sameCategory.map((row) => row.id));
@@ -244,6 +254,38 @@ async function softDeleteBook(id) {
   await pool.query("UPDATE books SET deleted_at = NOW() WHERE id = ?", [id]);
 }
 
+const TRANSLATABLE_LOCALES = ["en", "de"];
+
+async function listTranslations(bookId) {
+  const [rows] = await pool.query(
+    "SELECT locale, title, author, description, updated_at FROM book_translations WHERE book_id = ? ORDER BY locale ASC",
+    [bookId]
+  );
+  return rows;
+}
+
+async function findTranslation(bookId, locale) {
+  const [rows] = await pool.query(
+    "SELECT * FROM book_translations WHERE book_id = ? AND locale = ? LIMIT 1",
+    [bookId, locale]
+  );
+  return rows[0] || null;
+}
+
+async function upsertTranslation(bookId, locale, data) {
+  await pool.query(
+    `INSERT INTO book_translations (book_id, locale, title, author, description)
+     VALUES (?, ?, ?, ?, ?)
+     ON DUPLICATE KEY UPDATE title = VALUES(title), author = VALUES(author), description = VALUES(description)`,
+    [bookId, locale, data.title || null, data.author || null, data.description || null]
+  );
+  return findTranslation(bookId, locale);
+}
+
+async function deleteTranslation(bookId, locale) {
+  await pool.query("DELETE FROM book_translations WHERE book_id = ? AND locale = ?", [bookId, locale]);
+}
+
 module.exports = {
   listPublicBooks,
   countPublicBooks,
@@ -255,5 +297,10 @@ module.exports = {
   createBook,
   updateBook,
   softDeleteBook,
+  TRANSLATABLE_LOCALES,
+  listTranslations,
+  findTranslation,
+  upsertTranslation,
+  deleteTranslation,
   replaceExternalLinks,
 };

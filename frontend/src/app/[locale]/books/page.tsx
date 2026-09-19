@@ -53,8 +53,8 @@ export default async function BooksPage({
 
   const [dictionary, categories, bookList] = await Promise.all([
     getDictionary(locale),
-    getPublicBookCategories(),
-    getPublicBooks({ page, category, sort }),
+    getPublicBookCategories(locale),
+    getPublicBooks({ page, category, sort, locale }),
   ]);
 
   const { items, totalPages } = bookList;

@@ -1,5 +1,4 @@
 const {
-  listCategories,
   listPublicBlogs,
   countPublicBlogs,
   findPublicBlogBySlug,
@@ -95,15 +94,6 @@ async function getPublicBlogBySlug(req, res, next) {
     }
 
     res.json({ success: true, data: { ...blog, content_blocks: blocks, locked, related } });
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function getBlogCategories(req, res, next) {
-  try {
-    const categories = await listCategories();
-    res.json({ success: true, data: categories });
   } catch (error) {
     next(error);
   }
@@ -451,7 +441,6 @@ async function deleteBlogHandler(req, res, next) {
 module.exports = {
   getPublicBlogs,
   getPublicBlogBySlug,
-  getBlogCategories,
   getAdminBlogs,
   getHighlightedBlogsCountHandler,
   getAdminBlogById,

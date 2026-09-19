@@ -36,8 +36,8 @@ export default async function HomePage({
       getPublicStats(),
       getPublicBlogs({ page: 1, locale }),
       getPublicStudies({ page: 1, locale }),
-      getPublicAboutFeatures(),
-      getPublicBooks({ page: 1 }),
+      getPublicAboutFeatures(locale),
+      getPublicBooks({ page: 1, locale }),
     ]);
 
   const backendUrl = process.env.BACKEND_URL || "http://localhost:4000";

@@ -7,6 +7,9 @@ const {
   createAboutFeatureHandler,
   updateAboutFeatureHandler,
   deleteAboutFeatureHandler,
+  getFeatureTranslationsHandler,
+  upsertFeatureTranslationHandler,
+  deleteFeatureTranslationHandler,
 } = require("./aboutFeatures.controller");
 
 const publicRouter = Router();
@@ -18,5 +21,8 @@ adminRouter.get("/about-features", requireAdmin, getAdminAboutFeatures);
 adminRouter.post("/about-features", requireAdmin, createAboutFeatureHandler);
 adminRouter.put("/about-features/:id", requireAdmin, updateAboutFeatureHandler);
 adminRouter.delete("/about-features/:id", requireAdmin, deleteAboutFeatureHandler);
+adminRouter.get("/about-features/:id/translations", requireAdmin, getFeatureTranslationsHandler);
+adminRouter.put("/about-features/:id/translations/:locale", requireAdmin, upsertFeatureTranslationHandler);
+adminRouter.delete("/about-features/:id/translations/:locale", requireAdmin, deleteFeatureTranslationHandler);
 
 module.exports = { publicRouter, adminRouter };

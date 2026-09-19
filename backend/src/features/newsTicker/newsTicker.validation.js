@@ -19,4 +19,13 @@ function validateItemPayload(body) {
   return { errors, value };
 }
 
-module.exports = { validateItemPayload };
+function validateTranslationPayload(body) {
+  const errors = [];
+
+  const message = typeof body.message === "string" ? body.message.trim() : "";
+  if (!message) errors.push("Message is required");
+
+  return { errors, value: { message: message.slice(0, 500) } };
+}
+
+module.exports = { validateItemPayload, validateTranslationPayload };

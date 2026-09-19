@@ -10,8 +10,13 @@ const {
   updateBook,
   softDeleteBook,
   replaceExternalLinks,
+  TRANSLATABLE_LOCALES,
+  listTranslations,
+  findTranslation,
+  upsertTranslation,
+  deleteTranslation,
 } = require("./books.repository");
-const { validateBookPayload } = require("./books.validation");
+const { validateBookPayload, validateBookTranslationPayload } = require("./books.validation");
 
 const PAGE_SIZE = 12;
 const SORTS = ["newest", "oldest", "price_asc", "price_desc"];
@@ -30,9 +35,10 @@ async function getPublicBooks(req, res, next) {
     const offset = (page - 1) * PAGE_SIZE;
     const categorySlug = typeof req.query.category === "string" ? req.query.category : undefined;
     const sort = SORTS.includes(req.query.sort) ? req.query.sort : "newest";
+    const locale = typeof req.query.locale === "string" ? req.query.locale : undefined;
 
     const [items, total] = await Promise.all([
-      listPublicBooks({ limit: PAGE_SIZE, offset, categorySlug, sort }),
+      listPublicBooks({ limit: PAGE_SIZE, offset, categorySlug, sort, locale }),
       countPublicBooks({ categorySlug }),
     ]);
 
@@ -47,11 +53,12 @@ async function getPublicBooks(req, res, next) {
 
 async function getPublicBookBySlug(req, res, next) {
   try {
-    const book = await findPublicBookBySlug(req.params.slug);
+    const locale = typeof req.query.locale === "string" ? req.query.locale : undefined;
+    const book = await findPublicBookBySlug(req.params.slug, locale);
     if (!book) {
       return res.status(404).json({ success: false, message: "Book not found" });
     }
-    const related = await findRelatedBooks(book.category_id, book.id);
+    const related = await findRelatedBooks(book.category_id, book.id, locale);
     res.json({ success: true, data: { ...book, related } });
   } catch (error) {
     next(error);
@@ -154,6 +161,56 @@ async function deleteBookHandler(req, res, next) {
   }
 }
 
+function requireValidLocale(req, res) {
+  if (!TRANSLATABLE_LOCALES.includes(req.params.locale)) {
+    res.status(400).json({ success: false, message: "Unsupported locale" });
+    return false;
+  }
+  return true;
+}
+
+async function getBookTranslationsHandler(req, res, next) {
+  try {
+    const existing = await findAdminBookById(req.params.id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Book not found" });
+    }
+    const translations = await listTranslations(req.params.id);
+    res.json({ success: true, data: translations });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function upsertBookTranslationHandler(req, res, next) {
+  try {
+    if (!requireValidLocale(req, res)) return;
+    const existing = await findAdminBookById(req.params.id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Book not found" });
+    }
+    const { value } = validateBookTranslationPayload(req.body);
+    const translation = await upsertTranslation(existing.id, req.params.locale, value);
+    res.json({ success: true, data: translation });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function deleteBookTranslationHandler(req, res, next) {
+  try {
+    if (!requireValidLocale(req, res)) return;
+    const existing = await findAdminBookById(req.params.id);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Book not found" });
+    }
+    await deleteTranslation(req.params.id, req.params.locale);
+    res.json({ success: true, data: null });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getPublicBooks,
   getPublicBookBySlug,
@@ -162,4 +219,7 @@ module.exports = {
   createBookHandler,
   updateBookHandler,
   deleteBookHandler,
+  getBookTranslationsHandler,
+  upsertBookTranslationHandler,
+  deleteBookTranslationHandler,
 };

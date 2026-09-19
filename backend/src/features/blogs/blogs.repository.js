@@ -22,16 +22,15 @@ const PUBLIC_LIST_FIELDS = `
 const PUBLIC_LIST_FIELDS_TRANSLATED = `
   b.id, bt.title, bt.slug, bt.excerpt, b.cover_image, b.published_at, b.is_premium,
   b.is_highlighted, b.highlighted_until, ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active,
-  bc.name AS category_name, bc.slug AS category_slug,
+  bct.name AS category_name, bc.slug AS category_slug,
   COALESCE(b.author_name, u.name) AS author_name
 `;
 
-async function listCategories() {
-  const [rows] = await pool.query(
-    "SELECT id, name, slug FROM blogs_categories WHERE deleted_at IS NULL ORDER BY name ASC"
-  );
-  return rows;
-}
+// Only added when locale is a non-Arabic locale — category_name comes back
+// NULL (hiding the tag) rather than falling back to the Arabic name, so
+// translated posts never mix languages in their category label.
+const CATEGORY_TRANSLATION_JOIN =
+  "LEFT JOIN blogs_categories_translations bct ON bct.category_id = bc.id AND bct.locale = ?";
 
 const PUBLIC_SORT_COLUMNS = {
   newest: "b.published_at DESC",
@@ -45,9 +44,10 @@ async function listPublicBlogs({ limit, offset, premium, categorySlug, search, s
      FROM blogs b
      ${translated ? "INNER JOIN blog_translations bt ON bt.blog_id = b.id AND bt.locale = ?" : ""}
      LEFT JOIN blogs_categories bc ON bc.id = b.category_id
+     ${translated ? CATEGORY_TRANSLATION_JOIN : ""}
      LEFT JOIN users u ON u.id = b.author_id
      WHERE b.status = 'published' AND b.deleted_at IS NULL`;
-  if (translated) params.push(locale);
+  if (translated) params.push(locale, locale);
 
   if (premium === "premium") {
     query += " AND b.is_premium = 1";
@@ -106,10 +106,11 @@ async function findPublicBlogBySlug(slug, locale) {
        FROM blog_translations bt
        INNER JOIN blogs b ON b.id = bt.blog_id
        LEFT JOIN blogs_categories bc ON bc.id = b.category_id
+       ${CATEGORY_TRANSLATION_JOIN}
        LEFT JOIN users u ON u.id = b.author_id
        WHERE bt.slug = ? AND bt.locale = ? AND b.status = 'published' AND b.deleted_at IS NULL
        LIMIT 1`,
-      [slug, locale]
+      [locale, slug, locale]
     );
     return rows[0] || null;
   }
@@ -131,14 +132,17 @@ async function findRelatedBlogs(categoryId, excludeId, locale, limit = 3) {
   const fields = translated ? PUBLIC_LIST_FIELDS_TRANSLATED : PUBLIC_LIST_FIELDS;
   const translationJoin = translated ? "INNER JOIN blog_translations bt ON bt.blog_id = b.id AND bt.locale = ?" : "";
 
+  const categoryJoin = translated ? CATEGORY_TRANSLATION_JOIN : "";
+
   let sameCategory = [];
   if (categoryId) {
-    const params = translated ? [locale, categoryId, excludeId, limit] : [categoryId, excludeId, limit];
+    const params = translated ? [locale, locale, categoryId, excludeId, limit] : [categoryId, excludeId, limit];
     const [rows] = await pool.query(
       `SELECT ${fields}
        FROM blogs b
        ${translationJoin}
        LEFT JOIN blogs_categories bc ON bc.id = b.category_id
+       ${categoryJoin}
        LEFT JOIN users u ON u.id = b.author_id
        WHERE b.category_id = ? AND b.id != ? AND b.status = 'published' AND b.deleted_at IS NULL
        ORDER BY b.published_at DESC
@@ -150,12 +154,13 @@ async function findRelatedBlogs(categoryId, excludeId, locale, limit = 3) {
 
   if (sameCategory.length >= limit) return sameCategory;
 
-  const latestParams = translated ? [locale, excludeId, limit] : [excludeId, limit];
+  const latestParams = translated ? [locale, locale, excludeId, limit] : [excludeId, limit];
   const [latest] = await pool.query(
     `SELECT ${fields}
      FROM blogs b
      ${translationJoin}
      LEFT JOIN blogs_categories bc ON bc.id = b.category_id
+     ${categoryJoin}
      LEFT JOIN users u ON u.id = b.author_id
      WHERE b.id != ? AND b.status = 'published' AND b.deleted_at IS NULL
      ORDER BY b.published_at DESC
@@ -455,7 +460,6 @@ async function reviewBlog(id, { decision, isPremium, reason, reviewerId }) {
 }
 
 module.exports = {
-  listCategories,
   listPublicBlogs,
   countPublicBlogs,
   findPublicBlogBySlug,

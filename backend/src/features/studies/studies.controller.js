@@ -1,5 +1,4 @@
 const {
-  listCategories,
   listPublicStudies,
   countPublicStudies,
   findPublicStudyBySlug,
@@ -94,15 +93,6 @@ async function getPublicStudyBySlug(req, res, next) {
     }
 
     res.json({ success: true, data: { ...study, content_blocks: blocks, locked, related } });
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function getStudyCategories(req, res, next) {
-  try {
-    const categories = await listCategories();
-    res.json({ success: true, data: categories });
   } catch (error) {
     next(error);
   }
@@ -298,7 +288,6 @@ async function deleteStudyHandler(req, res, next) {
 module.exports = {
   getPublicStudies,
   getPublicStudyBySlug,
-  getStudyCategories,
   getAdminStudies,
   getHighlightedStudiesCountHandler,
   getAdminStudyById,

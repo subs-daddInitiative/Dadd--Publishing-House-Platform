@@ -76,7 +76,7 @@ export default async function LocaleLayout({
   const siteName = settings?.siteName || dictionary.common.siteName;
   const logoUrl = backendAssetUrl(settings?.logo);
   const tickerAudience = subscriber?.account_type === "writer" ? "writer" : "reader";
-  const tickerItems = await getPublicNewsTicker(tickerAudience);
+  const tickerItems = await getPublicNewsTicker(tickerAudience, locale);
   const adsAudience = !subscriber ? "guest" : subscriber.account_type === "writer" ? "writer" : "reader";
   const siteAdsRaw = await getPublicSiteAds(adsAudience, locale);
   const siteAds = siteAdsRaw.map((ad) => ({ ...ad, image: backendAssetUrl(ad.image) }));
