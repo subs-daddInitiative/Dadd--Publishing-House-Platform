@@ -9,6 +9,12 @@ type Banner = {
   title: string | null;
   image: string;
   is_active: number;
+  placement?: "hero" | "subscription_offers";
+};
+
+const PLACEMENT_LABELS: Record<string, string> = {
+  hero: "الشريط الرئيسي",
+  subscription_offers: "عروض الاشتراكات",
 };
 
 type BannersManagerProps = {
@@ -20,6 +26,7 @@ export function BannersManager({ banners, backendUrl }: BannersManagerProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState("");
+  const [placement, setPlacement] = useState<"hero" | "subscription_offers">("hero");
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -34,6 +41,7 @@ export function BannersManager({ banners, backendUrl }: BannersManagerProps) {
     const formData = new FormData();
     formData.append("image", file);
     formData.append("title", title);
+    formData.append("placement", placement);
     formData.append("is_active", "1");
 
     const response = await fetch("/api/admin/banners", { method: "POST", body: formData });
@@ -41,6 +49,7 @@ export function BannersManager({ banners, backendUrl }: BannersManagerProps) {
 
     if (result.success) {
       setTitle("");
+      setPlacement("hero");
       if (fileInputRef.current) fileInputRef.current.value = "";
       router.refresh();
     } else {
@@ -66,7 +75,9 @@ export function BannersManager({ banners, backendUrl }: BannersManagerProps) {
             <img src={`${backendUrl}${banner.image}`} alt={banner.title || ""} className={styles.bannerImage} />
             <div className={styles.bannerInfo}>
               <p className={styles.bannerTitle}>{banner.title || "بدون عنوان"}</p>
-              <p className={styles.bannerMeta}>{banner.is_active ? "مفعّل" : "غير مفعّل"}</p>
+              <p className={styles.bannerMeta}>
+                {banner.is_active ? "مفعّل" : "غير مفعّل"} · {PLACEMENT_LABELS[banner.placement || "hero"]}
+              </p>
             </div>
             <button type="button" className={styles.buttonDanger} onClick={() => handleDelete(banner.id)}>
               حذف
@@ -85,6 +96,18 @@ export function BannersManager({ banners, backendUrl }: BannersManagerProps) {
             value={title}
             onChange={(event) => setTitle(event.target.value)}
           />
+        </div>
+        <div className={styles.field}>
+          <label htmlFor="bannerPlacement" className={styles.label}>مكان العرض</label>
+          <select
+            id="bannerPlacement"
+            className={styles.input}
+            value={placement}
+            onChange={(event) => setPlacement(event.target.value as "hero" | "subscription_offers")}
+          >
+            <option value="hero">الشريط الرئيسي</option>
+            <option value="subscription_offers">عروض الاشتراكات</option>
+          </select>
         </div>
         <div className={styles.field}>
           <label htmlFor="bannerImage" className={styles.label}>صورة البانر</label>

@@ -30,7 +30,11 @@ const {
   validateTranslationPayload,
 } = require("./blogs.validation");
 const { getSettings } = require("../settings/settings.repository");
-const { hasActiveBlogAccess, findById: findSubscriberById } = require("../subscribers/subscribers.repository");
+const {
+  hasActiveBlogAccess,
+  hasActiveCategoryAccess,
+  findById: findSubscriberById,
+} = require("../subscribers/subscribers.repository");
 const { assetUrl } = require("./blockAssetUpload");
 const { verifyTurnstileToken } = require("../../utils/turnstile");
 
@@ -76,7 +80,10 @@ async function getPublicBlogBySlug(req, res, next) {
     }
     const related = await findRelatedBlogs(blog.category_id, blog.id, locale);
 
-    const entitled = Boolean(req.subscriber) && (await hasActiveBlogAccess(req.subscriber.sub));
+    const entitled =
+      Boolean(req.subscriber) &&
+      ((await hasActiveBlogAccess(req.subscriber.sub)) ||
+        (blog.category_id != null && (await hasActiveCategoryAccess(req.subscriber.sub, "blogs", blog.category_id))));
     let blocks = blog.content_blocks ? JSON.parse(blog.content_blocks) : [];
     delete blog.content_blocks;
 

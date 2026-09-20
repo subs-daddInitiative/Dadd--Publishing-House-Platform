@@ -49,17 +49,21 @@ export async function getPublicSettings(): Promise<PublicSettings | null> {
   return result.success ? result.data : null;
 }
 
+export type BannerPlacement = "hero" | "subscription_offers";
+
 export type Banner = {
   id: number;
   title: string | null;
   description: string | null;
   image: string;
   link_url: string | null;
+  placement?: BannerPlacement;
   is_active: number;
 };
 
-export async function getPublicBanners(): Promise<Banner[]> {
-  const result = await backendFetch<Banner[]>("/api/banners");
+export async function getPublicBanners(placement: BannerPlacement = "hero"): Promise<Banner[]> {
+  const query = placement !== "hero" ? `?placement=${encodeURIComponent(placement)}` : "";
+  const result = await backendFetch<Banner[]>(`/api/banners${query}`);
   return result.success ? result.data : [];
 }
 
@@ -837,6 +841,39 @@ export type ContentAccessPlan = {
 export async function getPublicContentAccessPlans(): Promise<ContentAccessPlan[]> {
   const result = await backendFetch<ContentAccessPlan[]>("/api/content-access-plans");
   return result.success ? result.data : [];
+}
+
+export type ContentTrialCategory = { category_type: ContentAccessCategory; category_id: number };
+
+export type ContentTrial = {
+  id: number;
+  name: string;
+  duration_value: number;
+  duration_unit: "day" | "week" | "month";
+  sort_order?: number;
+  is_active?: number;
+  categories: ContentTrialCategory[];
+};
+
+export async function getPublicContentTrials(): Promise<ContentTrial[]> {
+  const result = await backendFetch<ContentTrial[]>("/api/content-trials");
+  return result.success ? result.data : [];
+}
+
+export async function getAdminContentTrials(): Promise<ContentTrial[]> {
+  const result = await backendFetch<ContentTrial[]>("/api/admin/content-trials");
+  return result.success ? result.data : [];
+}
+
+export type WriterTrialSettings = {
+  is_enabled: boolean;
+  duration_value: number;
+  duration_unit: "day" | "week" | "month";
+};
+
+export async function getAdminWriterTrialSettings(): Promise<WriterTrialSettings | null> {
+  const result = await backendFetch<WriterTrialSettings>("/api/admin/writer-trial-settings");
+  return result.success ? result.data : null;
 }
 
 export type WriterUpgradeRequest = {

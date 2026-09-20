@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
 import { isLocale, locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
-import { getCurrentSubscriber, getPublicContentAccessPlans } from "@/lib/serverApi";
+import {
+  getCurrentSubscriber,
+  getPublicContentAccessPlans,
+  getPublicContentTrials,
+  getPublicBlogCategories,
+  getPublicStudyCategories,
+} from "@/lib/serverApi";
 import { BlogSubscriptionCards } from "@/features/subscribers/BlogSubscriptionCards";
+import { ContentTrialsSection } from "@/features/subscribers/ContentTrialsSection";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata({
@@ -34,21 +41,36 @@ export default async function SubscribePage({
   if (!isLocale(rawLocale)) notFound();
   const locale = rawLocale as Locale;
 
-  const [dictionary, subscriber, plans] = await Promise.all([
+  const [dictionary, subscriber, plans, trials, blogCategories, studyCategories] = await Promise.all([
     getDictionary(locale),
     getCurrentSubscriber(),
     getPublicContentAccessPlans(),
+    getPublicContentTrials(),
+    getPublicBlogCategories(locale),
+    getPublicStudyCategories(locale),
   ]);
 
   const blogPlans = plans.filter((plan) => plan.category === "blogs");
 
+  const categoryNames: Record<string, string> = {};
+  for (const category of blogCategories) categoryNames[`blogs:${category.id}`] = category.name;
+  for (const category of studyCategories) categoryNames[`studies:${category.id}`] = category.name;
+
   return (
-    <BlogSubscriptionCards
-      locale={locale}
-      dictionary={dictionary}
-      isLoggedIn={Boolean(subscriber)}
-      blogAccessExpiresAt={subscriber?.blog_access_expires_at ?? null}
-      plans={blogPlans}
-    />
+    <>
+      <BlogSubscriptionCards
+        locale={locale}
+        dictionary={dictionary}
+        isLoggedIn={Boolean(subscriber)}
+        blogAccessExpiresAt={subscriber?.blog_access_expires_at ?? null}
+        plans={blogPlans}
+      />
+      <ContentTrialsSection
+        locale={locale}
+        isLoggedIn={Boolean(subscriber)}
+        trials={trials}
+        categoryNames={categoryNames}
+      />
+    </>
   );
 }

@@ -13,6 +13,7 @@ const {
   updatePassword,
   updateTier,
 } = require("./subscribers.repository");
+const { getSettings: getWriterTrialSettings, computeTrialExpiry } = require("../writerTrial/writerTrial.repository");
 const {
   validateRegisterPayload,
   validateLoginPayload,
@@ -63,16 +64,19 @@ async function register(req, res, next) {
       accountType: value.accountType,
     });
 
-    // New writer accounts get a free 1-month beginner-tier trial so they can
-    // try uploading blogs right away, without needing to subscribe first.
+    // New writer accounts get a one-time, admin-configurable beginner-tier
+    // trial so they can try uploading blogs right away, without needing to
+    // subscribe first. Duration/enabled state comes from writer_trial_settings.
     let currentTier = "none";
     let tierExpiresAt = null;
     if (value.accountType === "writer") {
-      const expiresAt = new Date();
-      expiresAt.setMonth(expiresAt.getMonth() + 1);
-      await updateTier(id, "beginner", expiresAt);
-      currentTier = "beginner";
-      tierExpiresAt = expiresAt.toISOString();
+      const trialSettings = await getWriterTrialSettings();
+      if (trialSettings.is_enabled) {
+        const expiresAt = computeTrialExpiry(trialSettings);
+        await updateTier(id, "beginner", expiresAt);
+        currentTier = "beginner";
+        tierExpiresAt = expiresAt.toISOString();
+      }
     }
 
     const token = signToken(id);

@@ -10,11 +10,12 @@ type BannerSliderProps = {
   backendUrl: string;
   prevLabel: string;
   nextLabel: string;
+  variant?: "hero" | "strip";
 };
 
 const AUTO_ADVANCE_MS = 6000;
 
-export function BannerSlider({ banners, backendUrl, prevLabel, nextLabel }: BannerSliderProps) {
+export function BannerSlider({ banners, backendUrl, prevLabel, nextLabel, variant = "hero" }: BannerSliderProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -53,7 +54,9 @@ export function BannerSlider({ banners, backendUrl, prevLabel, nextLabel }: Bann
       <div className={styles.sliderTrack} ref={trackRef}>
         {banners.map((banner, index) => {
           const slide = (
-            <div className={styles.sliderImageWrap}>
+            <div
+              className={`${styles.sliderImageWrap} ${variant === "strip" ? styles.sliderImageWrapStrip : ""}`}
+            >
               <Image
                 src={`${backendUrl}${banner.image}`}
                 alt={banner.title || ""}

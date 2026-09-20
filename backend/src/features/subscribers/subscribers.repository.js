@@ -59,6 +59,21 @@ async function grantContentAccess(subscriberId, category, expiresAt) {
   await pool.query(`UPDATE subscribers SET ${column} = ? WHERE id = ?`, [expiresAt, subscriberId]);
 }
 
+async function hasActiveCategoryAccess(subscriberId, categoryType, categoryId) {
+  const [rows] = await pool.query(
+    "SELECT 1 FROM subscriber_category_access WHERE subscriber_id = ? AND category_type = ? AND category_id = ? AND expires_at > NOW() LIMIT 1",
+    [subscriberId, categoryType, categoryId]
+  );
+  return rows.length > 0;
+}
+
+async function grantCategoryAccess(subscriberId, categoryType, categoryId, expiresAt, source, sourceId) {
+  await pool.query(
+    "INSERT INTO subscriber_category_access (subscriber_id, category_type, category_id, source, source_id, expires_at) VALUES (?, ?, ?, ?, ?, ?)",
+    [subscriberId, categoryType, categoryId, source, sourceId, expiresAt]
+  );
+}
+
 async function createSubscriber({ name, email, passwordHash, accountType }) {
   const [result] = await pool.query(
     "INSERT INTO subscribers (name, email, password_hash, account_type) VALUES (?, ?, ?, ?)",
@@ -101,4 +116,6 @@ module.exports = {
   hasActiveBlogAccess,
   hasActiveStudiesAccess,
   grantContentAccess,
+  hasActiveCategoryAccess,
+  grantCategoryAccess,
 };

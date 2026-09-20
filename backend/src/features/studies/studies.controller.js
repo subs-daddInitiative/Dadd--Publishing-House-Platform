@@ -18,7 +18,7 @@ const {
   deleteTranslation,
 } = require("./studies.repository");
 const { validateStudyPayload, validateTranslationPayload } = require("./studies.validation");
-const { hasActiveStudiesAccess } = require("../subscribers/subscribers.repository");
+const { hasActiveStudiesAccess, hasActiveCategoryAccess } = require("../subscribers/subscribers.repository");
 const { findCompletedPurchase } = require("../contentAccess/studyPurchases.repository");
 const { assetUrl } = require("./studiesBlockAssetUpload");
 
@@ -73,7 +73,9 @@ async function getPublicStudyBySlug(req, res, next) {
     if (study.is_premium && req.subscriber) {
       entitled =
         (await hasActiveStudiesAccess(req.subscriber.sub)) ||
-        Boolean(await findCompletedPurchase(req.subscriber.sub, study.id));
+        Boolean(await findCompletedPurchase(req.subscriber.sub, study.id)) ||
+        (study.category_id != null &&
+          (await hasActiveCategoryAccess(req.subscriber.sub, "studies", study.category_id)));
     }
 
     let locked = false;

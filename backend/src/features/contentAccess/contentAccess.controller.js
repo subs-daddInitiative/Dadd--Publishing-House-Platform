@@ -1,11 +1,21 @@
 const { env } = require("../../config/env");
-const { listPlans, findPlanById, upsertPlanPrice, createPendingAccessSubscription, attachTapCharge, findByTapChargeId, markResult } =
-  require("./contentAccess.repository");
+const {
+  listPlans,
+  findPlanById,
+  upsertPlanPrice,
+  createPendingAccessSubscription,
+  attachTapCharge,
+  findByTapChargeId,
+  markResult,
+  listPlanCategories,
+  replacePlanCategories,
+} = require("./contentAccess.repository");
 const studyPurchases = require("./studyPurchases.repository");
 const { createCharge } = require("../subscriptions/tap.client");
 const { settleCharge } = require("../subscriptions/subscriptions.controller");
 const { findById: findSubscriberById } = require("../subscribers/subscribers.repository");
 const { findStudyById } = require("../studies/studies.repository");
+const { validateCategories } = require("../contentTrials/contentTrials.validation");
 
 function addCycle(date, billingCycle) {
   const result = new Date(date);
@@ -184,12 +194,51 @@ async function updatePlanPriceHandler(req, res, next) {
   }
 }
 
+async function getPlanCategoriesHandler(req, res, next) {
+  try {
+    const plan = await findPlanById(req.params.id);
+    if (!plan) {
+      return res.status(404).json({ success: false, message: "Plan not found" });
+    }
+    const categories = await listPlanCategories(plan.id);
+    res.json({ success: true, data: categories });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function updatePlanCategoriesHandler(req, res, next) {
+  try {
+    const plan = await findPlanById(req.params.id);
+    if (!plan) {
+      return res.status(404).json({ success: false, message: "Plan not found" });
+    }
+
+    const { errors, categories } = await validateCategories(req.body.categories);
+    const invalidType = categories.find((cat) => cat.categoryType !== plan.category);
+    if (invalidType) {
+      errors.push(`Category type must match the plan's category (${plan.category})`);
+    }
+    if (errors.length > 0) {
+      return res.status(400).json({ success: false, message: "Validation failed", errors });
+    }
+
+    await replacePlanCategories(plan.id, categories);
+    const updated = await listPlanCategories(plan.id);
+    res.json({ success: true, data: updated });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getContentPlans,
   checkoutAccess,
   purchaseStudy,
   getAccessStatus,
   updatePlanPriceHandler,
+  getPlanCategoriesHandler,
+  updatePlanCategoriesHandler,
   addCycle,
   toMysqlDatetime,
   markResult,

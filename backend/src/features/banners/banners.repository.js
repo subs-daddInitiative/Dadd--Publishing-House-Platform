@@ -1,14 +1,16 @@
 const { pool } = require("../../config/db");
 
-async function listActiveBanners() {
+async function listActiveBanners(placement = "hero") {
   const [rows] = await pool.query(
-    `SELECT id, title, description, image, link_url
+    `SELECT id, title, description, image, link_url, placement
      FROM banners
      WHERE is_active = 1
        AND deleted_at IS NULL
+       AND placement = ?
        AND (starts_at IS NULL OR starts_at <= NOW())
        AND (ends_at IS NULL OR ends_at >= NOW())
-     ORDER BY sort_order ASC, created_at DESC`
+     ORDER BY sort_order ASC, created_at DESC`,
+    [placement]
   );
   return rows;
 }
@@ -22,13 +24,14 @@ async function listAllBanners() {
 
 async function createBanner(data) {
   const [result] = await pool.query(
-    `INSERT INTO banners (title, description, image, link_url, is_active, sort_order, starts_at, ends_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO banners (title, description, image, link_url, placement, is_active, sort_order, starts_at, ends_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.title,
       data.description,
       data.image,
       data.link_url,
+      data.placement,
       data.is_active,
       data.sort_order,
       data.starts_at,
@@ -52,6 +55,7 @@ async function updateBanner(id, fields) {
     "description",
     "image",
     "link_url",
+    "placement",
     "is_active",
     "sort_order",
     "starts_at",

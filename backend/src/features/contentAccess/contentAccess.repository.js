@@ -52,6 +52,24 @@ async function markResult(id, status, startsAt, endsAt) {
   );
 }
 
+async function listPlanCategories(planId) {
+  const [rows] = await pool.query(
+    "SELECT category_type, category_id FROM content_subscription_plan_categories WHERE plan_id = ?",
+    [planId]
+  );
+  return rows;
+}
+
+async function replacePlanCategories(planId, categories) {
+  await pool.query("DELETE FROM content_subscription_plan_categories WHERE plan_id = ?", [planId]);
+  if (categories.length === 0) return;
+  const values = categories.map((cat) => [planId, cat.categoryType, cat.categoryId]);
+  await pool.query(
+    "INSERT INTO content_subscription_plan_categories (plan_id, category_type, category_id) VALUES ?",
+    [values]
+  );
+}
+
 module.exports = {
   listPlans,
   findPlanById,
@@ -60,4 +78,6 @@ module.exports = {
   attachTapCharge,
   findByTapChargeId,
   markResult,
+  listPlanCategories,
+  replacePlanCategories,
 };

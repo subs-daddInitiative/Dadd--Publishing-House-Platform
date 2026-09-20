@@ -27,6 +27,8 @@ const newsletterRoutes = require("./features/newsletter/newsletter.routes");
 const bookPricingTiersRoutes = require("./features/bookPricingTiers/bookPricingTiers.routes");
 const newsTickerRoutes = require("./features/newsTicker/newsTicker.routes");
 const siteAdsRoutes = require("./features/siteAds/siteAds.routes");
+const writerTrialRoutes = require("./features/writerTrial/writerTrial.routes");
+const contentTrialsRoutes = require("./features/contentTrials/contentTrials.routes");
 
 const app = express();
 
@@ -69,6 +71,8 @@ app.use("/api", newsletterRoutes.publicRouter);
 app.use("/api", bookPricingTiersRoutes.publicRouter);
 app.use("/api", newsTickerRoutes.publicRouter);
 app.use("/api", siteAdsRoutes.publicRouter);
+app.use("/api", writerTrialRoutes.publicRouter);
+app.use("/api", contentTrialsRoutes.publicRouter);
 
 app.use("/api/admin", settingsRoutes.adminRouter);
 app.use("/api/admin", bannersRoutes.adminRouter);
@@ -85,6 +89,8 @@ app.use("/api/admin", writerUpgradesRoutes.adminRouter);
 app.use("/api/admin", bookPricingTiersRoutes.adminRouter);
 app.use("/api/admin", newsTickerRoutes.adminRouter);
 app.use("/api/admin", siteAdsRoutes.adminRouter);
+app.use("/api/admin", writerTrialRoutes.adminRouter);
+app.use("/api/admin", contentTrialsRoutes.adminRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

@@ -12,12 +12,15 @@ function validateBannerPayload(body) {
     errors.push("Link URL must start with http:// or https://");
   }
 
+  const placement = ["hero", "subscription_offers"].includes(body.placement) ? body.placement : "hero";
+
   return {
     errors,
     value: {
       title,
       description,
       link_url: linkUrl || null,
+      placement,
       is_active: isActive,
       sort_order: sortOrder,
       starts_at: body.starts_at || null,

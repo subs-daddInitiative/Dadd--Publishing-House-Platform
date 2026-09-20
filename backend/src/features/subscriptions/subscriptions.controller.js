@@ -11,7 +11,12 @@ const {
   findById,
   markSubscriptionResult,
 } = require("./subscriptions.repository");
-const { findById: findSubscriberById, updateTier, grantContentAccess } = require("../subscribers/subscribers.repository");
+const {
+  findById: findSubscriberById,
+  updateTier,
+  grantContentAccess,
+  grantCategoryAccess,
+} = require("../subscribers/subscribers.repository");
 const contentAccess = require("../contentAccess/contentAccess.repository");
 const studyPurchases = require("../contentAccess/studyPurchases.repository");
 const { findLatestBySubscriber } = require("../writerUpgrades/writerUpgrades.repository");
@@ -169,7 +174,21 @@ async function settleCharge(chargeId) {
         const startsAt = new Date();
         const endsAt = addCycle(startsAt, plan.billing_cycle);
         await contentAccess.markResult(contentSub.id, "active", toMysqlDatetime(startsAt), toMysqlDatetime(endsAt));
-        await grantContentAccess(contentSub.subscriber_id, plan.category, toMysqlDatetime(endsAt));
+        const planCategories = await contentAccess.listPlanCategories(plan.id);
+        if (planCategories.length === 0) {
+          await grantContentAccess(contentSub.subscriber_id, plan.category, toMysqlDatetime(endsAt));
+        } else {
+          for (const category of planCategories) {
+            await grantCategoryAccess(
+              contentSub.subscriber_id,
+              category.category_type,
+              category.category_id,
+              toMysqlDatetime(endsAt),
+              "subscription",
+              contentSub.id
+            );
+          }
+        }
       } else {
         await contentAccess.markResult(contentSub.id, "failed", null, null);
       }

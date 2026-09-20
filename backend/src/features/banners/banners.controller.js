@@ -10,7 +10,8 @@ const { validateBannerPayload } = require("./banners.validation");
 
 async function getPublicBanners(req, res, next) {
   try {
-    const banners = await listActiveBanners();
+    const placement = req.query.placement === "subscription_offers" ? "subscription_offers" : "hero";
+    const banners = await listActiveBanners(placement);
     res.json({ success: true, data: banners });
   } catch (error) {
     next(error);

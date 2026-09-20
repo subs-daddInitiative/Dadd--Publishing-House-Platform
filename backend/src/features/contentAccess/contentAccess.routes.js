@@ -8,6 +8,8 @@ const {
   purchaseStudy,
   getAccessStatus,
   updatePlanPriceHandler,
+  getPlanCategoriesHandler,
+  updatePlanCategoriesHandler,
 } = require("./contentAccess.controller");
 
 const publicRouter = Router();
@@ -19,5 +21,7 @@ publicRouter.get("/subscriber/content-access/status", requireSubscriberAuth, get
 const adminRouter = Router();
 adminRouter.use(requireAuth);
 adminRouter.put("/content-access-plans", requireAdmin, updatePlanPriceHandler);
+adminRouter.get("/content-access-plans/:id/categories", requireAdmin, getPlanCategoriesHandler);
+adminRouter.put("/content-access-plans/:id/categories", requireAdmin, updatePlanCategoriesHandler);
 
 module.exports = { publicRouter, adminRouter };

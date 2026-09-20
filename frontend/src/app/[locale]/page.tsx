@@ -14,6 +14,7 @@ import { Stats } from "@/features/home/Stats";
 import { About } from "@/features/home/About";
 import { BooksSection } from "@/features/home/BooksSection";
 import { Banners } from "@/features/home/Banners";
+import { SubscriptionOffersBanner } from "@/features/home/SubscriptionOffersBanner";
 import { StudiesSection } from "@/features/home/StudiesSection";
 import { BlogsSection } from "@/features/home/BlogsSection";
 import { Contact } from "@/features/home/Contact";
@@ -28,11 +29,12 @@ export default async function HomePage({
   if (!isLocale(rawLocale)) notFound();
 
   const locale = rawLocale as Locale;
-  const [dictionary, settings, banners, stats, blogList, studyList, aboutFeatures, bookList] =
+  const [dictionary, settings, banners, subscriptionBanners, stats, blogList, studyList, aboutFeatures, bookList] =
     await Promise.all([
       getDictionary(locale),
       getPublicSettings(),
       getPublicBanners(),
+      getPublicBanners("subscription_offers"),
       getPublicStats(),
       getPublicBlogs({ page: 1, locale }),
       getPublicStudies({ page: 1, locale }),
@@ -52,6 +54,7 @@ export default async function HomePage({
       <BlogsSection locale={locale} dictionary={dictionary} blogs={blogList.items} />
       <Banners dictionary={dictionary} banners={banners} backendUrl={backendUrl} />
       <StudiesSection locale={locale} dictionary={dictionary} studies={studyList.items} />
+      <SubscriptionOffersBanner dictionary={dictionary} banners={subscriptionBanners} backendUrl={backendUrl} />
       <Contact
         dictionary={dictionary}
         callNumber={settings?.callNumber ?? null}
