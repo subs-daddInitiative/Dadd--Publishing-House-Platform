@@ -11,9 +11,13 @@ const {
 const { validateTrialPayload } = require("./contentTrials.validation");
 const { computeExpiry } = require("../../utils/trialDuration");
 
+function readContentTypeFilter(req) {
+  return ["blogs", "studies"].includes(req.query.content_type) ? req.query.content_type : undefined;
+}
+
 async function getAdminTrials(req, res, next) {
   try {
-    const trials = await listAdmin();
+    const trials = await listAdmin(readContentTypeFilter(req));
     res.json({ success: true, data: trials });
   } catch (error) {
     next(error);
@@ -81,7 +85,7 @@ async function deleteTrial(req, res, next) {
 
 async function getPublicTrials(req, res, next) {
   try {
-    const trials = await listPublic();
+    const trials = await listPublic(readContentTypeFilter(req));
     res.json({ success: true, data: trials });
   } catch (error) {
     next(error);

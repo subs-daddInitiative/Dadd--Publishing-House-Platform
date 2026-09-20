@@ -2,13 +2,15 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import type { ContentTrial, BlogCategory, StudyCategory } from "@/lib/serverApi";
+import type { ContentTrial, ContentAccessCategory } from "@/lib/serverApi";
 import styles from "./content-trials.module.css";
 
+type PickerCategory = { id: number; name: string };
+
 type ContentTrialsManagerProps = {
+  contentType: ContentAccessCategory;
   initialTrials: ContentTrial[];
-  blogCategories: BlogCategory[];
-  studyCategories: StudyCategory[];
+  categories: PickerCategory[];
 };
 
 type FormState = {
@@ -17,8 +19,7 @@ type FormState = {
   durationValue: number;
   durationUnit: "day" | "week" | "month";
   isActive: boolean;
-  selectedBlogCategories: number[];
-  selectedStudyCategories: number[];
+  selectedCategories: number[];
 };
 
 const EMPTY_FORM: FormState = {
@@ -27,23 +28,22 @@ const EMPTY_FORM: FormState = {
   durationValue: 1,
   durationUnit: "week",
   isActive: true,
-  selectedBlogCategories: [],
-  selectedStudyCategories: [],
+  selectedCategories: [],
 };
 
-export function ContentTrialsManager({ initialTrials, blogCategories, studyCategories }: ContentTrialsManagerProps) {
+export function ContentTrialsManager({ contentType, initialTrials, categories }: ContentTrialsManagerProps) {
   const router = useRouter();
   const [trials, setTrials] = useState(initialTrials);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [status, setStatus] = useState<"idle" | "saving" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  function toggleCategory(list: "selectedBlogCategories" | "selectedStudyCategories", id: number) {
+  function toggleCategory(id: number) {
     setForm((current) => {
-      const set = new Set(current[list]);
+      const set = new Set(current.selectedCategories);
       if (set.has(id)) set.delete(id);
       else set.add(id);
-      return { ...current, [list]: Array.from(set) };
+      return { ...current, selectedCategories: Array.from(set) };
     });
   }
 
@@ -54,10 +54,7 @@ export function ContentTrialsManager({ initialTrials, blogCategories, studyCateg
       durationValue: trial.duration_value,
       durationUnit: trial.duration_unit,
       isActive: Boolean(trial.is_active ?? true),
-      selectedBlogCategories: trial.categories.filter((c) => c.category_type === "blogs").map((c) => c.category_id),
-      selectedStudyCategories: trial.categories
-        .filter((c) => c.category_type === "studies")
-        .map((c) => c.category_id),
+      selectedCategories: trial.categories.map((c) => c.category_id),
     });
   }
 
@@ -66,18 +63,19 @@ export function ContentTrialsManager({ initialTrials, blogCategories, studyCateg
     setStatus("saving");
     setErrorMessage(null);
 
-    const categories = [
-      ...form.selectedBlogCategories.map((category_id) => ({ category_type: "blogs", category_id })),
-      ...form.selectedStudyCategories.map((category_id) => ({ category_type: "studies", category_id })),
-    ];
+    const categoryPayload = form.selectedCategories.map((category_id) => ({
+      category_type: contentType,
+      category_id,
+    }));
 
     const payload = {
       name: form.name,
+      content_type: contentType,
       duration_value: form.durationValue,
       duration_unit: form.durationUnit,
       is_active: form.isActive,
       sort_order: 0,
-      categories,
+      categories: categoryPayload,
     };
 
     const url = form.id ? `/api/admin/content-trials/${form.id}` : "/api/admin/content-trials";
@@ -168,36 +166,19 @@ export function ContentTrialsManager({ initialTrials, blogCategories, studyCateg
         </div>
 
         <div className={styles.field} style={{ flexBasis: "100%" }}>
-          <p className={styles.label}>تصنيفات المدونة</p>
+          <p className={styles.label}>التصنيفات التي تفتحها التجربة</p>
           <div className={styles.checkboxGroup}>
-            {blogCategories.map((category) => (
+            {categories.map((category) => (
               <label key={category.id} className={styles.checkboxLabel}>
                 <input
                   type="checkbox"
-                  checked={form.selectedBlogCategories.includes(category.id)}
-                  onChange={() => toggleCategory("selectedBlogCategories", category.id)}
+                  checked={form.selectedCategories.includes(category.id)}
+                  onChange={() => toggleCategory(category.id)}
                 />{" "}
                 {category.name}
               </label>
             ))}
-            {blogCategories.length === 0 && <span className={styles.itemMeta}>لا توجد تصنيفات</span>}
-          </div>
-        </div>
-
-        <div className={styles.field} style={{ flexBasis: "100%" }}>
-          <p className={styles.label}>تصنيفات الدراسات</p>
-          <div className={styles.checkboxGroup}>
-            {studyCategories.map((category) => (
-              <label key={category.id} className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={form.selectedStudyCategories.includes(category.id)}
-                  onChange={() => toggleCategory("selectedStudyCategories", category.id)}
-                />{" "}
-                {category.name}
-              </label>
-            ))}
-            {studyCategories.length === 0 && <span className={styles.itemMeta}>لا توجد تصنيفات</span>}
+            {categories.length === 0 && <span className={styles.itemMeta}>لا توجد تصنيفات</span>}
           </div>
         </div>
 
@@ -225,7 +206,9 @@ export function ContentTrialsManager({ initialTrials, blogCategories, studyCateg
                   {" · "}
                   {trial.is_active ? "مفعّلة" : "غير مفعّلة"}
                   {" · "}
-                  {trial.categories.map((c) => `${c.category_type}:${c.category_id}`).join(", ")}
+                  {trial.categories
+                    .map((c) => categories.find((cat) => cat.id === c.category_id)?.name || `#${c.category_id}`)
+                    .join(", ") || "بدون تصنيفات"}
                 </p>
               </div>
               <div className={styles.itemActions}>

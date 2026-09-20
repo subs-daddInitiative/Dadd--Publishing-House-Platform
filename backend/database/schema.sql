@@ -692,6 +692,7 @@ SELECT 1, 1, 1, 'month' WHERE NOT EXISTS (SELECT 1 FROM writer_trial_settings WH
 CREATE TABLE IF NOT EXISTS content_trials (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(190) NOT NULL,
+  content_type ENUM('blogs','studies') NOT NULL DEFAULT 'blogs',
   duration_value SMALLINT UNSIGNED NOT NULL DEFAULT 1,
   duration_unit ENUM('day','week','month') NOT NULL DEFAULT 'week',
   is_active TINYINT(1) NOT NULL DEFAULT 1,

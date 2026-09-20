@@ -22,6 +22,9 @@ export default async function AdminBooksPage() {
           <Link href="/admin/dashboard/books/categories" className={styles.buttonSecondary}>
             إدارة التصنيفات
           </Link>
+          <Link href="/admin/dashboard/books/pricing-tiers" className={styles.buttonSecondary}>
+            باقات التسعير
+          </Link>
           <Link href="/admin/dashboard/books/new" className={styles.button}>
             إضافة كتاب
           </Link>

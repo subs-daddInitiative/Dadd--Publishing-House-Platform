@@ -76,8 +76,13 @@ export default async function DashboardLayout({ children }: { children: ReactNod
                 </Link>
               </li>
               <li>
-                <Link href="/admin/dashboard/content-trials" className={styles.navLink}>
-                  التجارب المجانية للمحتوى
+                <Link href="/admin/dashboard/content-trials/blogs" className={styles.navLink}>
+                  تجارب المدونة المجانية
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin/dashboard/content-trials/studies" className={styles.navLink}>
+                  تجارب الدراسات المجانية
                 </Link>
               </li>
               <li>

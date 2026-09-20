@@ -13,9 +13,18 @@ type ContentTrialsSectionProps = {
   isLoggedIn: boolean;
   trials: ContentTrial[];
   categoryNames: Record<string, string>;
+  title?: string;
+  subtitle?: string;
 };
 
-export function ContentTrialsSection({ locale, isLoggedIn, trials, categoryNames }: ContentTrialsSectionProps) {
+export function ContentTrialsSection({
+  locale,
+  isLoggedIn,
+  trials,
+  categoryNames,
+  title = "تجارب مجانية",
+  subtitle = "جرّب المحتوى المميز مجانًا لفترة محدودة",
+}: ContentTrialsSectionProps) {
   const [redeemed, setRedeemed] = useState<Set<number>>(new Set());
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [errors, setErrors] = useState<Record<number, string>>({});
@@ -46,8 +55,8 @@ export function ContentTrialsSection({ locale, isLoggedIn, trials, categoryNames
   return (
     <div className={styles.subscribePage}>
       <div className={styles.subscribeHeader}>
-        <h2 className={styles.subscribeTitle}>تجارب مجانية</h2>
-        <p className={styles.subscribeSubtitle}>جرّب المحتوى المميز مجانًا لفترة محدودة</p>
+        <h2 className={styles.subscribeTitle}>{title}</h2>
+        <p className={styles.subscribeSubtitle}>{subtitle}</p>
       </div>
 
       <div className={styles.subscribeCardsGrid}>

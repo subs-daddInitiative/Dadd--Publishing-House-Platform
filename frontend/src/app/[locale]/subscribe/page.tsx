@@ -41,14 +41,16 @@ export default async function SubscribePage({
   if (!isLocale(rawLocale)) notFound();
   const locale = rawLocale as Locale;
 
-  const [dictionary, subscriber, plans, trials, blogCategories, studyCategories] = await Promise.all([
-    getDictionary(locale),
-    getCurrentSubscriber(),
-    getPublicContentAccessPlans(),
-    getPublicContentTrials(),
-    getPublicBlogCategories(locale),
-    getPublicStudyCategories(locale),
-  ]);
+  const [dictionary, subscriber, plans, blogTrials, studyTrials, blogCategories, studyCategories] =
+    await Promise.all([
+      getDictionary(locale),
+      getCurrentSubscriber(),
+      getPublicContentAccessPlans(),
+      getPublicContentTrials("blogs"),
+      getPublicContentTrials("studies"),
+      getPublicBlogCategories(locale),
+      getPublicStudyCategories(locale),
+    ]);
 
   const blogPlans = plans.filter((plan) => plan.category === "blogs");
 
@@ -68,8 +70,18 @@ export default async function SubscribePage({
       <ContentTrialsSection
         locale={locale}
         isLoggedIn={Boolean(subscriber)}
-        trials={trials}
+        trials={blogTrials}
         categoryNames={categoryNames}
+        title="تجارب مجانية للمدونة"
+        subtitle="جرّب مقالات المدونة المميزة مجانًا لفترة محدودة"
+      />
+      <ContentTrialsSection
+        locale={locale}
+        isLoggedIn={Boolean(subscriber)}
+        trials={studyTrials}
+        categoryNames={categoryNames}
+        title="تجارب مجانية للدراسات"
+        subtitle="جرّب الدراسات المميزة مجانًا لفترة محدودة"
       />
     </>
   );

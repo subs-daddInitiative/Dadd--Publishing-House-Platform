@@ -17,16 +17,32 @@ async function attachCategories(trials) {
   return trials.map((trial) => ({ ...trial, categories: byTrial.get(trial.id) || [] }));
 }
 
-async function listAdmin() {
+async function listAdmin(contentType) {
+  const conditions = ["deleted_at IS NULL"];
+  const params = [];
+  if (contentType) {
+    conditions.push("content_type = ?");
+    params.push(contentType);
+  }
   const [rows] = await pool.query(
-    "SELECT * FROM content_trials WHERE deleted_at IS NULL ORDER BY created_at DESC"
+    `SELECT * FROM content_trials WHERE ${conditions.join(" AND ")} ORDER BY created_at DESC`,
+    params
   );
   return attachCategories(rows);
 }
 
-async function listPublic() {
+async function listPublic(contentType) {
+  const conditions = ["is_active = 1", "deleted_at IS NULL"];
+  const params = [];
+  if (contentType) {
+    conditions.push("content_type = ?");
+    params.push(contentType);
+  }
   const [rows] = await pool.query(
-    "SELECT id, name, duration_value, duration_unit, sort_order FROM content_trials WHERE is_active = 1 AND deleted_at IS NULL ORDER BY sort_order ASC, id ASC"
+    `SELECT id, name, content_type, duration_value, duration_unit, sort_order FROM content_trials WHERE ${conditions.join(
+      " AND "
+    )} ORDER BY sort_order ASC, id ASC`,
+    params
   );
   return attachCategories(rows);
 }
@@ -51,19 +67,19 @@ async function replaceCategories(trialId, categories) {
   );
 }
 
-async function create({ name, durationValue, durationUnit, isActive, sortOrder, categories }) {
+async function create({ name, contentType, durationValue, durationUnit, isActive, sortOrder, categories }) {
   const [result] = await pool.query(
-    "INSERT INTO content_trials (name, duration_value, duration_unit, is_active, sort_order) VALUES (?, ?, ?, ?, ?)",
-    [name, durationValue, durationUnit, isActive ? 1 : 0, sortOrder || 0]
+    "INSERT INTO content_trials (name, content_type, duration_value, duration_unit, is_active, sort_order) VALUES (?, ?, ?, ?, ?, ?)",
+    [name, contentType, durationValue, durationUnit, isActive ? 1 : 0, sortOrder || 0]
   );
   await replaceCategories(result.insertId, categories || []);
   return result.insertId;
 }
 
-async function update(id, { name, durationValue, durationUnit, isActive, sortOrder, categories }) {
+async function update(id, { name, contentType, durationValue, durationUnit, isActive, sortOrder, categories }) {
   await pool.query(
-    "UPDATE content_trials SET name = ?, duration_value = ?, duration_unit = ?, is_active = ?, sort_order = ? WHERE id = ?",
-    [name, durationValue, durationUnit, isActive ? 1 : 0, sortOrder || 0, id]
+    "UPDATE content_trials SET name = ?, content_type = ?, duration_value = ?, duration_unit = ?, is_active = ?, sort_order = ? WHERE id = ?",
+    [name, contentType, durationValue, durationUnit, isActive ? 1 : 0, sortOrder || 0, id]
   );
   if (categories !== undefined) {
     await replaceCategories(id, categories || []);

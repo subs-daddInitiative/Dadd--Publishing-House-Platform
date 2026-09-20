@@ -1,7 +1,7 @@
 const { pool } = require("../../config/db");
 const { DURATION_UNITS } = require("../../utils/trialDuration");
 
-async function validateCategories(rawCategories) {
+async function validateCategories(rawCategories, contentType) {
   const errors = [];
   if (!Array.isArray(rawCategories)) {
     return { errors: ["categories must be an array"], categories: [] };
@@ -17,6 +17,10 @@ async function validateCategories(rawCategories) {
     const categoryId = Number(entry?.category_id);
     if (!["blogs", "studies"].includes(categoryType) || !Number.isInteger(categoryId) || categoryId <= 0) {
       errors.push(`Invalid category entry: ${JSON.stringify(entry)}`);
+      continue;
+    }
+    if (contentType && categoryType !== contentType) {
+      errors.push(`Category ${categoryType}#${categoryId} does not match the trial's content_type (${contentType})`);
       continue;
     }
     const key = `${categoryType}:${categoryId}`;
@@ -48,6 +52,11 @@ async function validateTrialPayload(body) {
   if (name.length > 190) errors.push("name must be at most 190 characters");
   value.name = name.slice(0, 190);
 
+  if (!["blogs", "studies"].includes(body.content_type)) {
+    errors.push("content_type must be one of blogs, studies");
+  }
+  value.contentType = body.content_type;
+
   const durationValue = Number(body.duration_value);
   if (!Number.isInteger(durationValue) || durationValue < 1 || durationValue > 365) {
     errors.push("duration_value must be an integer between 1 and 365");
@@ -64,7 +73,7 @@ async function validateTrialPayload(body) {
   const sortOrder = Number(body.sort_order);
   value.sortOrder = Number.isInteger(sortOrder) && sortOrder >= 0 ? sortOrder : 0;
 
-  const { errors: categoryErrors, categories } = await validateCategories(body.categories);
+  const { errors: categoryErrors, categories } = await validateCategories(body.categories, value.contentType);
   errors.push(...categoryErrors);
   value.categories = categories;
 

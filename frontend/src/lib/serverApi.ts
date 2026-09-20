@@ -848,6 +848,7 @@ export type ContentTrialCategory = { category_type: ContentAccessCategory; categ
 export type ContentTrial = {
   id: number;
   name: string;
+  content_type: ContentAccessCategory;
   duration_value: number;
   duration_unit: "day" | "week" | "month";
   sort_order?: number;
@@ -855,13 +856,15 @@ export type ContentTrial = {
   categories: ContentTrialCategory[];
 };
 
-export async function getPublicContentTrials(): Promise<ContentTrial[]> {
-  const result = await backendFetch<ContentTrial[]>("/api/content-trials");
+export async function getPublicContentTrials(contentType?: ContentAccessCategory): Promise<ContentTrial[]> {
+  const query = contentType ? `?content_type=${contentType}` : "";
+  const result = await backendFetch<ContentTrial[]>(`/api/content-trials${query}`);
   return result.success ? result.data : [];
 }
 
-export async function getAdminContentTrials(): Promise<ContentTrial[]> {
-  const result = await backendFetch<ContentTrial[]>("/api/admin/content-trials");
+export async function getAdminContentTrials(contentType?: ContentAccessCategory): Promise<ContentTrial[]> {
+  const query = contentType ? `?content_type=${contentType}` : "";
+  const result = await backendFetch<ContentTrial[]>(`/api/admin/content-trials${query}`);
   return result.success ? result.data : [];
 }
 
