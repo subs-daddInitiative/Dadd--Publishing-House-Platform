@@ -14,7 +14,6 @@ import {
   backendAssetUrl,
 } from "@/lib/serverApi";
 import { notFound } from "next/navigation";
-import { Parallax } from "@/components/Parallax";
 import { Banners } from "@/features/home/Banners";
 import { StudyCard } from "@/features/studies/StudyCard";
 import { PremiumLock } from "@/features/subscribers/PremiumLock";
@@ -146,15 +145,6 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
         <span aria-hidden="true">/</span>
         <span>{study.title}</span>
       </nav>
-
-      {heroImageUrl && (
-        <div className={styles.heroBand}>
-          <Parallax speed={0.06} className={styles.heroBandParallax}>
-            <Image src={heroImageUrl} alt={study.title} fill sizes="100vw" className={styles.heroBandImage} priority />
-          </Parallax>
-          <div className={styles.heroBandOverlay} aria-hidden="true" />
-        </div>
-      )}
 
       <header className={styles.postHeader}>
         {study.category_name && <span className={styles.postCategoryTag}>{study.category_name}</span>}
