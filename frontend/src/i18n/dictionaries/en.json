@@ -2,7 +2,8 @@
   "common": {
     "siteName": "Publishing House",
     "skipToContent": "Skip to content",
-    "close": "Close"
+    "close": "Close",
+    "closeAll": "Close all"
   },
   "sidebar": {
     "recentBlogsTitle": "Latest Articles",

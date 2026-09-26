@@ -7,6 +7,7 @@ import styles from "./AdsPopupManager.module.css";
 type AdsPopupManagerProps = {
   ads: SiteAd[];
   closeLabel: string;
+  closeAllLabel: string;
 };
 
 const STORAGE_KEY = "site_ads:dismissed";
@@ -32,7 +33,17 @@ function markDismissed(id: number) {
   }
 }
 
-export function AdsPopupManager({ ads, closeLabel }: AdsPopupManagerProps) {
+function markAllDismissed(ids: number[]) {
+  const set = getDismissedSet();
+  for (const id of ids) set.add(id);
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+  } catch {
+    // ignore storage failures (private browsing, etc.)
+  }
+}
+
+export function AdsPopupManager({ ads, closeLabel, closeAllLabel }: AdsPopupManagerProps) {
   const [queue, setQueue] = useState<SiteAd[]>([]);
   const [visible, setVisible] = useState(false);
 
@@ -53,6 +64,15 @@ export function AdsPopupManager({ ads, closeLabel }: AdsPopupManagerProps) {
     setVisible(false);
     setTimeout(() => {
       setQueue((prev) => prev.slice(1));
+    }, 200);
+  }
+
+  function handleCloseAll() {
+    markAllDismissed(queue.map((ad) => ad.id));
+
+    setVisible(false);
+    setTimeout(() => {
+      setQueue([]);
     }, 200);
   }
 
@@ -100,6 +120,11 @@ export function AdsPopupManager({ ads, closeLabel }: AdsPopupManagerProps) {
             <button type="button" className={styles.dismissButton} onClick={handleClose}>
               {closeLabel}
             </button>
+            {queue.length > 1 && (
+              <button type="button" className={styles.dismissButton} onClick={handleCloseAll}>
+                {closeAllLabel}
+              </button>
+            )}
           </div>
         </div>
       </div>

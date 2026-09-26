@@ -100,7 +100,7 @@ export default async function LocaleLayout({
           whatsappNumber={settings?.whatsappNumber ?? null}
           socialLinks={settings?.socialLinks || []}
         />
-        <AdsPopupManager ads={siteAds} closeLabel={dictionary.common.close} />
+        <AdsPopupManager ads={siteAds} closeLabel={dictionary.common.close} closeAllLabel={dictionary.common.closeAll} />
       </FavoritesProvider>
     </StoreProvider>
   );

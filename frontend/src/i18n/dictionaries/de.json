@@ -2,7 +2,8 @@
   "common": {
     "siteName": "Verlagshaus",
     "skipToContent": "Zum Inhalt springen",
-    "close": "Schließen"
+    "close": "Schließen",
+    "closeAll": "Alle schließen"
   },
   "sidebar": {
     "recentBlogsTitle": "Neueste Artikel",

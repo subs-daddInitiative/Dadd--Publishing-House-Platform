@@ -2,7 +2,8 @@
   "common": {
     "siteName": "دار إتقان للنشر",
     "skipToContent": "الانتقال إلى المحتوى",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "closeAll": "إغلاق الكل"
   },
   "sidebar": {
     "recentBlogsTitle": "أحدث المقالات",
