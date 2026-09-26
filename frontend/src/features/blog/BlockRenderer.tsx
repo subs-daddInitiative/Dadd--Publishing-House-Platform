@@ -17,6 +17,7 @@ export function BlockRenderer({ blocks, lockedFileLabel }: BlockRendererProps) {
             return (
               <div
                 key={block.id}
+                id={block.id}
                 className={styles.postBody}
                 dangerouslySetInnerHTML={{ __html: block.html }}
               />
@@ -26,7 +27,7 @@ export function BlockRenderer({ blocks, lockedFileLabel }: BlockRendererProps) {
             const url = backendAssetUrl(block.url);
             if (!url) return null;
             return (
-              <figure key={block.id}>
+              <figure key={block.id} id={block.id}>
                 <div className={styles.blockImage}>
                   <Image src={url} alt={block.alt} fill sizes="(max-width: 60rem) 100vw, 42rem" className={styles.postImage} />
                 </div>
@@ -41,6 +42,7 @@ export function BlockRenderer({ blocks, lockedFileLabel }: BlockRendererProps) {
             return (
               <div
                 key={block.id}
+                id={block.id}
                 className={`${styles.blockImageText} ${block.layout === "image-right" ? styles.blockImageTextReversed : ""}`}
               >
                 <div className={styles.blockImage}>
@@ -53,7 +55,7 @@ export function BlockRenderer({ blocks, lockedFileLabel }: BlockRendererProps) {
 
           case "quote":
             return (
-              <blockquote key={block.id} className={styles.blockQuote}>
+              <blockquote key={block.id} id={block.id} className={styles.blockQuote}>
                 {block.text}
                 {block.author && <cite className={styles.blockQuoteAuthor}>{block.author}</cite>}
               </blockquote>
@@ -61,7 +63,7 @@ export function BlockRenderer({ blocks, lockedFileLabel }: BlockRendererProps) {
 
           case "tags":
             return (
-              <div key={block.id} className={styles.blockTags}>
+              <div key={block.id} id={block.id} className={styles.blockTags}>
                 {block.tags.map((tag) => (
                   <span key={tag} className={styles.blockTag}>
                     #{tag}
@@ -75,7 +77,7 @@ export function BlockRenderer({ blocks, lockedFileLabel }: BlockRendererProps) {
           case "video": {
             if (block.locked || !block.url) {
               return (
-                <div key={block.id} className={styles.blockFile}>
+                <div key={block.id} id={block.id} className={styles.blockFile}>
                   {block.label && <p className={styles.blockFileLabel}>{block.label}</p>}
                   <p className={styles.blockFileLocked}>{lockedFileLabel}</p>
                 </div>
@@ -83,7 +85,7 @@ export function BlockRenderer({ blocks, lockedFileLabel }: BlockRendererProps) {
             }
             const url = backendAssetUrl(block.url);
             return (
-              <div key={block.id} className={styles.blockFile}>
+              <div key={block.id} id={block.id} className={styles.blockFile}>
                 {block.label && <p className={styles.blockFileLabel}>{block.label}</p>}
                 {block.type === "pdf" ? (
                   <a href={url || undefined} target="_blank" rel="noopener noreferrer">

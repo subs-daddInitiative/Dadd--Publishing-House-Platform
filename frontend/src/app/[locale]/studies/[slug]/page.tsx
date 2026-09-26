@@ -19,6 +19,7 @@ import { StudyCard } from "@/features/studies/StudyCard";
 import { PremiumLock } from "@/features/subscribers/PremiumLock";
 import { Sidebar } from "@/components/Sidebar";
 import { BlockRenderer } from "@/features/blog/BlockRenderer";
+import { StudyTableOfContents } from "@/features/studies/StudyTableOfContents";
 import styles from "@/features/studies/studies.module.css";
 
 type PageParams = { locale: string; slug: string };
@@ -239,13 +240,17 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
       </div>
       </article>
 
-      <Sidebar
-        locale={locale}
-        dictionary={dictionary}
-        recentStudies={sidebarRecentStudies}
-        recentBlogs={recentBlogsResult.items.slice(0, 5)}
-        showSubscribeCta={false}
-      />
+      <div className={styles.sidebarCol}>
+        <StudyTableOfContents blocks={study.content_blocks} title={dictionary.studiesPage.tableOfContents} />
+
+        <Sidebar
+          locale={locale}
+          dictionary={dictionary}
+          recentStudies={sidebarRecentStudies}
+          recentBlogs={recentBlogsResult.items.slice(0, 5)}
+          showSubscribeCta={false}
+        />
+      </div>
       </div>
     </div>
   );

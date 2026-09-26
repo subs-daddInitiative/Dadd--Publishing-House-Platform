@@ -13,6 +13,13 @@
   min-width: 0;
 }
 
+.sidebarCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
 @media (max-width: 60rem) {
   .layoutGrid {
     grid-template-columns: 1fr;

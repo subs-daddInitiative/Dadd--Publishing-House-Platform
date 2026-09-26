@@ -324,7 +324,8 @@
     "filterPremium": "للمشتركين فقط",
     "searchPlaceholder": "ابحث في الدراسات...",
     "searchButton": "بحث",
-    "resetFilters": "إعادة تعيين"
+    "resetFilters": "إعادة تعيين",
+    "tableOfContents": "محتويات الدراسة"
   },
   "booksPage": {
     "title": "مكتبة الكتب",
