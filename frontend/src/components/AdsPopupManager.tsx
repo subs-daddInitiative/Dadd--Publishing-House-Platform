@@ -89,17 +89,20 @@ export function AdsPopupManager({ ads, closeLabel, closeAllLabel }: AdsPopupMana
 
   return (
     <div className={styles.corner}>
-      <div className={styles.card} role="complementary" aria-label={current.title}>
+      <div
+        className={`${styles.card} ${current.image ? styles.hasImage : ""}`}
+        role="complementary"
+        aria-label={current.title}
+      >
+        {current.image && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={current.image} alt="" className={styles.image} />
+        )}
+        <div className={styles.scrim} />
+
         <button type="button" className={styles.closeButton} onClick={handleClose} aria-label={closeLabel}>
           ×
         </button>
-
-        {current.image && (
-          <div className={styles.imageWrap}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={current.image} alt="" className={styles.image} />
-          </div>
-        )}
 
         <div className={styles.body}>
           <h2 className={styles.title}>{current.title}</h2>
