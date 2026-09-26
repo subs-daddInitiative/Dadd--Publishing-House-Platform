@@ -230,6 +230,16 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
         </section>
       )}
 
+      <div className={styles.recentSection}>
+        <Sidebar
+          locale={locale}
+          dictionary={dictionary}
+          recentStudies={sidebarRecentStudies}
+          recentBlogs={recentBlogsResult.items.slice(0, 5)}
+          showSubscribeCta={false}
+        />
+      </div>
+
       <div className={styles.postActions}>
         <Link href={`/${locale}`} className={styles.postActionPrimary}>
           {dictionary.studiesPage.backHome}
@@ -242,14 +252,6 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
 
       <div className={styles.sidebarCol}>
         <StudyTableOfContents blocks={study.content_blocks} title={dictionary.studiesPage.tableOfContents} />
-
-        <Sidebar
-          locale={locale}
-          dictionary={dictionary}
-          recentStudies={sidebarRecentStudies}
-          recentBlogs={recentBlogsResult.items.slice(0, 5)}
-          showSubscribeCta={false}
-        />
       </div>
       </div>
     </div>
