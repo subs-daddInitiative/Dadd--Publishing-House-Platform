@@ -623,3 +623,11 @@ Every change that is complete, working, and saved must be committed and pushed t
 As soon as a feature or fix has been verified (tested/built successfully), stage the relevant files, write a focused commit message describing what changed and why, and push it to the remote right away. Never leave verified work sitting uncommitted at the end of a task.
 
 Exceptions: never commit secrets/.env files, and never commit personal reference/content files or design mockups kept at the project root (e.g. draft docs, canvas/design working files) unless explicitly asked to.
+
+# database & dummy data sync
+
+Read `DB_CHANGES.md` at the start of any task that touches the database, dummy/demo content, or when picking up this repo after a pull — it is the changelog for schema and dummy-data changes and tells you exactly what to run.
+
+After pulling, or when someone reports missing dummy data/pictures locally: run any new files in `backend/database/migrations/` (safe to re-run all of them, they're idempotent), then run `npm run db:seed` from `backend/` to load `backend/database/seedData.json` into the local database and copy `backend/database/seed-assets/` into `backend/uploads/`. This restores all demo books/blogs/studies/categories/translations/settings/banners/ads/pricing tiers — never real accounts or billing data, which are excluded from the seed on purpose.
+
+Whenever you (the AI agent) add, edit, or seed any dummy/demo content, or add a migration: after verifying it works, run `npm run db:export-seed` from `backend/` to refresh `seedData.json` and `seed-assets/`, commit them alongside the migration, and add a dated entry to `DB_CHANGES.md` describing what changed and why. This is part of "verified work must be committed" above — do it without being asked, every time.
