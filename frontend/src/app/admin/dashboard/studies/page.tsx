@@ -54,6 +54,9 @@ export default async function AdminStudiesPage({
           <Link href="/admin/dashboard/studies/categories" className={styles.buttonSecondary}>
             إدارة التصنيفات
           </Link>
+          <Link href="/admin/dashboard/studies/import" className={styles.buttonSecondary}>
+            استيراد من Excel
+          </Link>
           <Link href="/admin/dashboard/studies/new" className={styles.button}>
             إضافة دراسة
           </Link>
