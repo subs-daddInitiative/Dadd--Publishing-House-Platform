@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { BlockEditor, type ContentBlock } from "@/features/blogEditor/BlockEditor";
+import { StatsEditor, parseInitialStats, type Stat } from "@/components/admin/StatsEditor";
 import type { AdminStudyTranslation } from "@/lib/serverApi";
 import styles from "../../../studies.module.css";
 
@@ -11,6 +12,7 @@ type StudyTranslationFormProps = {
   locale: string;
   initialTranslation: AdminStudyTranslation | null;
   originalContentBlocks: string | null | undefined;
+  originalStats: string | null | undefined;
 };
 
 function slugify(text: string) {
@@ -31,7 +33,13 @@ function parseInitialBlocks(raw: string | null | undefined): ContentBlock[] {
   }
 }
 
-export function StudyTranslationForm({ studyId, locale, initialTranslation, originalContentBlocks }: StudyTranslationFormProps) {
+export function StudyTranslationForm({
+  studyId,
+  locale,
+  initialTranslation,
+  originalContentBlocks,
+  originalStats,
+}: StudyTranslationFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState(initialTranslation?.title || "");
   const [slug, setSlug] = useState(initialTranslation?.slug || "");
@@ -43,6 +51,7 @@ export function StudyTranslationForm({ studyId, locale, initialTranslation, orig
   const [blocks, setBlocks] = useState<ContentBlock[]>(
     parseInitialBlocks(initialTranslation?.content_blocks ?? originalContentBlocks)
   );
+  const [stats, setStats] = useState<Stat[]>(parseInitialStats(initialTranslation?.stats ?? originalStats));
   const [uploading, setUploading] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "saving" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -65,6 +74,7 @@ export function StudyTranslationForm({ studyId, locale, initialTranslation, orig
         slug,
         description,
         content_blocks: JSON.stringify(blocks),
+        stats: JSON.stringify(stats),
       }),
     });
     const result = await response.json();
@@ -127,6 +137,11 @@ export function StudyTranslationForm({ studyId, locale, initialTranslation, orig
           onChange={(event) => setDescription(event.target.value)}
           maxLength={500}
         />
+      </div>
+
+      <div className={styles.field}>
+        <label className={styles.label}>أرقام وعناوين (اختياري، حتى 6)</label>
+        <StatsEditor stats={stats} onChange={setStats} />
       </div>
 
       <div className={styles.field}>

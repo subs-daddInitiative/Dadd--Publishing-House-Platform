@@ -214,6 +214,12 @@ function validateTranslationPayload(body) {
     value.content_blocks = JSON.stringify(blocks);
   }
 
+  if (body.stats !== undefined) {
+    const { errors: statsErrors, stats } = validateStats(body.stats);
+    errors.push(...statsErrors);
+    value.stats = JSON.stringify(stats);
+  }
+
   return { errors, value };
 }
 

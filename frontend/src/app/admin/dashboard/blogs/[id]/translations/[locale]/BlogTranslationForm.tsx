@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { BlockEditor, type ContentBlock } from "@/features/blogEditor/BlockEditor";
+import { StatsEditor, parseInitialStats, type Stat } from "@/components/admin/StatsEditor";
 import type { AdminBlogTranslation } from "@/lib/serverApi";
 import styles from "../../../blogs.module.css";
 
@@ -11,6 +12,7 @@ type BlogTranslationFormProps = {
   locale: string;
   initialTranslation: AdminBlogTranslation | null;
   originalContentBlocks: string | null | undefined;
+  originalStats: string | null | undefined;
 };
 
 function slugify(text: string) {
@@ -31,7 +33,13 @@ function parseInitialBlocks(raw: string | null | undefined): ContentBlock[] {
   }
 }
 
-export function BlogTranslationForm({ blogId, locale, initialTranslation, originalContentBlocks }: BlogTranslationFormProps) {
+export function BlogTranslationForm({
+  blogId,
+  locale,
+  initialTranslation,
+  originalContentBlocks,
+  originalStats,
+}: BlogTranslationFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState(initialTranslation?.title || "");
   const [slug, setSlug] = useState(initialTranslation?.slug || "");
@@ -43,6 +51,7 @@ export function BlogTranslationForm({ blogId, locale, initialTranslation, origin
   const [blocks, setBlocks] = useState<ContentBlock[]>(
     parseInitialBlocks(initialTranslation?.content_blocks ?? originalContentBlocks)
   );
+  const [stats, setStats] = useState<Stat[]>(parseInitialStats(initialTranslation?.stats ?? originalStats));
   const [seoKeywords, setSeoKeywords] = useState(initialTranslation?.seo_keywords || "");
   const [uploading, setUploading] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "saving" | "error">("idle");
@@ -66,6 +75,7 @@ export function BlogTranslationForm({ blogId, locale, initialTranslation, origin
         slug,
         excerpt,
         content_blocks: JSON.stringify(blocks),
+        stats: JSON.stringify(stats),
         seo_keywords: seoKeywords,
       }),
     });
@@ -129,6 +139,11 @@ export function BlogTranslationForm({ blogId, locale, initialTranslation, origin
           onChange={(event) => setExcerpt(event.target.value)}
           maxLength={500}
         />
+      </div>
+
+      <div className={styles.field}>
+        <label className={styles.label}>أرقام وعناوين (اختياري، حتى 6)</label>
+        <StatsEditor stats={stats} onChange={setStats} />
       </div>
 
       <div className={styles.field}>

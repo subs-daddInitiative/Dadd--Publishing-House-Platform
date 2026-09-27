@@ -31,6 +31,7 @@ export default async function BlogTranslationPage({
         locale={locale}
         initialTranslation={translation}
         originalContentBlocks={blog.content_blocks}
+        originalStats={blog.stats}
       />
     </section>
   );

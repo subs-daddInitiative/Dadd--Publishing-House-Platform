@@ -102,8 +102,8 @@ async function findPublicStudyBySlug(slug, locale) {
 
   if (translated) {
     const [rows] = await pool.query(
-      `SELECT ${PUBLIC_LIST_FIELDS_TRANSLATED}, s.category_id, s.main_image, s.stats,
-              st.content_blocks, st.updated_at
+      `SELECT ${PUBLIC_LIST_FIELDS_TRANSLATED}, s.category_id, s.main_image,
+              st.content_blocks, st.stats, st.updated_at
        FROM study_translations st
        INNER JOIN studies s ON s.id = st.study_id
        LEFT JOIN studies_categories sc ON sc.id = s.category_id
@@ -367,12 +367,12 @@ async function ensureUniqueTranslationSlug(locale, title, excludeStudyId) {
 
 async function upsertTranslation(studyId, locale, data) {
   await pool.query(
-    `INSERT INTO study_translations (study_id, locale, title, slug, description, content_blocks)
-     VALUES (?, ?, ?, ?, ?, ?)
+    `INSERT INTO study_translations (study_id, locale, title, slug, description, content_blocks, stats)
+     VALUES (?, ?, ?, ?, ?, ?, ?)
      ON DUPLICATE KEY UPDATE
        title = VALUES(title), slug = VALUES(slug), description = VALUES(description),
-       content_blocks = VALUES(content_blocks)`,
-    [studyId, locale, data.title, data.slug, data.description || null, data.content_blocks || null]
+       content_blocks = VALUES(content_blocks), stats = VALUES(stats)`,
+    [studyId, locale, data.title, data.slug, data.description || null, data.content_blocks || null, data.stats || null]
   );
   return findTranslation(studyId, locale);
 }

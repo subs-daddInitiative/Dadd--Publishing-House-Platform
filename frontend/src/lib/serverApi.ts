@@ -428,6 +428,7 @@ export type AdminBlogTranslation = {
   slug: string;
   excerpt: string | null;
   content_blocks: string | null;
+  stats: string | null;
   seo_keywords: string | null;
   created_at: string;
   updated_at: string;
@@ -612,6 +613,7 @@ export type AdminStudyTranslation = {
   slug: string;
   description: string | null;
   content_blocks: string | null;
+  stats: string | null;
   created_at: string;
   updated_at: string;
 };

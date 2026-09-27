@@ -43,13 +43,23 @@ harmless.
 
 ---
 
+## 2026-09-27 — Stats strip is now translatable per locale
+
+- Migration `035_add_stats_to_translations.sql`: added `stats` to
+  `blog_translations` and `study_translations` too. The stats strip now
+  follows the same hide-model as every other translated field on these
+  tables — a locale shows its own translated numbers/titles, with no
+  fallback to Arabic. The translation editor pre-fills from the Arabic
+  stats (like it already does for content sections) so the admin only has
+  to translate the wording, not re-enter the numbers.
+
 ## 2026-09-27 — Bulk study import from Excel; blog/study "stats" strip
 
 - Migration `034_add_stats_to_blogs_and_studies.sql`: added `stats` (TEXT,
   nullable JSON) to both `blogs` and `studies` — up to 6 admin-entered
   "number + title" pairs (e.g. "500" / "مشارك") shown as a stats strip right
-  under the post header. Optional; hidden entirely when empty. Not
-  translated per-locale yet — always shows the base (Arabic) values.
+  under the post header. Optional; hidden entirely when empty. Originally
+  shipped without per-locale translation — see the entry above for that.
 - Added bulk study import via Excel (`/admin/dashboard/studies/import`,
   template at `frontend/public/templates/study_import_template.xlsx`).
   Reuses the existing create/validation path exactly; downloads referenced

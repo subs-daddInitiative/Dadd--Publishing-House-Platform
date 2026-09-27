@@ -1294,6 +1294,7 @@
         "slug": "article-one",
         "excerpt": "A short excerpt from article number 1.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1306,6 +1307,7 @@
         "slug": "artikel-eins",
         "excerpt": "Ein kurzer Auszug aus Artikel Nummer 1.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1318,6 +1320,7 @@
         "slug": "importance-of-reading-in-shaping-character",
         "excerpt": "How daily reading helps build a balanced, self-aware character.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1330,6 +1333,7 @@
         "slug": "bedeutung-des-lesens-fuer-charakterbildung",
         "excerpt": "Wie tägliches Lesen zu einem ausgeglichenen, bewussten Charakter beiträgt.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1342,6 +1346,7 @@
         "slug": "five-habits-for-every-beginning-writer",
         "excerpt": "Practical tips to help beginning writers develop their style and productivity.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1354,6 +1359,7 @@
         "slug": "fuenf-gewohnheiten-fuer-angehende-schriftsteller",
         "excerpt": "Praktische Tipps, die angehenden Schriftstellern helfen, ihren Stil und ihre Produktivität zu entwickeln.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1366,6 +1372,7 @@
         "slug": "how-to-choose-your-next-book",
         "excerpt": "A brief guide to picking the right book based on your interests and goals.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1378,6 +1385,7 @@
         "slug": "wie-waehlen-sie-ihr-naechstes-buch",
         "excerpt": "Ein kurzer Leitfaden, um das passende Buch nach Ihren Interessen und Zielen auszuwählen.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1390,6 +1398,7 @@
         "slug": "journey-of-publishing-your-first-book",
         "excerpt": "Practical steps from idea to printed book.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1402,6 +1411,7 @@
         "slug": "reise-zur-veroeffentlichung-ihres-ersten-buches",
         "excerpt": "Praktische Schritte von der Idee bis zum gedruckten Buch.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1414,6 +1424,7 @@
         "slug": "arabic-literature-in-the-digital-age",
         "excerpt": "How Arabic writing is adapting to the age of digital platforms.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1426,6 +1437,7 @@
         "slug": "arabische-literatur-im-digitalen-zeitalter",
         "excerpt": "Wie sich das arabische Schreiben an das Zeitalter der digitalen Plattformen anpasst.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1438,6 +1450,7 @@
         "slug": "die-kunst-des-schreibens-von-der-idee-zur-wirkung",
         "excerpt": "Eine Reise durch die Welt des ernsthaften Schreibens – von der Geburt einer Idee bis zum Leser – und die Rolle der Verlage bei der Förderung neuer Stimmen.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1450,6 +1463,7 @@
         "slug": "contemporary-arabic-literature-in-depth-read-1",
         "excerpt": "An article about contemporary arabic literature, reviewing the key ideas and angles related to the topic in an engaging style.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1462,6 +1476,7 @@
         "slug": "zeitgenoessische-arabische-literatur-vertiefte-lektuere-1",
         "excerpt": "Ein Artikel über Zeitgenössische arabische Literatur, der die wichtigsten Ideen und Aspekte des Themas auf ansprechende Weise beleuchtet.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1474,6 +1489,7 @@
         "slug": "the-philosophy-of-reading-in-depth-read-2",
         "excerpt": "An article about the philosophy of reading, reviewing the key ideas and angles related to the topic in an engaging style.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1486,6 +1502,7 @@
         "slug": "die-philosophie-des-lesens-vertiefte-lektuere-2",
         "excerpt": "Ein Artikel über Die Philosophie des Lesens, der die wichtigsten Ideen und Aspekte des Themas auf ansprechende Weise beleuchtet.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1498,6 +1515,7 @@
         "slug": "the-history-of-printing-in-depth-read-3",
         "excerpt": "An article about the history of printing, reviewing the key ideas and angles related to the topic in an engaging style.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1510,6 +1528,7 @@
         "slug": "die-geschichte-des-buchdrucks-vertiefte-lektuere-3",
         "excerpt": "Ein Artikel über Die Geschichte des Buchdrucks, der die wichtigsten Ideen und Aspekte des Themas auf ansprechende Weise beleuchtet.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1522,6 +1541,7 @@
         "slug": "modern-poetry-in-depth-read-4",
         "excerpt": "An article about modern poetry, reviewing the key ideas and angles related to the topic in an engaging style.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1534,6 +1554,7 @@
         "slug": "moderne-poesie-vertiefte-lektuere-4",
         "excerpt": "Ein Artikel über Moderne Poesie, der die wichtigsten Ideen und Aspekte des Themas auf ansprechende Weise beleuchtet.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1546,6 +1567,7 @@
         "slug": "the-arabic-novel-in-depth-read-5",
         "excerpt": "An article about the arabic novel, reviewing the key ideas and angles related to the topic in an engaging style.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1558,6 +1580,7 @@
         "slug": "der-arabische-roman-vertiefte-lektuere-5",
         "excerpt": "Ein Artikel über Der arabische Roman, der die wichtigsten Ideen und Aspekte des Themas auf ansprechende Weise beleuchtet.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1570,6 +1593,7 @@
         "slug": "travel-literature-in-depth-read-6",
         "excerpt": "An article about travel literature, reviewing the key ideas and angles related to the topic in an engaging style.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1582,6 +1606,7 @@
         "slug": "reiseliteratur-vertiefte-lektuere-6",
         "excerpt": "Ein Artikel über Reiseliteratur, der die wichtigsten Ideen und Aspekte des Themas auf ansprechende Weise beleuchtet.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1594,6 +1619,7 @@
         "slug": "literary-criticism-in-depth-read-7",
         "excerpt": "An article about literary criticism, reviewing the key ideas and angles related to the topic in an engaging style.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1606,6 +1632,7 @@
         "slug": "literaturkritik-vertiefte-lektuere-7",
         "excerpt": "Ein Artikel über Literaturkritik, der die wichtigsten Ideen und Aspekte des Themas auf ansprechende Weise beleuchtet.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1618,6 +1645,7 @@
         "slug": "literary-translation-in-depth-read-8",
         "excerpt": "An article about literary translation, reviewing the key ideas and angles related to the topic in an engaging style.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1630,6 +1658,7 @@
         "slug": "literarische-uebersetzung-vertiefte-lektuere-8",
         "excerpt": "Ein Artikel über Literarische Übersetzung, der die wichtigsten Ideen und Aspekte des Themas auf ansprechende Weise beleuchtet.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1642,6 +1671,7 @@
         "slug": "children-s-literature-in-depth-read-9",
         "excerpt": "An article about children's literature, reviewing the key ideas and angles related to the topic in an engaging style.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1654,6 +1684,7 @@
         "slug": "kinderliteratur-vertiefte-lektuere-9",
         "excerpt": "Ein Artikel über Kinderliteratur, der die wichtigsten Ideen und Aspekte des Themas auf ansprechende Weise beleuchtet.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1666,6 +1697,7 @@
         "slug": "creative-writing-in-depth-read-10",
         "excerpt": "An article about creative writing, reviewing the key ideas and angles related to the topic in an engaging style.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -1678,6 +1710,7 @@
         "slug": "kreatives-schreiben-vertiefte-lektuere-10",
         "excerpt": "Ein Artikel über Kreatives Schreiben, der die wichtigsten Ideen und Aspekte des Themas auf ansprechende Weise beleuchtet.",
         "content_blocks": null,
+        "stats": null,
         "seo_keywords": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
@@ -2031,7 +2064,7 @@
         "currency": "USD",
         "published_at": "2026-09-05 19:38:01",
         "created_at": "2026-09-05 19:38:01",
-        "updated_at": "2026-09-27 09:49:41",
+        "updated_at": "2026-09-27 09:58:02",
         "deleted_at": null
       },
       {
@@ -2344,6 +2377,7 @@
         "slug": "study-number-one",
         "description": "Study Number 1 — a short preview excerpt used to test how descriptions display across the site.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2355,6 +2389,7 @@
         "slug": "studie-nummer-eins",
         "description": "Studie Nummer 1 – ein kurzer Vorschautext, der zeigt, wie Beschreibungen auf der Seite dargestellt werden.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2366,6 +2401,7 @@
         "slug": "impact-of-early-reading-on-academic-achievement",
         "description": "An analytical study on the relationship between early childhood reading and later academic achievement.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2377,6 +2413,7 @@
         "slug": "einfluss-fruehen-lesens-auf-schulischen-erfolg",
         "description": "Eine analytische Studie über den Zusammenhang zwischen frühkindlichem Lesen und späterem schulischem Erfolg.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2388,6 +2425,7 @@
         "slug": "state-of-arabic-digital-publishing",
         "description": "A field study on the shifts in the Arabic publishing industry amid digital transformation.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2399,6 +2437,7 @@
         "slug": "stand-des-arabischen-digitalen-verlagswesens",
         "description": "Eine Feldstudie über den Wandel der arabischen Verlagsbranche im Zuge der digitalen Transformation.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2410,6 +2449,7 @@
         "slug": "analyzing-reading-trends-among-arab-youth",
         "description": "A survey and analysis of reading habits and interests among young people in the Arab world.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2421,6 +2461,7 @@
         "slug": "analyse-der-lesetrends-unter-arabischen-jugendlichen",
         "description": "Eine Umfrage und Analyse der Lesegewohnheiten und Interessen junger Menschen in der arabischen Welt.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2432,6 +2473,7 @@
         "slug": "role-of-independent-publishers-supporting-new-writers",
         "description": "A study on how independent publishers discover and support emerging literary talent.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2443,6 +2485,7 @@
         "slug": "rolle-unabhaengiger-verlage-foerderung-neuer-autoren",
         "description": "Eine Studie darüber, wie unabhängige Verlage aufstrebende literarische Talente entdecken und fördern.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2454,6 +2497,7 @@
         "slug": "impact-of-translation-on-global-reach-of-arabic-literature",
         "description": "A study on the role of translation in bringing Arabic literature to non-Arabic-speaking readers.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2465,17 +2509,7 @@
         "slug": "einfluss-der-uebersetzung-auf-verbreitung-arabischer-literatur",
         "description": "Eine Studie über die Rolle der Übersetzung bei der Vermittlung arabischer Literatur an nicht arabischsprachige Leser.",
         "content_blocks": null,
-        "created_at": "2026-09-19 19:47:05",
-        "updated_at": "2026-09-19 19:47:05"
-      },
-      {
-        "id": 14,
-        "study_id": 14,
-        "locale": "en",
-        "title": "A Study on Cultural Identity (Study No. 1)",
-        "slug": "study-on-cultural-identity-study-no-1",
-        "description": "An analytical study on cultural identity, using a research methodology to present data and findings.",
-        "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2487,6 +2521,7 @@
         "slug": "studie-zur-kulturellen-identitaet-studie-nr-1",
         "description": "Eine analytische Studie zur kulturellen Identität, die eine Forschungsmethodik zur Darstellung von Daten und Ergebnissen anwendet.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2498,6 +2533,7 @@
         "slug": "media-discourse-analysis-study-no-2",
         "description": "An analytical study on media discourse analysis, using a research methodology to present data and findings.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2509,6 +2545,7 @@
         "slug": "analyse-des-mediendiskurses-studie-nr-2",
         "description": "Eine analytische Studie zur Medienanalyse, die eine Forschungsmethodik zur Darstellung von Daten und Ergebnissen anwendet.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2520,6 +2557,7 @@
         "slug": "digital-sociology-study-no-3",
         "description": "An analytical study on digital sociology, using a research methodology to present data and findings.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2531,6 +2569,7 @@
         "slug": "digitale-soziologie-studie-nr-3",
         "description": "Eine analytische Studie zur digitalen Soziologie, die eine Forschungsmethodik zur Darstellung von Daten und Ergebnissen anwendet.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2542,6 +2581,7 @@
         "slug": "postcolonial-studies-study-no-4",
         "description": "An analytical study on postcolonial studies, using a research methodology to present data and findings.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2553,6 +2593,7 @@
         "slug": "postkoloniale-studien-studie-nr-4",
         "description": "Eine analytische Studie zu postkolonialen Studien, die eine Forschungsmethodik zur Darstellung von Daten und Ergebnissen anwendet.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2564,6 +2605,7 @@
         "slug": "political-economy-of-publishing-study-no-5",
         "description": "An analytical study on the political economy of publishing, using a research methodology to present data and findings.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2575,6 +2617,7 @@
         "slug": "politische-oekonomie-des-verlagswesens-studie-nr-5",
         "description": "Eine analytische Studie zur politischen Ökonomie des Verlagswesens, die eine Forschungsmethodik zur Darstellung von Daten und Ergebnissen anwendet.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2586,6 +2629,7 @@
         "slug": "transformations-of-arabic-language-study-no-6",
         "description": "An analytical study on the transformations of the Arabic language, using a research methodology to present data and findings.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2597,6 +2641,7 @@
         "slug": "wandel-der-arabischen-sprache-studie-nr-6",
         "description": "Eine analytische Studie zum Wandel der arabischen Sprache, die eine Forschungsmethodik zur Darstellung von Daten und Ergebnissen anwendet.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2608,6 +2653,7 @@
         "slug": "gender-studies-study-no-7",
         "description": "An analytical study on gender studies, using a research methodology to present data and findings.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2619,6 +2665,7 @@
         "slug": "geschlechterstudien-studie-nr-7",
         "description": "Eine analytische Studie zu Geschlechterstudien, die eine Forschungsmethodik zur Darstellung von Daten und Ergebnissen anwendet.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2630,6 +2677,7 @@
         "slug": "distance-learning-and-its-impact-study-no-8",
         "description": "An analytical study on distance learning and its impact, using a research methodology to present data and findings.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2641,6 +2689,7 @@
         "slug": "fernunterricht-und-seine-auswirkungen-studie-nr-8",
         "description": "Eine analytische Studie zum Fernunterricht und seinen Auswirkungen, die eine Forschungsmethodik zur Darstellung von Daten und Ergebnissen anwendet.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2652,6 +2701,7 @@
         "slug": "artificial-intelligence-and-society-study-no-9",
         "description": "An analytical study on artificial intelligence and society, using a research methodology to present data and findings.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2663,6 +2713,7 @@
         "slug": "kuenstliche-intelligenz-und-gesellschaft-studie-nr-9",
         "description": "Eine analytische Studie zu künstlicher Intelligenz und Gesellschaft, die eine Forschungsmethodik zur Darstellung von Daten und Ergebnissen anwendet.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2674,6 +2725,7 @@
         "slug": "study-in-history-of-ideas-study-no-10",
         "description": "An analytical study on the history of ideas, using a research methodology to present data and findings.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
       },
@@ -2685,8 +2737,21 @@
         "slug": "studie-zur-ideengeschichte-studie-nr-10",
         "description": "Eine analytische Studie zur Ideengeschichte, die eine Forschungsmethodik zur Darstellung von Daten und Ergebnissen anwendet.",
         "content_blocks": null,
+        "stats": null,
         "created_at": "2026-09-19 19:47:05",
         "updated_at": "2026-09-19 19:47:05"
+      },
+      {
+        "id": 35,
+        "study_id": 14,
+        "locale": "en",
+        "title": "A Study on Cultural Identity (Study No. 1)",
+        "slug": "study-on-cultural-identity-study-no-1",
+        "description": "An analytical study on cultural identity, using a research methodology to present data and findings.",
+        "content_blocks": null,
+        "stats": null,
+        "created_at": "2026-09-27 09:58:12",
+        "updated_at": "2026-09-27 09:58:12"
       }
     ],
     "about_features": [

@@ -229,6 +229,12 @@ function validateTranslationPayload(body) {
     value.content_blocks = JSON.stringify(blocks);
   }
 
+  if (body.stats !== undefined) {
+    const { errors: statsErrors, stats } = validateStats(body.stats);
+    errors.push(...statsErrors);
+    value.stats = JSON.stringify(stats);
+  }
+
   if (body.seo_keywords !== undefined) {
     value.seo_keywords = sanitizePlainText(body.seo_keywords, 500);
   }

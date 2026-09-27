@@ -31,6 +31,7 @@ export default async function StudyTranslationPage({
         locale={locale}
         initialTranslation={translation}
         originalContentBlocks={study.content_blocks}
+        originalStats={study.stats}
       />
     </section>
   );

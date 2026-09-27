@@ -102,7 +102,7 @@ async function findPublicBlogBySlug(slug, locale) {
 
   if (translated) {
     const [rows] = await pool.query(
-      `SELECT ${PUBLIC_LIST_FIELDS_TRANSLATED}, b.category_id, b.stats, bt.content_blocks, bt.seo_keywords, bt.updated_at
+      `SELECT ${PUBLIC_LIST_FIELDS_TRANSLATED}, b.category_id, bt.content_blocks, bt.stats, bt.seo_keywords, bt.updated_at
        FROM blog_translations bt
        INNER JOIN blogs b ON b.id = bt.blog_id
        LEFT JOIN blogs_categories bc ON bc.id = b.category_id
@@ -420,11 +420,11 @@ async function ensureUniqueTranslationSlug(locale, title, excludeBlogId) {
 
 async function upsertTranslation(blogId, locale, data) {
   await pool.query(
-    `INSERT INTO blog_translations (blog_id, locale, title, slug, excerpt, content_blocks, seo_keywords)
-     VALUES (?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO blog_translations (blog_id, locale, title, slug, excerpt, content_blocks, stats, seo_keywords)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
      ON DUPLICATE KEY UPDATE
        title = VALUES(title), slug = VALUES(slug), excerpt = VALUES(excerpt),
-       content_blocks = VALUES(content_blocks), seo_keywords = VALUES(seo_keywords)`,
+       content_blocks = VALUES(content_blocks), stats = VALUES(stats), seo_keywords = VALUES(seo_keywords)`,
     [
       blogId,
       locale,
@@ -432,6 +432,7 @@ async function upsertTranslation(blogId, locale, data) {
       data.slug,
       data.excerpt || null,
       data.content_blocks || null,
+      data.stats || null,
       data.seo_keywords || null,
     ]
   );
