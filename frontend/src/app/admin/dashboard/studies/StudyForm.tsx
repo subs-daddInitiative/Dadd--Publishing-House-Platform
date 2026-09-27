@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "r
 import { useRouter } from "next/navigation";
 import { BlockEditor, type ContentBlock } from "@/features/blogEditor/BlockEditor";
 import { ImageCropper } from "@/components/ImageCropper";
+import { StatsEditor, parseInitialStats, type Stat } from "@/components/admin/StatsEditor";
 import type { AdminStudyDetail, StudyCategory } from "@/lib/serverApi";
 import styles from "./studies.module.css";
 
@@ -68,6 +69,7 @@ export function StudyForm({
   const [categoryId, setCategoryId] = useState(initialStudy?.category_id?.toString() || "");
   const [description, setDescription] = useState(initialStudy?.description || "");
   const [blocks, setBlocks] = useState<ContentBlock[]>(parseInitialBlocks(initialStudy?.content_blocks));
+  const [stats, setStats] = useState<Stat[]>(parseInitialStats(initialStudy?.stats));
   const [status, setStatus] = useState(initialStudy?.status || "draft");
   const [isPremium, setIsPremium] = useState(Boolean(initialStudy?.is_premium));
   const [isHighlighted, setIsHighlighted] = useState(Boolean(initialStudy?.is_highlighted));
@@ -117,6 +119,7 @@ export function StudyForm({
     formData.append("category_id", categoryId);
     formData.append("description", description);
     formData.append("content_blocks", JSON.stringify(blocks));
+    formData.append("stats", JSON.stringify(stats));
     formData.append("status", status);
     formData.append("is_premium", String(isPremium));
     if (isPremium) formData.append("price", price);
@@ -233,6 +236,15 @@ export function StudyForm({
           onChange={(event) => setDescription(event.target.value)}
           maxLength={500}
         />
+      </div>
+
+      <div className={styles.field}>
+        <label className={styles.label}>أرقام وعناوين (اختياري، حتى 6)</label>
+        <p className={styles.itemMeta}>
+          تظهر كشريط أرقام بارز أسفل عنوان الدراسة مباشرة، مثل &quot;500 مشارك&quot; أو &quot;10 سنوات خبرة&quot;.
+          اتركها فارغة إن لم ترغب بإظهار هذا الشريط.
+        </p>
+        <StatsEditor stats={stats} onChange={setStats} />
       </div>
 
       <div className={styles.field}>

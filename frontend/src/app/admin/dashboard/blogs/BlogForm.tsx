@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "r
 import { useRouter } from "next/navigation";
 import { BlockEditor, type ContentBlock } from "@/features/blogEditor/BlockEditor";
 import { ImageCropper } from "@/components/ImageCropper";
+import { StatsEditor, parseInitialStats, type Stat } from "@/components/admin/StatsEditor";
 import type { AdminBlogDetail, BlogCategory } from "@/lib/serverApi";
 import styles from "./blogs.module.css";
 
@@ -68,6 +69,7 @@ export function BlogForm({
   const [categoryId, setCategoryId] = useState(initialBlog?.category_id?.toString() || "");
   const [excerpt, setExcerpt] = useState(initialBlog?.excerpt || "");
   const [blocks, setBlocks] = useState<ContentBlock[]>(parseInitialBlocks(initialBlog?.content_blocks));
+  const [stats, setStats] = useState<Stat[]>(parseInitialStats(initialBlog?.stats));
   const [seoKeywords, setSeoKeywords] = useState(initialBlog?.seo_keywords || "");
   const [status, setStatus] = useState(initialBlog?.status || "draft");
   const [isPremium, setIsPremium] = useState(Boolean(initialBlog?.is_premium));
@@ -117,6 +119,7 @@ export function BlogForm({
     formData.append("category_id", categoryId);
     formData.append("excerpt", excerpt);
     formData.append("content_blocks", JSON.stringify(blocks));
+    formData.append("stats", JSON.stringify(stats));
     formData.append("seo_keywords", seoKeywords);
     formData.append("status", status);
     formData.append("is_premium", String(isPremium));
@@ -236,6 +239,15 @@ export function BlogForm({
           onChange={(event) => setExcerpt(event.target.value)}
           maxLength={500}
         />
+      </div>
+
+      <div className={styles.field}>
+        <label className={styles.label}>أرقام وعناوين (اختياري، حتى 6)</label>
+        <p className={styles.itemMeta}>
+          تظهر كشريط أرقام بارز أسفل عنوان المقالة مباشرة، مثل &quot;500 مشارك&quot; أو &quot;10 دقائق قراءة&quot;.
+          اتركها فارغة إن لم ترغب بإظهار هذا الشريط.
+        </p>
+        <StatsEditor stats={stats} onChange={setStats} />
       </div>
 
       <div className={styles.field}>

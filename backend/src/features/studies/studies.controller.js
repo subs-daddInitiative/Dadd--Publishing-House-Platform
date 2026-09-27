@@ -69,6 +69,9 @@ async function getPublicStudyBySlug(req, res, next) {
     let blocks = study.content_blocks ? JSON.parse(study.content_blocks) : [];
     delete study.content_blocks;
 
+    const stats = study.stats ? JSON.parse(study.stats) : [];
+    delete study.stats;
+
     let entitled = false;
     if (study.is_premium && req.subscriber) {
       entitled =
@@ -94,7 +97,7 @@ async function getPublicStudyBySlug(req, res, next) {
       });
     }
 
-    res.json({ success: true, data: { ...study, content_blocks: blocks, locked, related } });
+    res.json({ success: true, data: { ...study, content_blocks: blocks, stats, locked, related } });
   } catch (error) {
     next(error);
   }

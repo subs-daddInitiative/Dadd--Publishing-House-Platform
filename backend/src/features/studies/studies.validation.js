@@ -1,5 +1,6 @@
 const { slugify } = require("../../utils/slugify");
 const { sanitizeRichText } = require("../../utils/sanitizeRichText");
+const { validateStats } = require("../../utils/statsValidation");
 
 const STATUSES = ["draft", "published"];
 const BLOCK_TYPES = ["text", "image", "image_text", "quote", "tags", "pdf", "voice", "video"];
@@ -138,6 +139,12 @@ function validateStudyPayload(body, { partial = false } = {}) {
     const { errors: blockErrors, blocks } = validateContentBlocks(body.content_blocks);
     errors.push(...blockErrors);
     value.content_blocks = JSON.stringify(blocks);
+  }
+
+  if (body.stats !== undefined) {
+    const { errors: statsErrors, stats } = validateStats(body.stats);
+    errors.push(...statsErrors);
+    value.stats = JSON.stringify(stats);
   }
 
   if (body.category_id !== undefined) {

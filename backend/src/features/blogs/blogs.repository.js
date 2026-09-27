@@ -102,7 +102,7 @@ async function findPublicBlogBySlug(slug, locale) {
 
   if (translated) {
     const [rows] = await pool.query(
-      `SELECT ${PUBLIC_LIST_FIELDS_TRANSLATED}, b.category_id, bt.content_blocks, bt.seo_keywords, bt.updated_at
+      `SELECT ${PUBLIC_LIST_FIELDS_TRANSLATED}, b.category_id, b.stats, bt.content_blocks, bt.seo_keywords, bt.updated_at
        FROM blog_translations bt
        INNER JOIN blogs b ON b.id = bt.blog_id
        LEFT JOIN blogs_categories bc ON bc.id = b.category_id
@@ -116,7 +116,7 @@ async function findPublicBlogBySlug(slug, locale) {
   }
 
   const [rows] = await pool.query(
-    `SELECT ${PUBLIC_LIST_FIELDS}, b.category_id, b.content_blocks, b.seo_keywords, b.updated_at
+    `SELECT ${PUBLIC_LIST_FIELDS}, b.category_id, b.content_blocks, b.stats, b.seo_keywords, b.updated_at
      FROM blogs b
      LEFT JOIN blogs_categories bc ON bc.id = b.category_id
      LEFT JOIN users u ON u.id = b.author_id
@@ -284,8 +284,8 @@ async function createBlog(data) {
   const publishedAt = data.status === "published" ? new Date() : null;
   const [result] = await pool.query(
     `INSERT INTO blogs
-       (category_id, author_id, author_name, title, slug, excerpt, content_blocks, seo_keywords, cover_image, status, is_premium, is_highlighted, highlighted_until, published_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (category_id, author_id, author_name, title, slug, excerpt, content_blocks, stats, seo_keywords, cover_image, status, is_premium, is_highlighted, highlighted_until, published_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.category_id || null,
       data.author_id || null,
@@ -294,6 +294,7 @@ async function createBlog(data) {
       data.slug,
       data.excerpt || null,
       data.content_blocks || null,
+      data.stats || null,
       data.seo_keywords || null,
       data.cover_image || null,
       data.status,
@@ -314,6 +315,7 @@ async function updateBlog(id, fields) {
     "slug",
     "excerpt",
     "content_blocks",
+    "stats",
     "seo_keywords",
     "cover_image",
     "status",

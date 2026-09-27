@@ -87,6 +87,9 @@ async function getPublicBlogBySlug(req, res, next) {
     let blocks = blog.content_blocks ? JSON.parse(blog.content_blocks) : [];
     delete blog.content_blocks;
 
+    const stats = blog.stats ? JSON.parse(blog.stats) : [];
+    delete blog.stats;
+
     let locked = false;
     if (blog.is_premium && !entitled) {
       locked = true;
@@ -100,7 +103,7 @@ async function getPublicBlogBySlug(req, res, next) {
       });
     }
 
-    res.json({ success: true, data: { ...blog, content_blocks: blocks, locked, related } });
+    res.json({ success: true, data: { ...blog, content_blocks: blocks, stats, locked, related } });
   } catch (error) {
     next(error);
   }

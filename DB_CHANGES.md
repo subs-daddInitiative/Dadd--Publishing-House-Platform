@@ -43,6 +43,23 @@ harmless.
 
 ---
 
+## 2026-09-27 — Bulk study import from Excel; blog/study "stats" strip
+
+- Migration `034_add_stats_to_blogs_and_studies.sql`: added `stats` (TEXT,
+  nullable JSON) to both `blogs` and `studies` — up to 6 admin-entered
+  "number + title" pairs (e.g. "500" / "مشارك") shown as a stats strip right
+  under the post header. Optional; hidden entirely when empty. Not
+  translated per-locale yet — always shows the base (Arabic) values.
+- Added bulk study import via Excel (`/admin/dashboard/studies/import`,
+  template at `frontend/public/templates/study_import_template.xlsx`).
+  Reuses the existing create/validation path exactly; downloads referenced
+  image/PDF/audio/video URLs into the same `uploads/` layout the block
+  editor uses. No schema change for this — it creates ordinary `studies`
+  rows and `study` content blocks, nothing new to seed.
+- Re-ran `db:export-seed` after this: `studies` count is unchanged (26) —
+  the two studies created while testing the importer were deleted again
+  before exporting.
+
 ## 2026-09-26 — Seed/changelog system introduced
 
 - Added `backend/database/seed.js` (loads `seedData.json` into the local DB

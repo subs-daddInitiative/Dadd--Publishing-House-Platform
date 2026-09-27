@@ -292,8 +292,11 @@ export type BlogContentBlock =
   | { id: string; type: "tags"; tags: string[] }
   | { id: string; type: "pdf" | "voice" | "video"; url: string | null; label: string; access: "free" | "premium"; locked?: boolean };
 
+export type PostStat = { number: string; title: string };
+
 export type BlogDetail = BlogSummary & {
   content_blocks: BlogContentBlock[];
+  stats: PostStat[];
   seo_keywords: string | null;
   updated_at: string;
   locked: boolean;
@@ -370,6 +373,7 @@ export type AdminBlogDetail = {
   slug: string;
   excerpt: string | null;
   content_blocks: string | null;
+  stats: string | null;
   seo_keywords: string | null;
   cover_image: string | null;
   status: "draft" | "published";
@@ -477,6 +481,7 @@ export type StudyDetail = StudySummary & {
   content_intro: string | null;
   content_body: string | null;
   content_blocks: StudyContentBlock[];
+  stats: PostStat[];
   pdf_file: string | null;
   updated_at: string;
   locked: boolean;
@@ -551,6 +556,7 @@ export type AdminStudyDetail = {
   content_intro: string | null;
   content_body: string | null;
   content_blocks: string | null;
+  stats: string | null;
   cover_image: string | null;
   main_image: string | null;
   pdf_file: string | null;

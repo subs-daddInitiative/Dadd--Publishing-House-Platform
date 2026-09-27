@@ -102,7 +102,7 @@ async function findPublicStudyBySlug(slug, locale) {
 
   if (translated) {
     const [rows] = await pool.query(
-      `SELECT ${PUBLIC_LIST_FIELDS_TRANSLATED}, s.category_id, s.main_image,
+      `SELECT ${PUBLIC_LIST_FIELDS_TRANSLATED}, s.category_id, s.main_image, s.stats,
               st.content_blocks, st.updated_at
        FROM study_translations st
        INNER JOIN studies s ON s.id = st.study_id
@@ -117,7 +117,7 @@ async function findPublicStudyBySlug(slug, locale) {
 
   const [rows] = await pool.query(
     `SELECT ${PUBLIC_LIST_FIELDS}, s.category_id, s.main_image, s.content_intro, s.content_body,
-            s.content_blocks, s.pdf_file, s.updated_at
+            s.content_blocks, s.stats, s.pdf_file, s.updated_at
      FROM studies s
      LEFT JOIN studies_categories sc ON sc.id = s.category_id
      WHERE s.slug = ? AND s.status = 'published' AND s.deleted_at IS NULL
@@ -256,9 +256,9 @@ async function createStudy(data) {
   const publishedAt = data.status === "published" ? new Date() : null;
   const [result] = await pool.query(
     `INSERT INTO studies
-       (category_id, title, slug, author, description, content_intro, content_body, content_blocks,
+       (category_id, title, slug, author, description, content_intro, content_body, content_blocks, stats,
         cover_image, main_image, pdf_file, status, is_premium, is_highlighted, highlighted_until, price, currency, published_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.category_id || null,
       data.title,
@@ -268,6 +268,7 @@ async function createStudy(data) {
       data.content_intro || null,
       data.content_body || null,
       data.content_blocks || null,
+      data.stats || null,
       data.cover_image || null,
       data.main_image || null,
       data.pdf_file || null,
@@ -293,6 +294,7 @@ async function updateStudy(id, fields) {
     "content_intro",
     "content_body",
     "content_blocks",
+    "stats",
     "cover_image",
     "main_image",
     "pdf_file",
