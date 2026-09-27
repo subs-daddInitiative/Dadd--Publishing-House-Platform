@@ -134,7 +134,10 @@ export function BlogForm({
     const result = await response.json();
 
     if (result.success) {
-      router.push("/admin/dashboard/blogs");
+      // After the first save, send the admin to the edit page (not the list)
+      // so the translations panel — which needs a saved blog id — becomes
+      // available right away instead of requiring a second visit.
+      router.push(mode === "create" ? `/admin/dashboard/blogs/${result.data.id}/edit` : "/admin/dashboard/blogs");
       router.refresh();
     } else {
       setSubmitState("error");

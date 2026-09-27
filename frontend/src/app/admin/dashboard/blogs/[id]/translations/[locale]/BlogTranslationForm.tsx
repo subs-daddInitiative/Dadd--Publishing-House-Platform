@@ -10,6 +10,7 @@ type BlogTranslationFormProps = {
   blogId: number;
   locale: string;
   initialTranslation: AdminBlogTranslation | null;
+  originalContentBlocks: string | null | undefined;
 };
 
 function slugify(text: string) {
@@ -30,13 +31,18 @@ function parseInitialBlocks(raw: string | null | undefined): ContentBlock[] {
   }
 }
 
-export function BlogTranslationForm({ blogId, locale, initialTranslation }: BlogTranslationFormProps) {
+export function BlogTranslationForm({ blogId, locale, initialTranslation, originalContentBlocks }: BlogTranslationFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState(initialTranslation?.title || "");
   const [slug, setSlug] = useState(initialTranslation?.slug || "");
   const [slugTouched, setSlugTouched] = useState(Boolean(initialTranslation));
   const [excerpt, setExcerpt] = useState(initialTranslation?.excerpt || "");
-  const [blocks, setBlocks] = useState<ContentBlock[]>(parseInitialBlocks(initialTranslation?.content_blocks));
+  // When no translation exists yet, start from the original (Arabic) sections
+  // so the admin can see and translate each one in place, instead of
+  // rebuilding the whole article from a blank editor.
+  const [blocks, setBlocks] = useState<ContentBlock[]>(
+    parseInitialBlocks(initialTranslation?.content_blocks ?? originalContentBlocks)
+  );
   const [seoKeywords, setSeoKeywords] = useState(initialTranslation?.seo_keywords || "");
   const [uploading, setUploading] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "saving" | "error">("idle");

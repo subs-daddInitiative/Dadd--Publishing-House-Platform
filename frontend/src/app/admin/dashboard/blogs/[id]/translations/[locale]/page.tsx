@@ -26,7 +26,12 @@ export default async function BlogTranslationPage({
       <h1>
         ترجمة المقالة إلى {LOCALE_NAMES[locale]} — <span className={styles.itemMeta}>{blog.title}</span>
       </h1>
-      <BlogTranslationForm blogId={blog.id} locale={locale} initialTranslation={translation} />
+      <BlogTranslationForm
+        blogId={blog.id}
+        locale={locale}
+        initialTranslation={translation}
+        originalContentBlocks={blog.content_blocks}
+      />
     </section>
   );
 }

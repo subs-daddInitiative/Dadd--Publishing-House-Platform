@@ -26,7 +26,12 @@ export default async function StudyTranslationPage({
       <h1>
         ترجمة الدراسة إلى {LOCALE_NAMES[locale]} — <span className={styles.itemMeta}>{study.title}</span>
       </h1>
-      <StudyTranslationForm studyId={study.id} locale={locale} initialTranslation={translation} />
+      <StudyTranslationForm
+        studyId={study.id}
+        locale={locale}
+        initialTranslation={translation}
+        originalContentBlocks={study.content_blocks}
+      />
     </section>
   );
 }

@@ -10,6 +10,7 @@ type StudyTranslationFormProps = {
   studyId: number;
   locale: string;
   initialTranslation: AdminStudyTranslation | null;
+  originalContentBlocks: string | null | undefined;
 };
 
 function slugify(text: string) {
@@ -30,13 +31,18 @@ function parseInitialBlocks(raw: string | null | undefined): ContentBlock[] {
   }
 }
 
-export function StudyTranslationForm({ studyId, locale, initialTranslation }: StudyTranslationFormProps) {
+export function StudyTranslationForm({ studyId, locale, initialTranslation, originalContentBlocks }: StudyTranslationFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState(initialTranslation?.title || "");
   const [slug, setSlug] = useState(initialTranslation?.slug || "");
   const [slugTouched, setSlugTouched] = useState(Boolean(initialTranslation));
   const [description, setDescription] = useState(initialTranslation?.description || "");
-  const [blocks, setBlocks] = useState<ContentBlock[]>(parseInitialBlocks(initialTranslation?.content_blocks));
+  // When no translation exists yet, start from the original (Arabic) sections
+  // so the admin can see and translate each one in place, instead of
+  // rebuilding the whole study from a blank editor.
+  const [blocks, setBlocks] = useState<ContentBlock[]>(
+    parseInitialBlocks(initialTranslation?.content_blocks ?? originalContentBlocks)
+  );
   const [uploading, setUploading] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "saving" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

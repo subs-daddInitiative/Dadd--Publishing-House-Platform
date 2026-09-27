@@ -132,7 +132,10 @@ export function StudyForm({
     const result = await response.json();
 
     if (result.success) {
-      router.push("/admin/dashboard/studies");
+      // After the first save, send the admin to the edit page (not the list)
+      // so the translations panel — which needs a saved study id — becomes
+      // available right away instead of requiring a second visit.
+      router.push(mode === "create" ? `/admin/dashboard/studies/${result.data.id}/edit` : "/admin/dashboard/studies");
       router.refresh();
     } else {
       setSubmitState("error");
