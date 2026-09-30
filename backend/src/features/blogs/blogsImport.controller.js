@@ -1,4 +1,4 @@
-const { importStudiesFromWorkbook } = require("./studiesImport.service");
+const { importBlogsFromWorkbook } = require("./blogsImport.service");
 
 function isBadWorkbookError(error) {
   return Boolean(error.message) && /excel|zip|central directory/i.test(error.message);
@@ -7,8 +7,8 @@ function isBadWorkbookError(error) {
 // Accepts one or more .xlsx files in one request. Each file is processed
 // independently — a broken/malformed file doesn't stop the others, it's just
 // reported as failed under its own filename in the response, alongside
-// whichever studies inside it succeeded or failed.
-async function importStudiesHandler(req, res, next) {
+// whichever posts inside it succeeded or failed.
+async function importBlogsHandler(req, res, next) {
   try {
     const files = req.files || (req.file ? [req.file] : []);
     if (files.length === 0) {
@@ -18,7 +18,7 @@ async function importStudiesHandler(req, res, next) {
     const data = [];
     for (const file of files) {
       try {
-        const result = await importStudiesFromWorkbook(file.buffer);
+        const result = await importBlogsFromWorkbook(file.buffer);
         if (!result.success) {
           data.push({ filename: file.originalname, success: false, message: result.message });
         } else {
@@ -41,4 +41,4 @@ async function importStudiesHandler(req, res, next) {
   }
 }
 
-module.exports = { importStudiesHandler };
+module.exports = { importBlogsHandler };

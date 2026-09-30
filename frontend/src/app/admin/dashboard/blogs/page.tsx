@@ -54,6 +54,9 @@ export default async function AdminBlogsPage({
           <Link href="/admin/dashboard/blogs/categories" className={styles.buttonSecondary}>
             إدارة التصنيفات
           </Link>
+          <Link href="/admin/dashboard/blogs/import" className={styles.buttonSecondary}>
+            استيراد من Excel
+          </Link>
           <Link href="/admin/dashboard/blogs/new" className={styles.button}>
             إضافة مقالة
           </Link>

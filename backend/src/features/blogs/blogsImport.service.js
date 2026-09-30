@@ -1,7 +1,8 @@
 const ExcelJS = require("exceljs");
 const { createCategoryRepository } = require("../../utils/categoryRepository");
-const { validateStudyPayload, STATUSES } = require("./studies.validation");
-const { ensureUniqueSlug, createStudy } = require("./studies.repository");
+const { validateBlogPayload, STATUSES } = require("./blogs.validation");
+const { ensureUniqueSlug, createBlog } = require("./blogs.repository");
+const { getSettings } = require("../settings/settings.repository");
 const { resolveType, parseLabelledLines, wrapAsHtml, parseTags } = require("../../utils/contentImportParse");
 const {
   downloadCoverImage,
@@ -9,12 +10,12 @@ const {
   downloadBlockPdf,
   downloadBlockAudio,
   downloadBlockVideo,
-} = require("./studiesImport.assets");
+} = require("./blogsImport.assets");
 
-const STUDIES_SHEET_NAME = "الدراسات";
+const BLOGS_SHEET_NAME = "المقالات";
 const SECTIONS_SHEET_NAME = "الأقسام";
 
-const studyCategoriesRepo = createCategoryRepository("studies_categories");
+const blogCategoriesRepo = createCategoryRepository("blogs_categories");
 
 function cellText(row, column) {
   const cell = row.getCell(column);
@@ -34,7 +35,7 @@ function normalizeName(name) {
   return name.trim().toLowerCase();
 }
 
-function readStudyRows(sheet) {
+function readBlogRows(sheet) {
   const rows = [];
   sheet.eachRow((row, rowNumber) => {
     if (rowNumber === 1) return;
@@ -45,46 +46,46 @@ function readStudyRows(sheet) {
       key,
       title,
       slug: cellText(row, 3),
-      author: cellText(row, 4),
+      authorName: cellText(row, 4),
       categoryName: cellText(row, 5),
-      description: cellText(row, 6),
+      excerpt: cellText(row, 6),
       status: cellText(row, 7),
       isPremium: cellText(row, 8),
-      price: cellText(row, 9),
-      isHighlighted: cellText(row, 10),
-      highlightedUntil: cellText(row, 11),
-      coverUrl: cellText(row, 12),
+      isHighlighted: cellText(row, 9),
+      highlightedUntil: cellText(row, 10),
+      coverUrl: cellText(row, 11),
+      seoKeywords: cellText(row, 12),
     });
   });
   return rows;
 }
 
-function readSectionsByStudy(sheet) {
-  const byStudy = new Map();
+function readSectionsByPost(sheet) {
+  const byPost = new Map();
   sheet.eachRow((row, rowNumber) => {
     if (rowNumber === 1) return;
-    const studyKey = cellText(row, 1);
+    const postKey = cellText(row, 1);
     const type = cellText(row, 3);
-    if (!studyKey || !type) return; // blank row, or the yellow example note row
+    if (!postKey || !type) return; // blank row, or the yellow example note row
     const order = Number(cellText(row, 2));
     const content = cellText(row, 4);
-    if (!byStudy.has(studyKey)) byStudy.set(studyKey, []);
-    byStudy.get(studyKey).push({
-      order: Number.isFinite(order) ? order : byStudy.get(studyKey).length + 1,
+    if (!byPost.has(postKey)) byPost.set(postKey, []);
+    byPost.get(postKey).push({
+      order: Number.isFinite(order) ? order : byPost.get(postKey).length + 1,
       type,
       content,
     });
   });
-  for (const sections of byStudy.values()) {
+  for (const sections of byPost.values()) {
     sections.sort((a, b) => a.order - b.order);
   }
-  return byStudy;
+  return byPost;
 }
 
 // Builds one raw content block from a parsed section row. Returns
 // { block } on success, or { warning } when a referenced file couldn't be
-// downloaded — the study import still proceeds, just without that section,
-// so one bad link doesn't sink the whole study.
+// downloaded — the post import still proceeds, just without that section,
+// so one bad link doesn't sink the whole post.
 async function buildBlock(section, sectionLabel) {
   const internalType = resolveType(section.type);
   if (!internalType) {
@@ -146,35 +147,37 @@ async function buildBlock(section, sectionLabel) {
   };
 }
 
-async function importStudiesFromWorkbook(buffer) {
+async function importBlogsFromWorkbook(buffer) {
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.load(buffer);
 
-  const studiesSheet = workbook.getWorksheet(STUDIES_SHEET_NAME);
+  const blogsSheet = workbook.getWorksheet(BLOGS_SHEET_NAME);
   const sectionsSheet = workbook.getWorksheet(SECTIONS_SHEET_NAME);
-  if (!studiesSheet || !sectionsSheet) {
+  if (!blogsSheet || !sectionsSheet) {
     return {
       success: false,
-      message: `الملف يجب أن يحتوي على ورقتين باسم "${STUDIES_SHEET_NAME}" و"${SECTIONS_SHEET_NAME}" — استخدم القالب المرفق.`,
+      message: `الملف يجب أن يحتوي على ورقتين باسم "${BLOGS_SHEET_NAME}" و"${SECTIONS_SHEET_NAME}" — استخدم القالب المرفق.`,
     };
   }
 
-  const categories = await studyCategoriesRepo.list();
+  const categories = await blogCategoriesRepo.list();
   const categoryIdByName = new Map(categories.map((category) => [normalizeName(category.name), category.id]));
+  const settings = await getSettings();
+  const fallbackAuthorName = settings?.site_name || null;
 
-  const studyRows = readStudyRows(studiesSheet);
-  const sectionsByStudy = readSectionsByStudy(sectionsSheet);
+  const blogRows = readBlogRows(blogsSheet);
+  const sectionsByPost = readSectionsByPost(sectionsSheet);
 
-  if (studyRows.length === 0) {
-    return { success: false, message: `لم يتم العثور على أي صفوف بيانات في ورقة "${STUDIES_SHEET_NAME}".` };
+  if (blogRows.length === 0) {
+    return { success: false, message: `لم يتم العثور على أي صفوف بيانات في ورقة "${BLOGS_SHEET_NAME}".` };
   }
 
   const results = [];
 
-  for (const row of studyRows) {
+  for (const row of blogRows) {
     const warnings = [];
     try {
-      const sections = sectionsByStudy.get(row.key) || [];
+      const sections = sectionsByPost.get(row.key) || [];
       const blocks = [];
       for (let i = 0; i < sections.length; i += 1) {
         const outcome = await buildBlock(sections[i], `القسم رقم ${i + 1}`);
@@ -191,31 +194,31 @@ async function importStudiesFromWorkbook(buffer) {
 
       const categoryId = row.categoryName ? categoryIdByName.get(normalizeName(row.categoryName)) ?? null : null;
       if (row.categoryName && categoryId === null) {
-        warnings.push(`لم يتم العثور على تصنيف باسم "${row.categoryName}" — تم حفظ الدراسة بلا تصنيف`);
+        warnings.push(`لم يتم العثور على تصنيف باسم "${row.categoryName}" — تم حفظ المقالة بلا تصنيف`);
       }
 
       const body = {
         title: row.title,
         slug: row.slug || undefined,
-        author: row.author,
+        author_name: row.authorName || fallbackAuthorName || "",
         category_id: categoryId ?? "",
-        description: row.description,
+        excerpt: row.excerpt,
         status: STATUSES.includes(row.status) ? row.status : "draft",
         is_premium: parseYesNo(row.isPremium),
-        price: row.price,
         is_highlighted: parseYesNo(row.isHighlighted),
         highlighted_until: row.isHighlighted && row.highlightedUntil ? row.highlightedUntil : "",
         content_blocks: JSON.stringify(blocks),
+        seo_keywords: row.seoKeywords,
       };
 
-      const { errors, value } = validateStudyPayload(body);
+      const { errors, value } = validateBlogPayload(body);
       if (errors.length > 0) {
         results.push({ key: row.key, title: row.title, status: "error", message: errors.join("، ") });
         continue;
       }
 
       const slug = await ensureUniqueSlug(value.slug || value.title);
-      const id = await createStudy({ ...value, slug, cover_image: coverImage });
+      const id = await createBlog({ ...value, slug, cover_image: coverImage, author_id: null });
 
       results.push({
         key: row.key,
@@ -232,4 +235,4 @@ async function importStudiesFromWorkbook(buffer) {
   return { success: true, results };
 }
 
-module.exports = { importStudiesFromWorkbook };
+module.exports = { importBlogsFromWorkbook };

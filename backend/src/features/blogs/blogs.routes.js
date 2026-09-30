@@ -4,6 +4,8 @@ const { optionalSubscriberAuth } = require("../../middlewares/optionalSubscriber
 const { requireSubscriberAuth } = require("../../middlewares/requireSubscriberAuth");
 const { createImageUpload } = require("../../middlewares/imageUpload");
 const { blockAssetUpload } = require("./blockAssetUpload");
+const { importUpload, MAX_FILES } = require("../../utils/xlsxImportUpload");
+const { importBlogsHandler } = require("./blogsImport.controller");
 const { compressImages } = require("../../middlewares/compressImage");
 const { enforceMediaLimits } = require("../../middlewares/enforceMediaLimits");
 const { createCategoryRepository } = require("../../utils/categoryRepository");
@@ -55,6 +57,7 @@ adminRouter.get("/blogs/:id/translations", getBlogTranslationsHandler);
 adminRouter.get("/blogs/:id/translations/:locale", getBlogTranslationHandler);
 adminRouter.put("/blogs/:id/translations/:locale", upsertBlogTranslationHandler);
 adminRouter.delete("/blogs/:id/translations/:locale", deleteBlogTranslationHandler);
+adminRouter.post("/blogs/import", importUpload.array("files", MAX_FILES), importBlogsHandler);
 adminRouter.post("/blogs", blogUpload.single("cover_image"), enforceMediaLimits, compressImages, createBlogHandler);
 adminRouter.put("/blogs/:id", blogUpload.single("cover_image"), enforceMediaLimits, compressImages, updateBlogHandler);
 adminRouter.delete("/blogs/:id", deleteBlogHandler);
