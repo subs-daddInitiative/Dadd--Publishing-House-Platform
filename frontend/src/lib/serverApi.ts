@@ -463,6 +463,7 @@ export type StudySummary = {
   title: string;
   slug: string;
   description: string | null;
+  study_type: string | null;
   author: string | null;
   cover_image: string | null;
   published_at: string | null;
@@ -552,6 +553,7 @@ export type AdminStudySummary = {
 export type AdminStudyDetail = {
   id: number;
   category_id: number | null;
+  study_type: string | null;
   title: string;
   slug: string;
   author: string | null;

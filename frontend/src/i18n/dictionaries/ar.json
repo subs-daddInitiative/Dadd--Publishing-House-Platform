@@ -307,6 +307,12 @@
     "resetFilters": "إعادة تعيين"
   },
   "studiesPage": {
+    "studyTypes": {
+      "analytical_study": "دراسة تحليلية",
+      "report": "تقرير",
+      "policy_brief": "موجز سياسات",
+      "research_paper": "ورقة بحثية"
+    },
     "title": "دراسات معمّقة",
     "subtitle": "أبحاث وتحليلات تستحق وقتك.",
     "viewAll": "عرض الكل",

@@ -21,6 +21,7 @@ import { PremiumLock } from "@/features/subscribers/PremiumLock";
 import { Sidebar } from "@/components/Sidebar";
 import { PostStats } from "@/components/PostStats";
 import { buildArticleJsonLd } from "@/lib/articleJsonLd";
+import { isStudyTypeKey } from "@/features/studies/studyTypes";
 import { ShareBar } from "@/components/ShareBar";
 import { BlockRenderer } from "@/features/blog/BlockRenderer";
 import { StudyTableOfContents } from "@/features/studies/StudyTableOfContents";
@@ -103,6 +104,8 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
 
   const canonicalPath = `/${locale}/studies/${study.slug}`;
 
+  const studyTypeLabel = isStudyTypeKey(study.study_type) ? dictionary.studiesPage.studyTypes[study.study_type] : null;
+
   const jsonLd = buildArticleJsonLd({
     headline: study.title,
     description: study.description,
@@ -114,6 +117,7 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
     locale,
     isPremium: Boolean(study.is_premium),
     type: "ScholarlyArticle",
+    section: studyTypeLabel,
   });
 
   const breadcrumbJsonLd = {
@@ -146,6 +150,7 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
 
       <header className={styles.postHeader}>
         {study.category_name && <span className={styles.postCategoryTag}>{study.category_name}</span>}
+        {studyTypeLabel && <span className={styles.postTypeTag}>{studyTypeLabel}</span>}
         <h1 className={styles.postTitle}>{study.title}</h1>
         <p className={styles.postMeta}>
           {publishedDate && <time dateTime={study.published_at || undefined}>{dateLabel}</time>}

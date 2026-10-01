@@ -10,7 +10,7 @@ function isTranslatableLocale(locale) {
 }
 
 const PUBLIC_LIST_FIELDS = `
-  s.id, s.title, s.slug, s.description, s.author, s.cover_image, s.published_at,
+  s.id, s.title, s.slug, s.description, s.study_type, s.author, s.cover_image, s.published_at,
   s.is_premium, s.price, s.currency,
   s.is_highlighted, s.highlighted_until, ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active,
   sc.name AS category_name, sc.slug AS category_slug
@@ -20,7 +20,7 @@ const PUBLIC_LIST_FIELDS = `
 // translation row (st) — used whenever locale is a non-Arabic locale, since a
 // study only exists in that locale once a matching study_translations row does.
 const PUBLIC_LIST_FIELDS_TRANSLATED = `
-  s.id, st.title, st.slug, st.description, s.author, s.cover_image, s.published_at,
+  s.id, st.title, st.slug, st.description, s.study_type, s.author, s.cover_image, s.published_at,
   s.is_premium, s.price, s.currency,
   s.is_highlighted, s.highlighted_until, ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active,
   sct.name AS category_name, sc.slug AS category_slug
@@ -264,11 +264,12 @@ async function createStudy(data) {
   const publishedAt = data.status === "published" ? new Date() : null;
   const [result] = await pool.query(
     `INSERT INTO studies
-       (category_id, title, slug, author, description, content_intro, content_body, content_blocks, stats,
+       (category_id, study_type, title, slug, author, description, content_intro, content_body, content_blocks, stats,
         cover_image, main_image, pdf_file, status, is_premium, is_highlighted, highlighted_until, price, currency, published_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.category_id || null,
+      data.study_type || null,
       data.title,
       data.slug,
       data.author || null,
@@ -295,6 +296,7 @@ async function createStudy(data) {
 async function updateStudy(id, fields) {
   const allowedKeys = [
     "category_id",
+    "study_type",
     "title",
     "slug",
     "author",

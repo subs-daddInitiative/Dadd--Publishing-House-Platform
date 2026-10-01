@@ -1756,6 +1756,7 @@
       {
         "id": 1,
         "category_id": 1,
+        "study_type": null,
         "title": "دراسة رقم 1",
         "slug": "study-one",
         "author": "دار النشر",
@@ -1775,12 +1776,13 @@
         "currency": "USD",
         "published_at": "2026-08-08 10:14:51",
         "created_at": "2026-08-08 10:14:50",
-        "updated_at": "2026-08-21 18:24:08",
+        "updated_at": "2026-10-01 15:53:40",
         "deleted_at": null
       },
       {
         "id": 2,
         "category_id": null,
+        "study_type": null,
         "title": "??? ??????? ??????? ??? ??????? ???????",
         "slug": "study",
         "author": null,
@@ -1806,6 +1808,7 @@
       {
         "id": 3,
         "category_id": null,
+        "study_type": null,
         "title": "???? ????? ?????? ??????",
         "slug": "study-2",
         "author": null,
@@ -1831,6 +1834,7 @@
       {
         "id": 4,
         "category_id": null,
+        "study_type": null,
         "title": "????? ??????? ??????? ??? ?????? ??????",
         "slug": "study-3",
         "author": null,
@@ -1856,6 +1860,7 @@
       {
         "id": 5,
         "category_id": null,
+        "study_type": null,
         "title": "??? ??? ????? ???????? ?? ??? ??????? ?????",
         "slug": "study-4",
         "author": null,
@@ -1881,6 +1886,7 @@
       {
         "id": 6,
         "category_id": null,
+        "study_type": null,
         "title": "????? ??????? ??? ?????? ????? ?????? ???????",
         "slug": "study-5",
         "author": null,
@@ -1906,6 +1912,7 @@
       {
         "id": 7,
         "category_id": null,
+        "study_type": null,
         "title": "أثر القراءة المبكرة على التحصيل الدراسي",
         "slug": "أثر-القراءة-المبكرة-على-التحصيل-الدراسي",
         "author": null,
@@ -1931,6 +1938,7 @@
       {
         "id": 8,
         "category_id": null,
+        "study_type": null,
         "title": "واقع النشر العربي الرقمي",
         "slug": "واقع-النشر-العربي-الرقمي",
         "author": null,
@@ -1956,6 +1964,7 @@
       {
         "id": 9,
         "category_id": null,
+        "study_type": null,
         "title": "تحليل اتجاهات القراءة لدى الشباب العربي",
         "slug": "تحليل-اتجاهات-القراءة-لدى-الشباب-العربي",
         "author": null,
@@ -1981,6 +1990,7 @@
       {
         "id": 10,
         "category_id": null,
+        "study_type": null,
         "title": "دور دور النشر المستقلة في دعم الكتّاب الجدد",
         "slug": "دور-دور-النشر-المستقلة-في-دعم-الكت-اب-الجدد",
         "author": null,
@@ -2006,6 +2016,7 @@
       {
         "id": 11,
         "category_id": null,
+        "study_type": null,
         "title": "تأثير الترجمة على انتشار الأدب العربي عالميًا",
         "slug": "تأثير-الترجمة-على-انتشار-الأدب-العربي-عالمي-ا",
         "author": null,
@@ -2031,6 +2042,7 @@
       {
         "id": 12,
         "category_id": null,
+        "study_type": null,
         "title": "دراسة مميزة للتجربة",
         "slug": "دراسة-مميزة-للتجربة",
         "author": null,
@@ -2056,6 +2068,7 @@
       {
         "id": 13,
         "category_id": null,
+        "study_type": null,
         "title": "????? ??????? ????????",
         "slug": "study-6",
         "author": "???? ??????",
@@ -2081,6 +2094,7 @@
       {
         "id": 14,
         "category_id": 1,
+        "study_type": null,
         "title": "دراسة في الهوية الثقافية (دراسة رقم 1)",
         "slug": "دراسة-في-الهوية-الثقافية-دراسة-رقم-1",
         "author": "د. باحث تجريبي",
@@ -2106,6 +2120,7 @@
       {
         "id": 15,
         "category_id": 1,
+        "study_type": null,
         "title": "تحليل الخطاب الإعلامي (دراسة رقم 2)",
         "slug": "تحليل-الخطاب-الإعلامي-دراسة-رقم-2",
         "author": "د. باحثة تجريبية",
@@ -2131,6 +2146,7 @@
       {
         "id": 16,
         "category_id": 1,
+        "study_type": null,
         "title": "علم الاجتماع الرقمي (دراسة رقم 3)",
         "slug": "علم-الاجتماع-الرقمي-دراسة-رقم-3",
         "author": "د. باحث تجريبي",
@@ -2156,6 +2172,7 @@
       {
         "id": 17,
         "category_id": 1,
+        "study_type": null,
         "title": "دراسات ما بعد الاستعمار (دراسة رقم 4)",
         "slug": "دراسات-ما-بعد-الاستعمار-دراسة-رقم-4",
         "author": "د. باحثة تجريبية",
@@ -2181,6 +2198,7 @@
       {
         "id": 18,
         "category_id": 1,
+        "study_type": null,
         "title": "الاقتصاد السياسي للنشر (دراسة رقم 5)",
         "slug": "الاقتصاد-السياسي-للنشر-دراسة-رقم-5",
         "author": "د. باحث تجريبي",
@@ -2206,6 +2224,7 @@
       {
         "id": 19,
         "category_id": 1,
+        "study_type": null,
         "title": "تحولات اللغة العربية (دراسة رقم 6)",
         "slug": "تحولات-اللغة-العربية-دراسة-رقم-6",
         "author": "د. باحثة تجريبية",
@@ -2231,6 +2250,7 @@
       {
         "id": 20,
         "category_id": 1,
+        "study_type": null,
         "title": "دراسات النوع الاجتماعي (دراسة رقم 7)",
         "slug": "دراسات-النوع-الاجتماعي-دراسة-رقم-7",
         "author": "د. باحث تجريبي",
@@ -2256,6 +2276,7 @@
       {
         "id": 21,
         "category_id": 1,
+        "study_type": null,
         "title": "التعليم عن بعد وأثره (دراسة رقم 8)",
         "slug": "التعليم-عن-بعد-وأثره-دراسة-رقم-8",
         "author": "د. باحثة تجريبية",
@@ -2281,6 +2302,7 @@
       {
         "id": 22,
         "category_id": 1,
+        "study_type": null,
         "title": "الذكاء الاصطناعي والمجتمع (دراسة رقم 9)",
         "slug": "الذكاء-الاصطناعي-والمجتمع-دراسة-رقم-9",
         "author": "د. باحث تجريبي",
@@ -2306,6 +2328,7 @@
       {
         "id": 23,
         "category_id": 1,
+        "study_type": null,
         "title": "دراسة في تاريخ الأفكار (دراسة رقم 10)",
         "slug": "دراسة-في-تاريخ-الأفكار-دراسة-رقم-10",
         "author": "د. باحثة تجريبية",
@@ -2331,6 +2354,7 @@
       {
         "id": 24,
         "category_id": null,
+        "study_type": null,
         "title": "?????? ??? ???????",
         "slug": "study-7",
         "author": null,
@@ -2356,6 +2380,7 @@
       {
         "id": 25,
         "category_id": null,
+        "study_type": null,
         "title": "????? ????? ??????",
         "slug": "study-8",
         "author": null,
@@ -2381,6 +2406,7 @@
       {
         "id": 26,
         "category_id": null,
+        "study_type": null,
         "title": "????? ????? ??? ??? ???????",
         "slug": "study-9",
         "author": null,

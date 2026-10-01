@@ -43,6 +43,14 @@ harmless.
 
 ---
 
+## 2026-10-01 — Optional study type on studies
+
+- Migration `038_add_study_type_to_studies.sql`: added nullable `studies.study_type`
+  (`analytical_study` | `report` | `policy_brief` | `research_paper`), chosen from a
+  dropdown in the study form. Labels live in the frontend dictionaries; the type
+  shows as a chip on the study and as `articleSection` in its JSON-LD. No demo
+  study has a type set.
+
 ## 2026-10-01 — Optional article type on blogs
 
 - Migration `037_add_article_type_to_blogs.sql`: added nullable `blogs.article_type`

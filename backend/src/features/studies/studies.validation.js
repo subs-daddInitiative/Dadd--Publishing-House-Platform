@@ -2,6 +2,7 @@ const { slugify } = require("../../utils/slugify");
 const { sanitizeRichText } = require("../../utils/sanitizeRichText");
 const { validateStats } = require("../../utils/statsValidation");
 
+const STUDY_TYPES = ["analytical_study", "report", "policy_brief", "research_paper"];
 const STATUSES = ["draft", "published"];
 const BLOCK_TYPES = ["text", "image", "image_text", "quote", "tags", "pdf", "voice", "video"];
 
@@ -147,6 +148,12 @@ function validateStudyPayload(body, { partial = false } = {}) {
     value.stats = JSON.stringify(stats);
   }
 
+  if (body.study_type !== undefined) {
+    const studyType = String(body.study_type).trim();
+    if (studyType && !STUDY_TYPES.includes(studyType)) errors.push("Invalid study type");
+    else value.study_type = studyType || null;
+  }
+
   if (body.category_id !== undefined) {
     const categoryId = Number(body.category_id);
     value.category_id = Number.isInteger(categoryId) && categoryId > 0 ? categoryId : null;
@@ -228,5 +235,6 @@ module.exports = {
   validateTranslationPayload,
   validateContentBlocks,
   STATUSES,
+  STUDY_TYPES,
   BLOCK_TYPES,
 };

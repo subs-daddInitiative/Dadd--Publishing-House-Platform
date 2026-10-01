@@ -307,6 +307,12 @@
     "resetFilters": "Zurücksetzen"
   },
   "studiesPage": {
+    "studyTypes": {
+      "analytical_study": "Analytische Studie",
+      "report": "Bericht",
+      "policy_brief": "Policy Brief",
+      "research_paper": "Forschungspapier"
+    },
     "title": "Vertiefende Studien",
     "subtitle": "Forschung und Analysen, die Ihre Zeit wert sind.",
     "viewAll": "Alle ansehen",

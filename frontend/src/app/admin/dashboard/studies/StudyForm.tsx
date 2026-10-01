@@ -6,6 +6,7 @@ import { BlockEditor, type ContentBlock } from "@/features/blogEditor/BlockEdito
 import { ImageCropper } from "@/components/ImageCropper";
 import { StatsEditor, parseInitialStats, type Stat } from "@/components/admin/StatsEditor";
 import type { AdminStudyDetail, StudyCategory } from "@/lib/serverApi";
+import { STUDY_TYPE_ADMIN_LABELS, STUDY_TYPE_KEYS } from "@/features/studies/studyTypes";
 import styles from "./studies.module.css";
 
 const COVER_ASPECT_RATIO = 16 / 6;
@@ -67,6 +68,7 @@ export function StudyForm({
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
   const [author, setAuthor] = useState(initialStudy?.author || "");
   const [categoryId, setCategoryId] = useState(initialStudy?.category_id?.toString() || "");
+  const [studyType, setStudyType] = useState(initialStudy?.study_type || "");
   const [description, setDescription] = useState(initialStudy?.description || "");
   const [blocks, setBlocks] = useState<ContentBlock[]>(parseInitialBlocks(initialStudy?.content_blocks));
   const [stats, setStats] = useState<Stat[]>(parseInitialStats(initialStudy?.stats));
@@ -117,6 +119,7 @@ export function StudyForm({
     formData.append("slug", slug);
     formData.append("author", author);
     formData.append("category_id", categoryId);
+    formData.append("study_type", studyType);
     formData.append("description", description);
     formData.append("content_blocks", JSON.stringify(blocks));
     formData.append("stats", JSON.stringify(stats));
@@ -188,6 +191,25 @@ export function StudyForm({
             value={author}
             onChange={(event) => setAuthor(event.target.value)}
           />
+        </div>
+
+        <div className={styles.field}>
+          <label htmlFor="studyType" className={styles.label}>
+            نوع الدراسة (اختياري)
+          </label>
+          <select
+            id="studyType"
+            className={styles.select}
+            value={studyType}
+            onChange={(event) => setStudyType(event.target.value)}
+          >
+            <option value="">بدون نوع</option>
+            {STUDY_TYPE_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {STUDY_TYPE_ADMIN_LABELS[key]}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className={styles.field}>

@@ -307,6 +307,12 @@
     "resetFilters": "Reset"
   },
   "studiesPage": {
+    "studyTypes": {
+      "analytical_study": "Analytical study",
+      "report": "Report",
+      "policy_brief": "Policy brief",
+      "research_paper": "Research paper"
+    },
     "title": "In-Depth Studies",
     "subtitle": "Research and analysis worth your time.",
     "viewAll": "View All",
