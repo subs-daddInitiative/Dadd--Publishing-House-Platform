@@ -69,6 +69,7 @@ export function StudyForm({
   const [author, setAuthor] = useState(initialStudy?.author || "");
   const [categoryId, setCategoryId] = useState(initialStudy?.category_id?.toString() || "");
   const [studyType, setStudyType] = useState(initialStudy?.study_type || "");
+  const [doi, setDoi] = useState(initialStudy?.doi || "");
   const [description, setDescription] = useState(initialStudy?.description || "");
   const [blocks, setBlocks] = useState<ContentBlock[]>(parseInitialBlocks(initialStudy?.content_blocks));
   const [stats, setStats] = useState<Stat[]>(parseInitialStats(initialStudy?.stats));
@@ -120,6 +121,7 @@ export function StudyForm({
     formData.append("author", author);
     formData.append("category_id", categoryId);
     formData.append("study_type", studyType);
+    formData.append("doi", doi);
     formData.append("description", description);
     formData.append("content_blocks", JSON.stringify(blocks));
     formData.append("stats", JSON.stringify(stats));
@@ -190,6 +192,20 @@ export function StudyForm({
             className={styles.input}
             value={author}
             onChange={(event) => setAuthor(event.target.value)}
+          />
+        </div>
+
+        <div className={styles.field}>
+          <label htmlFor="studyDoi" className={styles.label}>
+            DOI (اختياري - إن كان للدراسة DOI مسجّل مسبقًا)
+          </label>
+          <input
+            id="studyDoi"
+            className={styles.input}
+            value={doi}
+            dir="ltr"
+            placeholder="10.1234/example"
+            onChange={(event) => setDoi(event.target.value)}
           />
         </div>
 

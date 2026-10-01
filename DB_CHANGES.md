@@ -43,6 +43,13 @@ harmless.
 
 ---
 
+## 2026-10-01 — Optional DOI on studies
+
+- Migration `039_add_doi_to_studies.sql`: added nullable `studies.doi`, stored as the
+  bare identifier (`10.xxxx/yyyy`; a doi.org link is accepted and normalised). For
+  DOIs already issued elsewhere — the platform never mints them. Shown as a link on
+  the study and as `identifier`/`sameAs` in its JSON-LD. No demo study has one.
+
 ## 2026-10-01 — Optional study type on studies
 
 - Migration `038_add_study_type_to_studies.sql`: added nullable `studies.study_type`

@@ -307,6 +307,7 @@
     "resetFilters": "Zurücksetzen"
   },
   "studiesPage": {
+    "doi": "DOI",
     "studyTypes": {
       "analytical_study": "Analytische Studie",
       "report": "Bericht",

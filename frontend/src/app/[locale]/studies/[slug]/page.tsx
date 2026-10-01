@@ -118,6 +118,7 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
     isPremium: Boolean(study.is_premium),
     type: "ScholarlyArticle",
     section: studyTypeLabel,
+    doi: study.doi,
   });
 
   const breadcrumbJsonLd = {
@@ -161,6 +162,14 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
             </>
           )}
         </p>
+        {study.doi && (
+          <p className={styles.postMeta}>
+            {dictionary.studiesPage.doi}:{" "}
+            <a href={`https://doi.org/${study.doi}`} target="_blank" rel="noopener noreferrer" dir="ltr">
+              {study.doi}
+            </a>
+          </p>
+        )}
 
         {pdfUrl && (
           <div className={styles.pdfButtonRow}>

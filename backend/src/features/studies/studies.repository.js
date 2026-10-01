@@ -102,7 +102,7 @@ async function findPublicStudyBySlug(slug, locale) {
 
   if (translated) {
     const [rows] = await pool.query(
-      `SELECT ${PUBLIC_LIST_FIELDS_TRANSLATED}, s.category_id, s.main_image,
+      `SELECT ${PUBLIC_LIST_FIELDS_TRANSLATED}, s.category_id, s.doi, s.main_image,
               st.content_blocks, st.stats, st.updated_at
        FROM study_translations st
        INNER JOIN studies s ON s.id = st.study_id
@@ -116,7 +116,7 @@ async function findPublicStudyBySlug(slug, locale) {
   }
 
   const [rows] = await pool.query(
-    `SELECT ${PUBLIC_LIST_FIELDS}, s.category_id, s.main_image, s.content_intro, s.content_body,
+    `SELECT ${PUBLIC_LIST_FIELDS}, s.category_id, s.doi, s.main_image, s.content_intro, s.content_body,
             s.content_blocks, s.stats, s.pdf_file, s.updated_at
      FROM studies s
      LEFT JOIN studies_categories sc ON sc.id = s.category_id
@@ -264,12 +264,13 @@ async function createStudy(data) {
   const publishedAt = data.status === "published" ? new Date() : null;
   const [result] = await pool.query(
     `INSERT INTO studies
-       (category_id, study_type, title, slug, author, description, content_intro, content_body, content_blocks, stats,
+       (category_id, study_type, doi, title, slug, author, description, content_intro, content_body, content_blocks, stats,
         cover_image, main_image, pdf_file, status, is_premium, is_highlighted, highlighted_until, price, currency, published_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.category_id || null,
       data.study_type || null,
+      data.doi || null,
       data.title,
       data.slug,
       data.author || null,
@@ -297,6 +298,7 @@ async function updateStudy(id, fields) {
   const allowedKeys = [
     "category_id",
     "study_type",
+    "doi",
     "title",
     "slug",
     "author",

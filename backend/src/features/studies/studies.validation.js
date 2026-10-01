@@ -106,6 +106,16 @@ function validateContentBlocks(raw) {
   return { errors, blocks };
 }
 
+// Accepts a bare DOI or a doi.org link and returns the bare 10.xxxx/yyyy form,
+// null when blank, or false when it is not shaped like a DOI.
+function normalizeDoi(raw) {
+  const doi = String(raw ?? "")
+    .trim()
+    .replace(/^(https?:\/\/(dx\.)?doi\.org\/|doi:\s*)/i, "");
+  if (!doi) return null;
+  return /^10\.\d{4,9}\/\S{1,150}$/.test(doi) ? doi : false;
+}
+
 function validateStudyPayload(body, { partial = false } = {}) {
   const errors = [];
   const value = {};
@@ -152,6 +162,12 @@ function validateStudyPayload(body, { partial = false } = {}) {
     const studyType = String(body.study_type).trim();
     if (studyType && !STUDY_TYPES.includes(studyType)) errors.push("Invalid study type");
     else value.study_type = studyType || null;
+  }
+
+  if (body.doi !== undefined) {
+    const doi = normalizeDoi(body.doi);
+    if (doi === false) errors.push("DOI must look like 10.1234/example");
+    else value.doi = doi;
   }
 
   if (body.category_id !== undefined) {

@@ -307,6 +307,7 @@
     "resetFilters": "إعادة تعيين"
   },
   "studiesPage": {
+    "doi": "المعرّف الرقمي (DOI)",
     "studyTypes": {
       "analytical_study": "دراسة تحليلية",
       "report": "تقرير",
