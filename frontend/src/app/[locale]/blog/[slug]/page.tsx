@@ -19,6 +19,7 @@ import { BlockRenderer } from "@/features/blog/BlockRenderer";
 import { PremiumLock } from "@/features/subscribers/PremiumLock";
 import { Sidebar } from "@/components/Sidebar";
 import { PostStats } from "@/components/PostStats";
+import { buildArticleJsonLd } from "@/lib/articleJsonLd";
 import { ShareBar } from "@/components/ShareBar";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
 import styles from "@/features/blog/blog.module.css";
@@ -74,10 +75,9 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
   const locale = rawLocale as Locale;
   const slug = decodeURIComponent(rawSlug);
 
-  const [dictionary, blog, settings, recentBlogsResult, recentStudiesResult] = await Promise.all([
+  const [dictionary, blog, recentBlogsResult, recentStudiesResult] = await Promise.all([
     getDictionary(locale),
     getPublicBlogBySlug(slug, locale),
-    getPublicSettings(),
     getPublicBlogs({ page: 1, locale }),
     getPublicStudies({ page: 1, locale }),
   ]);
@@ -91,30 +91,22 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
   const blogPlans = contentPlans.filter((plan) => plan.category === "blogs");
   const sidebarRecentBlogs = recentBlogsResult.items.filter((item) => item.id !== blog.id).slice(0, 5);
 
-  const siteName = settings?.siteName || dictionary.common.siteName;
-  const logoUrl = backendAssetUrl(settings?.logo);
   const coverImageUrl = backendAssetUrl(blog.cover_image);
   const publishedDate = blog.published_at ? new Date(blog.published_at.replace(" ", "T")) : null;
   const dateLabel = publishedDate ? publishedDate.toLocaleDateString(locale, { dateStyle: "long" }) : "";
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
+  const jsonLd = buildArticleJsonLd({
     headline: blog.title,
-    image: coverImageUrl ? [coverImageUrl] : undefined,
-    datePublished: blog.published_at || undefined,
-    dateModified: blog.updated_at,
-    author: blog.author_name ? { "@type": "Person", name: blog.author_name } : undefined,
-    publisher: {
-      "@type": "Organization",
-      name: siteName,
-      logo: logoUrl ? { "@type": "ImageObject", url: logoUrl } : undefined,
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": absoluteUrl(`/${locale}/blog/${blog.slug}`),
-    },
-  };
+    description: blog.excerpt,
+    imageUrl: coverImageUrl,
+    publishedAt: blog.published_at,
+    updatedAt: blog.updated_at,
+    authorName: blog.author_name,
+    path: `/${locale}/blog/${blog.slug}`,
+    locale,
+    isPremium: Boolean(blog.is_premium),
+    keywords: blog.seo_keywords,
+  });
 
   return (
     <div className={`container ${styles.page}`}>

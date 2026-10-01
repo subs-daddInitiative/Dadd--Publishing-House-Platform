@@ -20,6 +20,7 @@ import { StudyCard } from "@/features/studies/StudyCard";
 import { PremiumLock } from "@/features/subscribers/PremiumLock";
 import { Sidebar } from "@/components/Sidebar";
 import { PostStats } from "@/components/PostStats";
+import { buildArticleJsonLd } from "@/lib/articleJsonLd";
 import { ShareBar } from "@/components/ShareBar";
 import { BlockRenderer } from "@/features/blog/BlockRenderer";
 import { StudyTableOfContents } from "@/features/studies/StudyTableOfContents";
@@ -76,10 +77,9 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
   const locale = rawLocale as Locale;
   const slug = decodeURIComponent(rawSlug);
 
-  const [dictionary, study, settings, banners, recentStudiesResult, recentBlogsResult] = await Promise.all([
+  const [dictionary, study, banners, recentStudiesResult, recentBlogsResult] = await Promise.all([
     getDictionary(locale),
     getPublicStudyBySlug(slug, locale),
-    getPublicSettings(),
     getPublicBanners(),
     getPublicStudies({ page: 1, locale }),
     getPublicBlogs({ page: 1, locale }),
@@ -93,8 +93,6 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
   const studyPlans = contentPlans.filter((plan) => plan.category === "studies");
   const sidebarRecentStudies = recentStudiesResult.items.filter((item) => item.id !== study.id).slice(0, 5);
 
-  const siteName = settings?.siteName || dictionary.common.siteName;
-  const logoUrl = backendAssetUrl(settings?.logo);
   const heroImageUrl = backendAssetUrl(study.cover_image);
   const mainImageUrl = backendAssetUrl(study.main_image);
   const pdfUrl = backendAssetUrl(study.pdf_file);
@@ -105,24 +103,17 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
 
   const canonicalPath = `/${locale}/studies/${study.slug}`;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
+  const jsonLd = buildArticleJsonLd({
     headline: study.title,
-    image: heroImageUrl ? [heroImageUrl] : undefined,
-    datePublished: study.published_at || undefined,
-    dateModified: study.updated_at,
-    author: study.author ? { "@type": "Person", name: study.author } : undefined,
-    publisher: {
-      "@type": "Organization",
-      name: siteName,
-      logo: logoUrl ? { "@type": "ImageObject", url: logoUrl } : undefined,
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": absoluteUrl(canonicalPath),
-    },
-  };
+    description: study.description,
+    imageUrl: heroImageUrl,
+    publishedAt: study.published_at,
+    updatedAt: study.updated_at,
+    authorName: study.author,
+    path: canonicalPath,
+    locale,
+    isPremium: Boolean(study.is_premium),
+  });
 
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",

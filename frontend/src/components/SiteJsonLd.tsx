@@ -1,7 +1,7 @@
 import type { Locale } from "@/i18n/config";
 import type { PublicSettings } from "@/lib/serverApi";
 import { backendAssetUrl } from "@/lib/serverApi";
-import { SITE_URL, absoluteUrl } from "@/lib/siteUrl";
+import { SITE_URL, ORGANIZATION_ID, absoluteUrl } from "@/lib/siteUrl";
 
 type SiteJsonLdProps = {
   locale: Locale;
@@ -10,7 +10,6 @@ type SiteJsonLdProps = {
   fallbackDescription: string;
 };
 
-const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 
 // Escaping "<" keeps admin-entered text from ever closing the script tag.
