@@ -482,6 +482,8 @@ export type StudyContentBlock = BlogContentBlock;
 export type StudyDetail = StudySummary & {
   category_id: number | null;
   doi: string | null;
+  report_number: string | null;
+  series_number: string | null;
   main_image: string | null;
   content_intro: string | null;
   content_body: string | null;
@@ -556,6 +558,8 @@ export type AdminStudyDetail = {
   category_id: number | null;
   study_type: string | null;
   doi: string | null;
+  report_number: string | null;
+  series_number: string | null;
   title: string;
   slug: string;
   author: string | null;

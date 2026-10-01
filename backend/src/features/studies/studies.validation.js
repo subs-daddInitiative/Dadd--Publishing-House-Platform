@@ -164,6 +164,12 @@ function validateStudyPayload(body, { partial = false } = {}) {
     else value.study_type = studyType || null;
   }
 
+  for (const field of ["report_number", "series_number"]) {
+    if (body[field] !== undefined) {
+      value[field] = String(body[field]).trim().slice(0, 60) || null;
+    }
+  }
+
   if (body.doi !== undefined) {
     const doi = normalizeDoi(body.doi);
     if (doi === false) errors.push("DOI must look like 10.1234/example");

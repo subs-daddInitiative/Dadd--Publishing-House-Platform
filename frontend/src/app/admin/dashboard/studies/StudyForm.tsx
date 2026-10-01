@@ -70,6 +70,8 @@ export function StudyForm({
   const [categoryId, setCategoryId] = useState(initialStudy?.category_id?.toString() || "");
   const [studyType, setStudyType] = useState(initialStudy?.study_type || "");
   const [doi, setDoi] = useState(initialStudy?.doi || "");
+  const [reportNumber, setReportNumber] = useState(initialStudy?.report_number || "");
+  const [seriesNumber, setSeriesNumber] = useState(initialStudy?.series_number || "");
   const [description, setDescription] = useState(initialStudy?.description || "");
   const [blocks, setBlocks] = useState<ContentBlock[]>(parseInitialBlocks(initialStudy?.content_blocks));
   const [stats, setStats] = useState<Stat[]>(parseInitialStats(initialStudy?.stats));
@@ -122,6 +124,8 @@ export function StudyForm({
     formData.append("category_id", categoryId);
     formData.append("study_type", studyType);
     formData.append("doi", doi);
+    formData.append("report_number", reportNumber);
+    formData.append("series_number", seriesNumber);
     formData.append("description", description);
     formData.append("content_blocks", JSON.stringify(blocks));
     formData.append("stats", JSON.stringify(stats));
@@ -195,6 +199,28 @@ export function StudyForm({
           />
         </div>
 
+        <div className={styles.field}>
+          <label htmlFor="studyReportNumber" className={styles.label}>
+            رقم التقرير (اختياري)
+          </label>
+          <input
+            id="studyReportNumber"
+            className={styles.input}
+            value={reportNumber}
+            onChange={(event) => setReportNumber(event.target.value)}
+          />
+        </div>
+        <div className={styles.field}>
+          <label htmlFor="studySeriesNumber" className={styles.label}>
+            رقم السلسلة (اختياري)
+          </label>
+          <input
+            id="studySeriesNumber"
+            className={styles.input}
+            value={seriesNumber}
+            onChange={(event) => setSeriesNumber(event.target.value)}
+          />
+        </div>
         <div className={styles.field}>
           <label htmlFor="studyDoi" className={styles.label}>
             DOI (اختياري - إن كان للدراسة DOI مسجّل مسبقًا)

@@ -125,6 +125,8 @@ CREATE TABLE IF NOT EXISTS studies (
   category_id INT UNSIGNED NULL,
   study_type VARCHAR(30) NULL,
   doi VARCHAR(200) NULL,
+  report_number VARCHAR(60) NULL,
+  series_number VARCHAR(60) NULL,
   title VARCHAR(255) NOT NULL,
   slug VARCHAR(280) NOT NULL,
   author VARCHAR(190) NULL,

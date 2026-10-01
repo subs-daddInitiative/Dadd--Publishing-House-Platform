@@ -43,6 +43,12 @@ harmless.
 
 ---
 
+## 2026-10-01 — Optional report number and series number on studies
+
+- Migration `040_add_report_and_series_number_to_studies.sql`: added nullable free-text
+  `studies.report_number` and `studies.series_number` (max 60 chars each). Shown under
+  the study header and as `identifier` entries in its JSON-LD. No demo study has them.
+
 ## 2026-10-01 — Optional DOI on studies
 
 - Migration `039_add_doi_to_studies.sql`: added nullable `studies.doi`, stored as the

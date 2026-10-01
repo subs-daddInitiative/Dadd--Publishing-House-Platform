@@ -13,6 +13,8 @@ type ArticleJsonLdInput = {
   keywords?: string | null;
   section?: string | null;
   doi?: string | null;
+  reportNumber?: string | null;
+  seriesNumber?: string | null;
   type?: "Article" | "ScholarlyArticle";
 };
 
@@ -26,6 +28,11 @@ function splitKeywords(raw?: string | null): string[] {
 
 export function buildArticleJsonLd(input: ArticleJsonLdInput) {
   const keywords = splitKeywords(input.keywords);
+  const identifiers = [
+    input.doi && { "@type": "PropertyValue", propertyID: "DOI", value: input.doi },
+    input.reportNumber && { "@type": "PropertyValue", propertyID: "reportNumber", value: input.reportNumber },
+    input.seriesNumber && { "@type": "PropertyValue", propertyID: "seriesNumber", value: input.seriesNumber },
+  ].filter(Boolean);
   const doiUrl = input.doi ? `https://doi.org/${input.doi}` : undefined;
   return {
     "@context": "https://schema.org",
@@ -39,7 +46,7 @@ export function buildArticleJsonLd(input: ArticleJsonLdInput) {
     isAccessibleForFree: !input.isPremium,
     articleSection: input.section || undefined,
     keywords: keywords.length > 0 ? keywords.join(", ") : undefined,
-    identifier: input.doi ? { "@type": "PropertyValue", propertyID: "DOI", value: input.doi } : undefined,
+    identifier: identifiers.length > 0 ? identifiers : undefined,
     sameAs: doiUrl,
     author: input.authorName ? { "@type": "Person", name: input.authorName } : undefined,
     publisher: { "@id": ORGANIZATION_ID },

@@ -119,6 +119,8 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
     type: "ScholarlyArticle",
     section: studyTypeLabel,
     doi: study.doi,
+    reportNumber: study.report_number,
+    seriesNumber: study.series_number,
   });
 
   const breadcrumbJsonLd = {
@@ -162,6 +164,21 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
             </>
           )}
         </p>
+        {(study.report_number || study.series_number) && (
+          <p className={styles.postMeta}>
+            {study.report_number && (
+              <>
+                {dictionary.studiesPage.reportNumber}: <bdi>{study.report_number}</bdi>
+              </>
+            )}
+            {study.report_number && study.series_number ? " · " : ""}
+            {study.series_number && (
+              <>
+                {dictionary.studiesPage.seriesNumber}: <bdi>{study.series_number}</bdi>
+              </>
+            )}
+          </p>
+        )}
         {study.doi && (
           <p className={styles.postMeta}>
             {dictionary.studiesPage.doi}:{" "}

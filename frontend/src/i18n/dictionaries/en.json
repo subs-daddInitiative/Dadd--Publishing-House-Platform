@@ -307,6 +307,8 @@
     "resetFilters": "Reset"
   },
   "studiesPage": {
+    "reportNumber": "Report no.",
+    "seriesNumber": "Series no.",
     "doi": "DOI",
     "studyTypes": {
       "analytical_study": "Analytical study",
