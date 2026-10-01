@@ -307,6 +307,16 @@
     "resetFilters": "إعادة تعيين"
   },
   "studiesPage": {
+    "abstract": "الملخص",
+    "studyInfo": "معلومات الدراسة",
+    "publishedOn": "تاريخ النشر",
+    "updatedOn": "آخر تحديث",
+    "category": "التصنيف",
+    "type": "النوع",
+    "access": "الوصول",
+    "accessFree": "مجاني",
+    "accessPremium": "للمشتركين",
+    "language": "اللغة",
     "pageLabel": "الصفحة",
     "pageIndicator": "صفحة {current} من {total}",
     "previousPage": "الصفحة السابقة",

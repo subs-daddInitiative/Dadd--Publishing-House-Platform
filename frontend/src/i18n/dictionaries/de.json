@@ -307,6 +307,16 @@
     "resetFilters": "Zurücksetzen"
   },
   "studiesPage": {
+    "abstract": "Zusammenfassung",
+    "studyInfo": "Angaben zur Studie",
+    "publishedOn": "Veröffentlicht",
+    "updatedOn": "Zuletzt aktualisiert",
+    "category": "Kategorie",
+    "type": "Typ",
+    "access": "Zugang",
+    "accessFree": "Kostenlos",
+    "accessPremium": "Nur für Abonnenten",
+    "language": "Sprache",
     "pageLabel": "Seite",
     "pageIndicator": "Seite {current} von {total}",
     "previousPage": "Vorherige Seite",

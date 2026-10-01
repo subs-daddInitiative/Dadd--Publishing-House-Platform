@@ -22,10 +22,10 @@ import { Sidebar } from "@/components/Sidebar";
 import { PostStats } from "@/components/PostStats";
 import { buildArticleJsonLd } from "@/lib/articleJsonLd";
 import { isStudyTypeKey } from "@/features/studies/studyTypes";
-import { ShareBar } from "@/components/ShareBar";
 import { BlockRenderer } from "@/features/blog/BlockRenderer";
 import { StudyTableOfContents } from "@/features/studies/StudyTableOfContents";
 import { StudyPager } from "@/features/studies/StudyPager";
+import { StudyArticleHeader } from "@/features/studies/StudyArticleHeader";
 import { studyPageHref } from "@/features/studies/studyPageHref";
 import styles from "@/features/studies/studies.module.css";
 
@@ -134,9 +134,6 @@ export default async function StudyPostPage({
   const pdfUrl = backendAssetUrl(study.pdf_file);
   const backendUrl = process.env.BACKEND_URL || "http://localhost:4000";
 
-  const publishedDate = study.published_at ? new Date(study.published_at.replace(" ", "T")) : null;
-  const dateLabel = publishedDate ? publishedDate.toLocaleDateString(locale, { dateStyle: "long" }) : "";
-
   const basePath = `/${locale}/studies/${study.slug}`;
   const canonicalPath = studyPageHref(basePath, currentPage);
 
@@ -187,74 +184,28 @@ export default async function StudyPostPage({
         <span>{study.title}</span>
       </nav>
 
-      <header className={styles.postHeader}>
-        {isFirstPage && (
-          <>
-            {study.category_name && <span className={styles.postCategoryTag}>{study.category_name}</span>}
-            {studyTypeLabel && <span className={styles.postTypeTag}>{studyTypeLabel}</span>}
-          </>
-        )}
-        <h1 className={styles.postTitle}>{study.title}</h1>
-        {!isFirstPage && (
+      {isFirstPage ? (
+        <StudyArticleHeader
+          study={study}
+          locale={locale}
+          typeLabel={studyTypeLabel}
+          pdfUrl={pdfUrl}
+          shareUrl={absoluteUrl(basePath)}
+          shareLabels={dictionary.share}
+          labels={dictionary.studiesPage}
+        />
+      ) : (
+        <header className={styles.postHeader}>
+          <h1 className={styles.postTitle}>{study.title}</h1>
           <p className={styles.postMeta}>
             {dictionary.studiesPage.pageIndicator
               .replace("{current}", String(currentPage))
               .replace("{total}", String(study.total_pages))}
           </p>
-        )}
-        {isFirstPage && (
-          <>
-            <p className={styles.postMeta}>
-              {publishedDate && <time dateTime={study.published_at || undefined}>{dateLabel}</time>}
-              {study.author && (
-                <>
-                  {publishedDate ? " · " : ""}
-                  {dictionary.studiesPage.by} {study.author}
-                </>
-              )}
-            </p>
-            {(study.report_number || study.series_number) && (
-              <p className={styles.postMeta}>
-                {study.report_number && (
-                  <>
-                    {dictionary.studiesPage.reportNumber}: <bdi>{study.report_number}</bdi>
-                  </>
-                )}
-                {study.report_number && study.series_number ? " · " : ""}
-                {study.series_number && (
-                  <>
-                    {dictionary.studiesPage.seriesNumber}: <bdi>{study.series_number}</bdi>
-                  </>
-                )}
-              </p>
-            )}
-            {study.doi && (
-              <p className={styles.postMeta}>
-                {dictionary.studiesPage.doi}:{" "}
-                <a href={`https://doi.org/${study.doi}`} target="_blank" rel="noopener noreferrer" dir="ltr">
-                  {study.doi}
-                </a>
-              </p>
-            )}
-
-            {pdfUrl && (
-              <div className={styles.pdfButtonRow}>
-                <a href={pdfUrl} className={styles.pdfButton} target="_blank" rel="noopener noreferrer">
-                  {dictionary.studiesPage.downloadPdf}
-                </a>
-              </div>
-            )}
-          </>
-        )}
-      </header>
-
-      {isFirstPage && (
-        <>
-          <ShareBar url={absoluteUrl(basePath)} title={study.title} labels={dictionary.share} />
-
-          <PostStats stats={study.stats} />
-        </>
+        </header>
       )}
+
+      {isFirstPage && <PostStats stats={study.stats} />}
 
       {isFirstPage && mainImageUrl && (
         <div className={styles.mainImageWrap}>

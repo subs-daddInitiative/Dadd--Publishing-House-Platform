@@ -1,0 +1,190 @@
+.header {
+  margin: 0 0 var(--space-4);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.chip,
+.chipType,
+.chipFree,
+.chipPremium {
+  padding: 0.25rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.chipType {
+  background: var(--gradient-brand);
+  color: var(--color-on-primary);
+}
+
+.chip {
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.chipFree {
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+.chipPremium {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.title {
+  font-size: clamp(1.8rem, 4.5vw, 2.75rem);
+  line-height: 1.25;
+  margin: 0 0 var(--space-2);
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 0 var(--space-3);
+  font-size: 1.05rem;
+}
+
+.authorAvatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+  font-weight: 700;
+}
+
+.authorBy {
+  color: var(--color-text-muted);
+}
+
+.authorName {
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* The share bar brings its own vertical margin; inside this row it only needs the gap. */
+.actions > * {
+  margin: 0;
+}
+
+.pdfButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  background: var(--gradient-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: box-shadow var(--duration-fast) ease;
+}
+
+.pdfButton:hover,
+.pdfButton:focus-visible {
+  box-shadow: 0 0.75rem 1.5rem -0.75rem color-mix(in srgb, var(--color-primary) 60%, transparent);
+}
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  align-items: start;
+}
+
+.body > :only-child {
+  grid-column: 1 / -1;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  margin: 0 0 var(--space-1);
+  color: var(--color-primary);
+}
+
+.abstractText {
+  margin: 0;
+  line-height: 1.9;
+  font-size: 1.05rem;
+}
+
+.info {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  background: var(--color-surface);
+}
+
+.facts {
+  margin: 0;
+}
+
+.fact {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 0.55rem 0;
+  font-size: 0.9rem;
+}
+
+.factStacked {
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.factStacked dd {
+  text-align: start;
+}
+
+.fact + .fact {
+  border-top: 1px solid var(--color-border);
+}
+
+.fact dt {
+  color: var(--color-text-muted);
+}
+
+.fact dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: end;
+  overflow-wrap: anywhere;
+}
+
+.fact a {
+  color: var(--color-primary);
+}
+
+@media (max-width: 48rem) {
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pdfButton {
+    transition: none;
+  }
+}
