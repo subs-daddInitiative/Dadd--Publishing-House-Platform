@@ -42,7 +42,6 @@ export async function generateMetadata({
   return {
     title: `${blog.title} | ${siteName}`,
     description,
-    keywords: blog.seo_keywords || undefined,
     alternates: {
       canonical: `/${locale}/blog/${blog.slug}`,
       languages: Object.fromEntries(locales.map((loc) => [loc, `/${loc}/blog/${blog.slug}`])),
