@@ -14,6 +14,7 @@ import { Footer } from "@/components/Footer";
 import { NewsTicker } from "@/components/NewsTicker";
 import { AdsPopupManager } from "@/components/AdsPopupManager";
 import { SyncHtmlAttributes } from "@/components/SyncHtmlAttributes";
+import { SiteJsonLd } from "@/components/SiteJsonLd";
 import { StoreProvider } from "@/components/store/StoreProvider";
 import { FavoritesProvider } from "@/components/favorites/FavoritesProvider";
 import { notFound } from "next/navigation";
@@ -85,6 +86,12 @@ export default async function LocaleLayout({
   return (
     <StoreProvider>
       <FavoritesProvider isLoggedIn={Boolean(subscriber)}>
+        <SiteJsonLd
+          locale={locale}
+          settings={settings}
+          fallbackName={dictionary.common.siteName}
+          fallbackDescription={dictionary.home.heroSubtitle}
+        />
         <SyncHtmlAttributes lang={locale} dir={dir} />
         <a href="#main-content" className="skip-link">
           {dictionary.common.skipToContent}
