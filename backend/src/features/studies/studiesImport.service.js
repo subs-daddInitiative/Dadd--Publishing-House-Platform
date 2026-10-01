@@ -12,6 +12,7 @@ const {
   downloadBlockVideo,
 } = require("./studiesImport.assets");
 
+const PAGE_BREAK_TYPE_LABEL = "فاصل صفحة";
 const STUDIES_SHEET_NAME = "الدراسات";
 const SECTIONS_SHEET_NAME = "الأقسام";
 
@@ -87,6 +88,9 @@ function readSectionsByStudy(sheet) {
 // downloaded — the study import still proceeds, just without that section,
 // so one bad link doesn't sink the whole study.
 async function buildBlock(section, sectionLabel) {
+  if (section.type.trim() === PAGE_BREAK_TYPE_LABEL) {
+    return { block: { type: "page_break" } };
+  }
   const internalType = resolveType(section.type);
   if (!internalType) {
     return { warning: `${sectionLabel}: نوع القسم "${section.type}" غير معروف` };
