@@ -631,3 +631,16 @@ Read `DB_CHANGES.md` at the start of any task that touches the database, dummy/d
 After pulling, or when someone reports missing dummy data/pictures locally: run any new files in `backend/database/migrations/` (safe to re-run all of them, they're idempotent), then run `npm run db:seed` from `backend/` to load `backend/database/seedData.json` into the local database and copy `backend/database/seed-assets/` into `backend/uploads/`. This restores all demo books/blogs/studies/categories/translations/settings/banners/ads/pricing tiers — never real accounts or billing data, which are excluded from the seed on purpose.
 
 Whenever you (the AI agent) add, edit, or seed any dummy/demo content, or add a migration: after verifying it works, run `npm run db:export-seed` from `backend/` to refresh `seedData.json` and `seed-assets/`, commit them alongside the migration, and add a dated entry to `DB_CHANGES.md` describing what changed and why. This is part of "verified work must be committed" above — do it without being asked, every time.
+
+# Metadata & research-platform roadmap
+
+The long-term goal is a large research/search platform on top of the publishing house, not only a bookstore. The ordered build plan for metadata, structured data and that research-platform build-out lives in `خطة_تحسين_البيانات_الوصفية.txt` at the project root (Arabic).
+
+Before building anything that touches metadata, JSON-LD/SEO, or the book/study/blog data model, read that file first so each change fits the whole picture.
+
+- Phase 1 (items 1-14): immediate metadata and structured-data improvements.
+- Phase 2 (items 15-18): author registry, simple edit history, unified access levels, auto-generated citations.
+- Phase 3 (3.1-3.8): roles and governance, peer review, real DOI via Crossref plus ISSN, versions, long-term archive, research-data repository, public API, unified search (Elasticsearch).
+- Items are built strictly in the file's order, one at a time. Each item is marked `[تم]` in the file once built, verified and pushed - do that as part of finishing the item.
+- Items the project decided not to adopt, and why, are listed in `بنود_مرفوضة_من_مواصفات_البيانات_الوصفية.txt` when that file is present locally (not committed) - do not build those without asking.
+- Anything that adds a database column also follows the `database & dummy data sync` rules above (migration, `schema.sql`, seed export, `DB_CHANGES.md`).
