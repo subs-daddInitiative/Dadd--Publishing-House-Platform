@@ -113,6 +113,7 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
     path: canonicalPath,
     locale,
     isPremium: Boolean(study.is_premium),
+    type: "ScholarlyArticle",
   });
 
   const breadcrumbJsonLd = {

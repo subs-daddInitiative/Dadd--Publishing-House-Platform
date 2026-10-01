@@ -11,6 +11,7 @@ type ArticleJsonLdInput = {
   locale: string;
   isPremium: boolean;
   keywords?: string | null;
+  type?: "Article" | "ScholarlyArticle";
 };
 
 // Splits the admin's comma-separated keywords (Arabic or Latin comma) into a clean list.
@@ -25,7 +26,7 @@ export function buildArticleJsonLd(input: ArticleJsonLdInput) {
   const keywords = splitKeywords(input.keywords);
   return {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": input.type ?? "Article",
     headline: input.headline,
     description: input.description || undefined,
     image: input.imageUrl ? [input.imageUrl] : undefined,
