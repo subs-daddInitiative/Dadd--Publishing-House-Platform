@@ -112,6 +112,7 @@ export default async function BookDetailPage({ params }: { params: Promise<PageP
     image: coverImageUrl ? [coverImageUrl] : undefined,
     description: book.description || undefined,
     author: book.author ? { "@type": "Person", name: book.author } : undefined,
+    isbn: book.isbn || undefined,
     inLanguage: locale,
     datePublished: book.published_at || undefined,
     publisher: { "@id": ORGANIZATION_ID },
@@ -162,6 +163,11 @@ export default async function BookDetailPage({ params }: { params: Promise<PageP
           {book.category_name && <span className={styles.detailCategoryTag}>{book.category_name}</span>}
           <h1 className={styles.detailTitle}>{book.title}</h1>
           {book.author && <p className={styles.detailAuthor}>{dictionary.booksPage.by} {book.author}</p>}
+          {book.isbn && (
+            <p className={styles.detailIsbn}>
+              {dictionary.booksPage.isbn}: <bdi>{book.isbn}</bdi>
+            </p>
+          )}
           {rating !== null && <StarRating rating={rating} reviewsCount={book.reviews_count} />}
           {price !== null && (
             <p className={styles.detailPrice}>{formatCurrency(price, book.currency)}</p>

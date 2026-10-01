@@ -328,6 +328,7 @@
     "tableOfContents": "Study Contents"
   },
   "booksPage": {
+    "isbn": "ISBN",
     "title": "Books Library",
     "subtitle": "Find your next great read.",
     "viewAll": "View All",

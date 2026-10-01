@@ -391,6 +391,12 @@ html[dir="rtl"] .viewAllLink:hover {
   margin: 0;
 }
 
+.detailIsbn {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
 .detailPrice {
   font-size: 1.75rem;
   font-weight: 700;

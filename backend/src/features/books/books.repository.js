@@ -13,7 +13,7 @@ const CURRENCY_EXPR = "IF(b.pricing_tier_id IS NOT NULL, pt.currency, b.currency
 // base column and this single query path stays correct for every locale.
 const PUBLIC_LIST_FIELDS = `
   b.id, COALESCE(bt.title, b.title) AS title, b.slug,
-  COALESCE(bt.author, b.author) AS author, COALESCE(bt.description, b.description) AS description,
+  COALESCE(bt.author, b.author) AS author, b.isbn, COALESCE(bt.description, b.description) AS description,
   ${PRICE_EXPR} AS price, ${CURRENCY_EXPR} AS currency,
   b.pricing_tier_id, pt.name AS pricing_tier_name,
   b.rating, b.reviews_count, b.cover_image, b.published_at,
@@ -193,14 +193,15 @@ async function createBook(data) {
   const publishedAt = data.status === "published" ? new Date() : null;
   const [result] = await pool.query(
     `INSERT INTO books
-       (category_id, title, slug, author, description, price, currency, pricing_tier_id, rating,
+       (category_id, title, slug, author, isbn, description, price, currency, pricing_tier_id, rating,
         reviews_count, cover_image, pdf_file, status, published_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.category_id || null,
       data.title,
       data.slug,
       data.author || null,
+      data.isbn || null,
       data.description || null,
       data.price ?? null,
       data.currency || "USD",
@@ -222,6 +223,7 @@ async function updateBook(id, fields) {
     "title",
     "slug",
     "author",
+    "isbn",
     "description",
     "price",
     "currency",

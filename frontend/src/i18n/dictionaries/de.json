@@ -328,6 +328,7 @@
     "tableOfContents": "Inhalt der Studie"
   },
   "booksPage": {
+    "isbn": "ISBN",
     "title": "Buchbibliothek",
     "subtitle": "Finden Sie Ihre nächste großartige Lektüre.",
     "viewAll": "Alle ansehen",

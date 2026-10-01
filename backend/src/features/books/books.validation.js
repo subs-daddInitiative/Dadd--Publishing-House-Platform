@@ -30,6 +30,21 @@ function parseExternalLinks(raw) {
   return { links };
 }
 
+// Returns the digits-only ISBN, null when blank, or false when it is not a valid ISBN-10/13.
+function normalizeIsbn(raw) {
+  const isbn = String(raw ?? "").replace(/[\s-]/g, "").toUpperCase();
+  if (!isbn) return null;
+  if (/^\d{13}$/.test(isbn)) {
+    const sum = [...isbn].reduce((total, digit, index) => total + Number(digit) * (index % 2 === 0 ? 1 : 3), 0);
+    return sum % 10 === 0 ? isbn : false;
+  }
+  if (/^\d{9}[\dX]$/.test(isbn)) {
+    const sum = [...isbn].reduce((total, char, index) => total + (char === "X" ? 10 : Number(char)) * (10 - index), 0);
+    return sum % 11 === 0 ? isbn : false;
+  }
+  return false;
+}
+
 function validateBookPayload(body, { partial = false } = {}) {
   const errors = [];
   const value = {};
@@ -46,6 +61,12 @@ function validateBookPayload(body, { partial = false } = {}) {
 
   if (body.author !== undefined) {
     value.author = String(body.author).trim().slice(0, 190);
+  }
+
+  if (body.isbn !== undefined) {
+    const isbn = normalizeIsbn(body.isbn);
+    if (isbn === false) errors.push("ISBN must be a valid ISBN-10 or ISBN-13");
+    else value.isbn = isbn;
   }
 
   if (body.description !== undefined) {

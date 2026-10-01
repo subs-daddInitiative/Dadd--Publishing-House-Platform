@@ -43,6 +43,14 @@ harmless.
 
 ---
 
+## 2026-10-01 — Optional ISBN on books
+
+- Migration `036_add_isbn_to_books.sql`: added nullable `books.isbn` (VARCHAR(13),
+  digits only, plus a trailing X for ISBN-10). Entered by the editor, validated
+  with the ISBN check digit, shown on the book page and in its `Book` JSON-LD
+  only when present. No demo book has an ISBN. The seed export also picked up
+  unrelated local drift (a soft-deleted test ad, newer `updated_at` values).
+
 ## 2026-09-27 — Stats strip is now translatable per locale
 
 - Migration `035_add_stats_to_translations.sql`: added `stats` to

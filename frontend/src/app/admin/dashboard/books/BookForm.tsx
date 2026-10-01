@@ -42,6 +42,7 @@ export function BookForm({
   const [slug, setSlug] = useState(initialBook?.slug || "");
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
   const [author, setAuthor] = useState(initialBook?.author || "");
+  const [isbn, setIsbn] = useState(initialBook?.isbn || "");
   const [categoryId, setCategoryId] = useState(initialBook?.category_id?.toString() || "");
   const [description, setDescription] = useState(initialBook?.description || "");
   const [pricingMode, setPricingMode] = useState<"fixed" | "tier">(
@@ -89,6 +90,7 @@ export function BookForm({
     formData.append("title", title);
     formData.append("slug", slug);
     formData.append("author", author);
+    formData.append("isbn", isbn);
     formData.append("category_id", categoryId);
     formData.append("description", description);
     if (pricingMode === "tier") {
@@ -168,6 +170,21 @@ export function BookForm({
             className={styles.input}
             value={author}
             onChange={(event) => setAuthor(event.target.value)}
+          />
+        </div>
+
+        <div className={styles.field}>
+          <label htmlFor="bookIsbn" className={styles.label}>
+            ISBN (اختياري)
+          </label>
+          <input
+            id="bookIsbn"
+            className={styles.input}
+            value={isbn}
+            inputMode="numeric"
+            dir="ltr"
+            placeholder="978-..."
+            onChange={(event) => setIsbn(event.target.value)}
           />
         </div>
 

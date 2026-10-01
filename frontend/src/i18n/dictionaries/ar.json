@@ -328,6 +328,7 @@
     "tableOfContents": "محتويات الدراسة"
   },
   "booksPage": {
+    "isbn": "الرقم الدولي (ISBN)",
     "title": "مكتبة الكتب",
     "subtitle": "اعثر على قراءتك القادمة.",
     "viewAll": "عرض الكل",

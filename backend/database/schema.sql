@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS books (
   title VARCHAR(255) NOT NULL,
   slug VARCHAR(280) NOT NULL,
   author VARCHAR(190) NULL,
+  isbn VARCHAR(13) NULL,
   description TEXT NULL,
   price DECIMAL(10,2) NULL,
   pricing_tier_id INT UNSIGNED NULL,

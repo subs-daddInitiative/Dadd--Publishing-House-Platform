@@ -647,6 +647,7 @@ export type BookSummary = {
   title: string;
   slug: string;
   author: string | null;
+  isbn: string | null;
   description: string | null;
   price: string | null;
   currency: string;
@@ -735,6 +736,7 @@ export type AdminBookDetail = {
   title: string;
   slug: string;
   author: string | null;
+  isbn: string | null;
   description: string | null;
   price: string | null;
   currency: string;
