@@ -258,6 +258,14 @@ async function findAdminBlogById(id) {
   return rows[0] || null;
 }
 
+async function findActiveBlogBySlug(slug) {
+  const [rows] = await pool.query(
+    "SELECT id, title FROM blogs WHERE slug = ? AND deleted_at IS NULL LIMIT 1",
+    [slug]
+  );
+  return rows[0] || null;
+}
+
 async function slugExists(slug, excludeId) {
   const params = [slug];
   let query = "SELECT id FROM blogs WHERE slug = ?";
@@ -473,6 +481,7 @@ module.exports = {
   listBySubscriber,
   findByIdForSubscriber,
   findAdminBlogById,
+  findActiveBlogBySlug,
   ensureUniqueSlug,
   createBlog,
   updateBlog,

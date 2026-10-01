@@ -60,4 +60,20 @@ function parseTags(content) {
     .slice(0, 20);
 }
 
-module.exports = { resolveType, parseLabelledLines, wrapAsHtml, parseTags };
+// Reads the duplicate-handling options sent alongside the uploaded files:
+// duplicates = "overwrite" (anything else means "ask"), only = JSON array of row ids.
+function parseImportOptions(body = {}) {
+  const duplicates = body.duplicates === "overwrite" ? "overwrite" : "ask";
+  let only = null;
+  if (typeof body.only === "string" && body.only) {
+    try {
+      const ids = JSON.parse(body.only);
+      if (Array.isArray(ids)) only = new Set(ids.map(String));
+    } catch {
+      only = null;
+    }
+  }
+  return { duplicates, only };
+}
+
+module.exports = { resolveType, parseLabelledLines, wrapAsHtml, parseTags, parseImportOptions };

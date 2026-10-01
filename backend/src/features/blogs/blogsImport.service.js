@@ -1,7 +1,8 @@
 const ExcelJS = require("exceljs");
 const { createCategoryRepository } = require("../../utils/categoryRepository");
 const { validateBlogPayload, STATUSES } = require("./blogs.validation");
-const { ensureUniqueSlug, createBlog } = require("./blogs.repository");
+const { ensureUniqueSlug, createBlog, updateBlog, findActiveBlogBySlug } = require("./blogs.repository");
+const { slugify } = require("../../utils/slugify");
 const { getSettings } = require("../settings/settings.repository");
 const { resolveType, parseLabelledLines, wrapAsHtml, parseTags } = require("../../utils/contentImportParse");
 const {
@@ -147,7 +148,10 @@ async function buildBlock(section, sectionLabel) {
   };
 }
 
-async function importBlogsFromWorkbook(buffer) {
+// options.duplicates: "ask" reports a post whose slug already exists instead of
+// creating a copy; "overwrite" updates the existing post in place.
+// options.only: when set, only rows whose id ("<fileIndex>:<key>") is in the set are processed.
+async function importBlogsFromWorkbook(buffer, { fileIndex = 0, duplicates = "ask", only = null } = {}) {
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.load(buffer);
 
@@ -175,14 +179,37 @@ async function importBlogsFromWorkbook(buffer) {
   const results = [];
 
   for (const row of blogRows) {
+    const rowId = `${fileIndex}:${row.key}`;
+    if (only && !only.has(rowId)) continue;
+
+    const base = { key: row.key, rowId, title: row.title };
     const warnings = [];
     try {
+      const targetSlug = slugify(row.slug || row.title);
+      const existing = targetSlug ? await findActiveBlogBySlug(targetSlug) : null;
+
+      if (existing && duplicates !== "overwrite") {
+        results.push({ ...base, status: "duplicate", existingId: existing.id, existingTitle: existing.title });
+        continue;
+      }
+
       const sections = sectionsByPost.get(row.key) || [];
       const blocks = [];
       for (let i = 0; i < sections.length; i += 1) {
         const outcome = await buildBlock(sections[i], `القسم رقم ${i + 1}`);
         if (outcome.block) blocks.push(outcome.block);
         if (outcome.warning) warnings.push(outcome.warning);
+      }
+
+      // Replacing an existing post with a version that silently lost sections
+      // would destroy content, so an overwrite with any failed section changes nothing.
+      if (existing && warnings.length > 0) {
+        results.push({
+          ...base,
+          status: "error",
+          message: `لم يتم التحديث ولم يتغير شيء في المقالة الحالية، بسبب: ${warnings.join(" | ")}`,
+        });
+        continue;
       }
 
       let coverImage = null;
@@ -193,17 +220,22 @@ async function importBlogsFromWorkbook(buffer) {
       }
 
       const categoryId = row.categoryName ? categoryIdByName.get(normalizeName(row.categoryName)) ?? null : null;
-      if (row.categoryName && categoryId === null) {
-        warnings.push(`لم يتم العثور على تصنيف باسم "${row.categoryName}" — تم حفظ المقالة بلا تصنيف`);
+      const categoryMissing = Boolean(row.categoryName) && categoryId === null;
+      if (categoryMissing) {
+        warnings.push(
+          existing
+            ? `لم يتم العثور على تصنيف باسم "${row.categoryName}" — تم الإبقاء على التصنيف الحالي`
+            : `لم يتم العثور على تصنيف باسم "${row.categoryName}" — تم حفظ المقالة بلا تصنيف`
+        );
       }
 
       const body = {
         title: row.title,
         slug: row.slug || undefined,
-        author_name: row.authorName || fallbackAuthorName || "",
+        author_name: row.authorName || (existing ? undefined : fallbackAuthorName || ""),
         category_id: categoryId ?? "",
         excerpt: row.excerpt,
-        status: STATUSES.includes(row.status) ? row.status : "draft",
+        status: STATUSES.includes(row.status) ? row.status : existing ? undefined : "draft",
         is_premium: parseYesNo(row.isPremium),
         is_highlighted: parseYesNo(row.isHighlighted),
         highlighted_until: row.isHighlighted && row.highlightedUntil ? row.highlightedUntil : "",
@@ -211,9 +243,25 @@ async function importBlogsFromWorkbook(buffer) {
         seo_keywords: row.seoKeywords,
       };
 
-      const { errors, value } = validateBlogPayload(body);
+      const { errors, value } = validateBlogPayload(body, { partial: Boolean(existing) });
       if (errors.length > 0) {
-        results.push({ key: row.key, title: row.title, status: "error", message: errors.join("، ") });
+        results.push({ ...base, status: "error", message: errors.join("، ") });
+        continue;
+      }
+
+      if (existing) {
+        // Keep the existing slug (links and translations point at it); only the content changes.
+        const update = { ...value };
+        delete update.slug;
+        if (categoryMissing) delete update.category_id;
+        if (coverImage) update.cover_image = coverImage;
+        await updateBlog(existing.id, update);
+        results.push({
+          ...base,
+          status: "updated",
+          id: existing.id,
+          warnings: warnings.length > 0 ? warnings : undefined,
+        });
         continue;
       }
 
@@ -221,14 +269,13 @@ async function importBlogsFromWorkbook(buffer) {
       const id = await createBlog({ ...value, slug, cover_image: coverImage, author_id: null });
 
       results.push({
-        key: row.key,
-        title: row.title,
+        ...base,
         status: "created",
         id,
         warnings: warnings.length > 0 ? warnings : undefined,
       });
     } catch (error) {
-      results.push({ key: row.key, title: row.title, status: "error", message: error.message });
+      results.push({ ...base, status: "error", message: error.message });
     }
   }
 

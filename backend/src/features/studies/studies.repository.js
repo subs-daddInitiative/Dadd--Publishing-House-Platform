@@ -230,6 +230,14 @@ async function findAdminStudyById(id) {
   return rows[0] || null;
 }
 
+async function findActiveStudyBySlug(slug) {
+  const [rows] = await pool.query(
+    "SELECT id, title FROM studies WHERE slug = ? AND deleted_at IS NULL LIMIT 1",
+    [slug]
+  );
+  return rows[0] || null;
+}
+
 async function slugExists(slug, excludeId) {
   const params = [slug];
   let query = "SELECT id FROM studies WHERE slug = ?";
@@ -390,6 +398,7 @@ module.exports = {
   countActiveHighlightedStudies,
   findAdminStudyById,
   findStudyById,
+  findActiveStudyBySlug,
   ensureUniqueSlug,
   createStudy,
   updateStudy,

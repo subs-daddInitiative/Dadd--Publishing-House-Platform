@@ -1,3 +1,4 @@
+const { parseImportOptions } = require("../../utils/contentImportParse");
 const { importStudiesFromWorkbook } = require("./studiesImport.service");
 
 function isBadWorkbookError(error) {
@@ -15,10 +16,11 @@ async function importStudiesHandler(req, res, next) {
       return res.status(400).json({ success: false, message: "الرجاء رفع ملف Excel واحد أو أكثر." });
     }
 
+    const options = parseImportOptions(req.body);
     const data = [];
-    for (const file of files) {
+    for (const [fileIndex, file] of files.entries()) {
       try {
-        const result = await importStudiesFromWorkbook(file.buffer);
+        const result = await importStudiesFromWorkbook(file.buffer, { ...options, fileIndex });
         if (!result.success) {
           data.push({ filename: file.originalname, success: false, message: result.message });
         } else {
