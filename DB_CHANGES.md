@@ -43,6 +43,14 @@ harmless.
 
 ---
 
+## 2026-10-01 — Optional article type on blogs
+
+- Migration `037_add_article_type_to_blogs.sql`: added nullable `blogs.article_type`
+  (`news` | `analysis` | `opinion` | `interview` | `book_review`), chosen from a
+  dropdown in the blog form. Labels live in the frontend dictionaries; the type
+  shows as a chip on the post and as `articleSection` in its JSON-LD. No demo
+  blog has a type set.
+
 ## 2026-10-01 — Optional ISBN on books
 
 - Migration `036_add_isbn_to_books.sql`: added nullable `books.isbn` (VARCHAR(13),

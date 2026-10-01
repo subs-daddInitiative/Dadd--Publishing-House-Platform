@@ -273,6 +273,7 @@ export type BlogSummary = {
   title: string;
   slug: string;
   excerpt: string | null;
+  article_type: string | null;
   cover_image: string | null;
   published_at: string | null;
   category_name: string | null;
@@ -367,6 +368,7 @@ export type AdminBlogSummary = {
 export type AdminBlogDetail = {
   id: number;
   category_id: number | null;
+  article_type: string | null;
   author_id: number | null;
   author_name: string | null;
   title: string;

@@ -6,6 +6,7 @@ import { BlockEditor, type ContentBlock } from "@/features/blogEditor/BlockEdito
 import { ImageCropper } from "@/components/ImageCropper";
 import { StatsEditor, parseInitialStats, type Stat } from "@/components/admin/StatsEditor";
 import type { AdminBlogDetail, BlogCategory } from "@/lib/serverApi";
+import { ARTICLE_TYPE_ADMIN_LABELS, ARTICLE_TYPE_KEYS } from "@/features/blog/articleTypes";
 import styles from "./blogs.module.css";
 
 const COVER_ASPECT_RATIO = 16 / 8;
@@ -67,6 +68,7 @@ export function BlogForm({
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
   const [authorName, setAuthorName] = useState(initialBlog?.author_name || "");
   const [categoryId, setCategoryId] = useState(initialBlog?.category_id?.toString() || "");
+  const [articleType, setArticleType] = useState(initialBlog?.article_type || "");
   const [excerpt, setExcerpt] = useState(initialBlog?.excerpt || "");
   const [blocks, setBlocks] = useState<ContentBlock[]>(parseInitialBlocks(initialBlog?.content_blocks));
   const [stats, setStats] = useState<Stat[]>(parseInitialStats(initialBlog?.stats));
@@ -117,6 +119,7 @@ export function BlogForm({
     formData.append("slug", slug);
     formData.append("author_name", authorName);
     formData.append("category_id", categoryId);
+    formData.append("article_type", articleType);
     formData.append("excerpt", excerpt);
     formData.append("content_blocks", JSON.stringify(blocks));
     formData.append("stats", JSON.stringify(stats));
@@ -193,6 +196,25 @@ export function BlogForm({
       </div>
 
       <div className={styles.row}>
+        <div className={styles.field}>
+          <label htmlFor="blogArticleType" className={styles.label}>
+            نوع المقال (اختياري)
+          </label>
+          <select
+            id="blogArticleType"
+            className={styles.select}
+            value={articleType}
+            onChange={(event) => setArticleType(event.target.value)}
+          >
+            <option value="">بدون نوع</option>
+            {ARTICLE_TYPE_KEYS.map((key) => (
+              <option key={key} value={key}>
+                {ARTICLE_TYPE_ADMIN_LABELS[key]}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className={styles.field}>
           <label htmlFor="blogCategory" className={styles.label}>
             التصنيف

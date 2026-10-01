@@ -276,6 +276,13 @@
     ]
   },
   "blogPage": {
+    "articleTypes": {
+      "news": "خبر",
+      "analysis": "تحليل",
+      "opinion": "رأي",
+      "interview": "مقابلة",
+      "book_review": "مراجعة كتاب"
+    },
     "title": "مقالات مختارة",
     "subtitle": "أصوات جديدة وحكايات لا تشيخ.",
     "viewAll": "عرض الكل",

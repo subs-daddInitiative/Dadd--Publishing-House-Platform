@@ -20,6 +20,7 @@ import { PremiumLock } from "@/features/subscribers/PremiumLock";
 import { Sidebar } from "@/components/Sidebar";
 import { PostStats } from "@/components/PostStats";
 import { buildArticleJsonLd } from "@/lib/articleJsonLd";
+import { isArticleTypeKey } from "@/features/blog/articleTypes";
 import { ShareBar } from "@/components/ShareBar";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
 import styles from "@/features/blog/blog.module.css";
@@ -95,6 +96,10 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
   const publishedDate = blog.published_at ? new Date(blog.published_at.replace(" ", "T")) : null;
   const dateLabel = publishedDate ? publishedDate.toLocaleDateString(locale, { dateStyle: "long" }) : "";
 
+  const articleTypeLabel = isArticleTypeKey(blog.article_type)
+    ? dictionary.blogPage.articleTypes[blog.article_type]
+    : null;
+
   const jsonLd = buildArticleJsonLd({
     headline: blog.title,
     description: blog.excerpt,
@@ -106,6 +111,7 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
     locale,
     isPremium: Boolean(blog.is_premium),
     keywords: blog.seo_keywords,
+    section: articleTypeLabel,
   });
 
   return (
@@ -119,6 +125,7 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
       <article className={styles.mainCol}>
       <header className={styles.postHeader}>
         {blog.category_name && <span className={styles.postCategoryTag}>{blog.category_name}</span>}
+        {articleTypeLabel && <span className={styles.postTypeTag}>{articleTypeLabel}</span>}
         <h1 className={styles.postTitle}>{blog.title}</h1>
         <p className={styles.postMeta}>
           {publishedDate && <time dateTime={blog.published_at || undefined}>{dateLabel}</time>}

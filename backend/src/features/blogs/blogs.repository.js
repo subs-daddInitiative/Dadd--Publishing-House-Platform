@@ -10,7 +10,7 @@ function isTranslatableLocale(locale) {
 }
 
 const PUBLIC_LIST_FIELDS = `
-  b.id, b.title, b.slug, b.excerpt, b.cover_image, b.published_at, b.is_premium,
+  b.id, b.title, b.slug, b.excerpt, b.article_type, b.cover_image, b.published_at, b.is_premium,
   b.is_highlighted, b.highlighted_until, ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active,
   bc.name AS category_name, bc.slug AS category_slug,
   COALESCE(b.author_name, u.name) AS author_name
@@ -20,7 +20,7 @@ const PUBLIC_LIST_FIELDS = `
 // translation row (bt) — used whenever locale is a non-Arabic locale, since a
 // blog only exists in that locale once a matching blog_translations row does.
 const PUBLIC_LIST_FIELDS_TRANSLATED = `
-  b.id, bt.title, bt.slug, bt.excerpt, b.cover_image, b.published_at, b.is_premium,
+  b.id, bt.title, bt.slug, bt.excerpt, b.article_type, b.cover_image, b.published_at, b.is_premium,
   b.is_highlighted, b.highlighted_until, ${HIGHLIGHT_ACTIVE_EXPR} AS is_highlighted_active,
   bct.name AS category_name, bc.slug AS category_slug,
   COALESCE(b.author_name, u.name) AS author_name
@@ -292,10 +292,11 @@ async function createBlog(data) {
   const publishedAt = data.status === "published" ? new Date() : null;
   const [result] = await pool.query(
     `INSERT INTO blogs
-       (category_id, author_id, author_name, title, slug, excerpt, content_blocks, stats, seo_keywords, cover_image, status, is_premium, is_highlighted, highlighted_until, published_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (category_id, article_type, author_id, author_name, title, slug, excerpt, content_blocks, stats, seo_keywords, cover_image, status, is_premium, is_highlighted, highlighted_until, published_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.category_id || null,
+      data.article_type || null,
       data.author_id || null,
       data.author_name || null,
       data.title,
@@ -318,6 +319,7 @@ async function createBlog(data) {
 async function updateBlog(id, fields) {
   const allowedKeys = [
     "category_id",
+    "article_type",
     "author_name",
     "title",
     "slug",

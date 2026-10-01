@@ -11,6 +11,7 @@ type ArticleJsonLdInput = {
   locale: string;
   isPremium: boolean;
   keywords?: string | null;
+  section?: string | null;
   type?: "Article" | "ScholarlyArticle";
 };
 
@@ -34,6 +35,7 @@ export function buildArticleJsonLd(input: ArticleJsonLdInput) {
     dateModified: input.updatedAt,
     inLanguage: input.locale,
     isAccessibleForFree: !input.isPremium,
+    articleSection: input.section || undefined,
     keywords: keywords.length > 0 ? keywords.join(", ") : undefined,
     author: input.authorName ? { "@type": "Person", name: input.authorName } : undefined,
     publisher: { "@id": ORGANIZATION_ID },

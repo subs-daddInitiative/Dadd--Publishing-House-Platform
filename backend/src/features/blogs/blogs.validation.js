@@ -3,6 +3,7 @@ const { sanitizeRichText } = require("../../utils/sanitizeRichText");
 const { validateStats } = require("../../utils/statsValidation");
 
 const STATUSES = ["draft", "published"];
+const ARTICLE_TYPES = ["news", "analysis", "opinion", "interview", "book_review"];
 const BLOCK_TYPES = ["text", "image", "image_text", "quote", "tags", "pdf", "voice", "video"];
 
 function sanitizePlainText(value, maxLength) {
@@ -143,6 +144,12 @@ function validateBlogPayload(body, { partial = false } = {}) {
     value.seo_keywords = sanitizePlainText(body.seo_keywords, 500);
   }
 
+  if (body.article_type !== undefined) {
+    const articleType = String(body.article_type).trim();
+    if (articleType && !ARTICLE_TYPES.includes(articleType)) errors.push("Invalid article type");
+    else value.article_type = articleType || null;
+  }
+
   if (body.category_id !== undefined) {
     const categoryId = Number(body.category_id);
     value.category_id = Number.isInteger(categoryId) && categoryId > 0 ? categoryId : null;
@@ -271,5 +278,6 @@ module.exports = {
   validateTranslationPayload,
   validateContentBlocks,
   STATUSES,
+  ARTICLE_TYPES,
   BLOCK_TYPES,
 };

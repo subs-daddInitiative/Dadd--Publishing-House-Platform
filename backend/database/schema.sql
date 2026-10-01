@@ -171,6 +171,7 @@ CREATE TABLE IF NOT EXISTS blogs_categories (
 CREATE TABLE IF NOT EXISTS blogs (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   category_id INT UNSIGNED NULL,
+  article_type VARCHAR(20) NULL,
   author_id INT UNSIGNED NULL,
   submitted_by_subscriber_id INT UNSIGNED NULL,
   author_name VARCHAR(190) NULL,

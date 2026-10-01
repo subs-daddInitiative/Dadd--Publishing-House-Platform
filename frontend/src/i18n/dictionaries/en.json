@@ -276,6 +276,13 @@
     ]
   },
   "blogPage": {
+    "articleTypes": {
+      "news": "News",
+      "analysis": "Analysis",
+      "opinion": "Opinion",
+      "interview": "Interview",
+      "book_review": "Book review"
+    },
     "title": "Curated Selections",
     "subtitle": "New voices and timeless narratives.",
     "viewAll": "View All",

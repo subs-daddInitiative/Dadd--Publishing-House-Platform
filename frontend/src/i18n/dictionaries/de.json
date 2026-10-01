@@ -276,6 +276,13 @@
     ]
   },
   "blogPage": {
+    "articleTypes": {
+      "news": "Nachricht",
+      "analysis": "Analyse",
+      "opinion": "Meinung",
+      "interview": "Interview",
+      "book_review": "Buchrezension"
+    },
     "title": "Ausgewählte Beiträge",
     "subtitle": "Neue Stimmen und zeitlose Erzählungen.",
     "viewAll": "Alle ansehen",
