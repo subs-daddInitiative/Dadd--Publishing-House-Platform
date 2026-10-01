@@ -160,7 +160,9 @@ export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: 
               </p>
               <input
                 className={styles.input}
-                placeholder="النص البديل (alt)"
+                placeholder="النص البديل (alt) - مطلوب"
+                required
+                aria-required="true"
                 value={block.alt}
                 onChange={(event) => update(block.id, { alt: event.target.value })}
               />
@@ -193,7 +195,9 @@ export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: 
               </p>
               <input
                 className={styles.input}
-                placeholder="النص البديل (alt)"
+                placeholder="النص البديل (alt) - مطلوب"
+                required
+                aria-required="true"
                 value={block.alt}
                 onChange={(event) => update(block.id, { alt: event.target.value })}
               />

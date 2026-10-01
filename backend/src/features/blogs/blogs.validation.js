@@ -26,6 +26,10 @@ function validateBlock(block, index, errors) {
         errors.push(`Block ${index + 1}: image URL is required`);
         return null;
       }
+      if (!sanitizePlainText(block.alt, 1)) {
+        errors.push(`Block ${index + 1}: image alt text is required`);
+        return null;
+      }
       return {
         id,
         type: "image",
@@ -36,6 +40,10 @@ function validateBlock(block, index, errors) {
     case "image_text":
       if (!block.url) {
         errors.push(`Block ${index + 1}: image URL is required`);
+        return null;
+      }
+      if (!sanitizePlainText(block.alt, 1)) {
+        errors.push(`Block ${index + 1}: image alt text is required`);
         return null;
       }
       return {

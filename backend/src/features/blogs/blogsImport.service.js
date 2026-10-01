@@ -104,6 +104,9 @@ async function buildBlock(section, sectionLabel) {
   const fields = parseLabelledLines(section.content);
 
   if (internalType === "image" || internalType === "image_text") {
+    if (!fields["نص بديل"]) {
+      return { warning: `${sectionLabel}: النص البديل مطلوب للصورة` };
+    }
     const download = await downloadBlockImage(fields["رابط"]);
     if (download.error) {
       return { warning: `${sectionLabel}: ${download.error}` };
