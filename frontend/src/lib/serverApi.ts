@@ -477,7 +477,8 @@ export type StudySummary = {
   is_highlighted_active: number;
 };
 
-export type StudyContentBlock = BlogContentBlock;
+// `page` is assigned by the backend (see utils/paginateBlocks.js).
+export type StudyContentBlock = BlogContentBlock & { page: number };
 
 export type StudyDetail = StudySummary & {
   category_id: number | null;
@@ -488,6 +489,7 @@ export type StudyDetail = StudySummary & {
   content_intro: string | null;
   content_body: string | null;
   content_blocks: StudyContentBlock[];
+  total_pages: number;
   stats: PostStat[];
   pdf_file: string | null;
   updated_at: string;

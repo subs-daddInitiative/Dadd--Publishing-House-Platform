@@ -307,6 +307,11 @@
     "resetFilters": "إعادة تعيين"
   },
   "studiesPage": {
+    "pageLabel": "الصفحة",
+    "pageIndicator": "صفحة {current} من {total}",
+    "previousPage": "الصفحة السابقة",
+    "nextPage": "الصفحة التالية",
+    "pagerLabel": "التنقل بين صفحات الدراسة",
     "reportNumber": "رقم التقرير",
     "seriesNumber": "رقم السلسلة",
     "doi": "المعرّف الرقمي (DOI)",

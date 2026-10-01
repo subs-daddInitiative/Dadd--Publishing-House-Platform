@@ -407,6 +407,7 @@ export function StudyForm({
           onChange={setBlocks}
           onUploadingChange={setUploading}
           uploadUrl="/api/admin/studies/upload-asset"
+          allowPageBreak
         />
         {currentPdfUrl && (
           <p className={styles.itemMeta}>

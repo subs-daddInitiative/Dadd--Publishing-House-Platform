@@ -25,32 +25,56 @@ import { isStudyTypeKey } from "@/features/studies/studyTypes";
 import { ShareBar } from "@/components/ShareBar";
 import { BlockRenderer } from "@/features/blog/BlockRenderer";
 import { StudyTableOfContents } from "@/features/studies/StudyTableOfContents";
+import { StudyPager } from "@/features/studies/StudyPager";
+import { studyPageHref } from "@/features/studies/studyPageHref";
 import styles from "@/features/studies/studies.module.css";
 
 type PageParams = { locale: string; slug: string };
+type PageSearchParams = { page?: string };
+
+// ?page=abc or ?page=0 fall back to the first page.
+function parsePageNumber(raw: string | undefined): number {
+  const page = Number(raw);
+  return Number.isInteger(page) && page >= 1 ? page : 1;
+}
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<PageParams>;
+  searchParams: Promise<PageSearchParams>;
 }): Promise<Metadata> {
   const { locale, slug: rawSlug } = await params;
   if (!isLocale(locale)) return {};
   const slug = decodeURIComponent(rawSlug);
+  const currentPage = parsePageNumber((await searchParams).page);
 
-  const [study, settings] = await Promise.all([getPublicStudyBySlug(slug, locale), getPublicSettings()]);
-  if (!study) return {};
+  const [study, settings, dictionary] = await Promise.all([
+    getPublicStudyBySlug(slug, locale),
+    getPublicSettings(),
+    getDictionary(locale),
+  ]);
+  if (!study || currentPage > study.total_pages) return {};
+
+  const basePath = `/${locale}/studies/${study.slug}`;
+  const pagePath = studyPageHref(basePath, currentPage);
+  const pageSuffix = currentPage > 1 ? ` - ${dictionary.studiesPage.pageLabel} ${currentPage}` : "";
 
   const siteName = settings?.siteName || "";
   const description = study.description || undefined;
   const imageUrl = backendAssetUrl(study.cover_image);
 
   return {
-    title: `${study.title} | ${siteName}`,
+    title: `${study.title}${pageSuffix} | ${siteName}`,
     description,
     alternates: {
-      canonical: `/${locale}/studies/${study.slug}`,
-      languages: Object.fromEntries(locales.map((loc) => [loc, `/${loc}/studies/${study.slug}`])),
+      canonical: pagePath,
+      languages: Object.fromEntries(locales.map((loc) => [loc, studyPageHref(`/${loc}/studies/${study.slug}`, currentPage)])),
+    },
+    pagination: {
+      previous: currentPage > 1 ? studyPageHref(basePath, currentPage - 1) : null,
+      next: currentPage < study.total_pages ? studyPageHref(basePath, currentPage + 1) : null,
     },
     openGraph: {
       title: study.title,
@@ -61,7 +85,7 @@ export async function generateMetadata({
       images: imageUrl ? [{ url: imageUrl }] : undefined,
       locale,
       siteName: siteName || undefined,
-      url: `/${locale}/studies/${study.slug}`,
+      url: pagePath,
     },
     twitter: {
       card: "summary_large_image",
@@ -72,7 +96,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function StudyPostPage({ params }: { params: Promise<PageParams> }) {
+export default async function StudyPostPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<PageParams>;
+  searchParams: Promise<PageSearchParams>;
+}) {
   const { locale: rawLocale, slug: rawSlug } = await params;
   if (!isLocale(rawLocale)) notFound();
   const locale = rawLocale as Locale;
@@ -88,6 +118,11 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
 
   if (!study) notFound();
 
+  const currentPage = parsePageNumber((await searchParams).page);
+  if (currentPage > study.total_pages) notFound();
+  const isFirstPage = currentPage === 1;
+  const pageBlocks = study.content_blocks.filter((block) => block.page === currentPage);
+
   const [subscriber, contentPlans] = study.locked
     ? await Promise.all([getCurrentSubscriber(), getPublicContentAccessPlans()])
     : [null, []];
@@ -102,7 +137,8 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
   const publishedDate = study.published_at ? new Date(study.published_at.replace(" ", "T")) : null;
   const dateLabel = publishedDate ? publishedDate.toLocaleDateString(locale, { dateStyle: "long" }) : "";
 
-  const canonicalPath = `/${locale}/studies/${study.slug}`;
+  const basePath = `/${locale}/studies/${study.slug}`;
+  const canonicalPath = studyPageHref(basePath, currentPage);
 
   const studyTypeLabel = isStudyTypeKey(study.study_type) ? dictionary.studiesPage.studyTypes[study.study_type] : null;
 
@@ -152,60 +188,75 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
       </nav>
 
       <header className={styles.postHeader}>
-        {study.category_name && <span className={styles.postCategoryTag}>{study.category_name}</span>}
-        {studyTypeLabel && <span className={styles.postTypeTag}>{studyTypeLabel}</span>}
+        {isFirstPage && (
+          <>
+            {study.category_name && <span className={styles.postCategoryTag}>{study.category_name}</span>}
+            {studyTypeLabel && <span className={styles.postTypeTag}>{studyTypeLabel}</span>}
+          </>
+        )}
         <h1 className={styles.postTitle}>{study.title}</h1>
-        <p className={styles.postMeta}>
-          {publishedDate && <time dateTime={study.published_at || undefined}>{dateLabel}</time>}
-          {study.author && (
-            <>
-              {publishedDate ? " · " : ""}
-              {dictionary.studiesPage.by} {study.author}
-            </>
-          )}
-        </p>
-        {(study.report_number || study.series_number) && (
+        {!isFirstPage && (
           <p className={styles.postMeta}>
-            {study.report_number && (
-              <>
-                {dictionary.studiesPage.reportNumber}: <bdi>{study.report_number}</bdi>
-              </>
-            )}
-            {study.report_number && study.series_number ? " · " : ""}
-            {study.series_number && (
-              <>
-                {dictionary.studiesPage.seriesNumber}: <bdi>{study.series_number}</bdi>
-              </>
-            )}
+            {dictionary.studiesPage.pageIndicator
+              .replace("{current}", String(currentPage))
+              .replace("{total}", String(study.total_pages))}
           </p>
         )}
-        {study.doi && (
-          <p className={styles.postMeta}>
-            {dictionary.studiesPage.doi}:{" "}
-            <a href={`https://doi.org/${study.doi}`} target="_blank" rel="noopener noreferrer" dir="ltr">
-              {study.doi}
-            </a>
-          </p>
-        )}
+        {isFirstPage && (
+          <>
+            <p className={styles.postMeta}>
+              {publishedDate && <time dateTime={study.published_at || undefined}>{dateLabel}</time>}
+              {study.author && (
+                <>
+                  {publishedDate ? " · " : ""}
+                  {dictionary.studiesPage.by} {study.author}
+                </>
+              )}
+            </p>
+            {(study.report_number || study.series_number) && (
+              <p className={styles.postMeta}>
+                {study.report_number && (
+                  <>
+                    {dictionary.studiesPage.reportNumber}: <bdi>{study.report_number}</bdi>
+                  </>
+                )}
+                {study.report_number && study.series_number ? " · " : ""}
+                {study.series_number && (
+                  <>
+                    {dictionary.studiesPage.seriesNumber}: <bdi>{study.series_number}</bdi>
+                  </>
+                )}
+              </p>
+            )}
+            {study.doi && (
+              <p className={styles.postMeta}>
+                {dictionary.studiesPage.doi}:{" "}
+                <a href={`https://doi.org/${study.doi}`} target="_blank" rel="noopener noreferrer" dir="ltr">
+                  {study.doi}
+                </a>
+              </p>
+            )}
 
-        {pdfUrl && (
-          <div className={styles.pdfButtonRow}>
-            <a href={pdfUrl} className={styles.pdfButton} target="_blank" rel="noopener noreferrer">
-              {dictionary.studiesPage.downloadPdf}
-            </a>
-          </div>
+            {pdfUrl && (
+              <div className={styles.pdfButtonRow}>
+                <a href={pdfUrl} className={styles.pdfButton} target="_blank" rel="noopener noreferrer">
+                  {dictionary.studiesPage.downloadPdf}
+                </a>
+              </div>
+            )}
+          </>
         )}
       </header>
 
-      <ShareBar
-        url={absoluteUrl(`/${locale}/studies/${study.slug}`)}
-        title={study.title}
-        labels={dictionary.share}
-      />
+      {isFirstPage && (
+        <>
+          <ShareBar url={absoluteUrl(basePath)} title={study.title} labels={dictionary.share} />
 
-      <PostStats stats={study.stats} />
+          <PostStats stats={study.stats} />
+        </>
+      )}
 
-      {mainImageUrl && (
+      {isFirstPage && mainImageUrl && (
         <div className={styles.mainImageWrap}>
           <Image
             src={mainImageUrl}
@@ -218,8 +269,9 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
       )}
 
       {study.content_blocks.length > 0 ? (
-        <BlockRenderer blocks={study.content_blocks} lockedFileLabel={dictionary.studiesPage.lockedFile} />
+        <BlockRenderer blocks={pageBlocks} lockedFileLabel={dictionary.studiesPage.lockedFile} />
       ) : (
+        isFirstPage &&
         study.content_intro && (
           <div className={styles.contentBlock} dangerouslySetInnerHTML={{ __html: study.content_intro }} />
         )
@@ -238,13 +290,20 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
         />
       )}
 
+      <StudyPager
+        basePath={basePath}
+        currentPage={currentPage}
+        totalPages={study.total_pages}
+        labels={dictionary.studiesPage}
+      />
+
       <Banners
         dictionary={dictionary}
         banners={banners}
         backendUrl={backendUrl}
       />
 
-      {study.content_blocks.length === 0 && study.content_body && (
+      {isFirstPage && study.content_blocks.length === 0 && study.content_body && (
         <div className={styles.contentBlock} dangerouslySetInnerHTML={{ __html: study.content_body }} />
       )}
 
@@ -287,7 +346,14 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
       </article>
 
       <div className={styles.sidebarCol}>
-        <StudyTableOfContents blocks={study.content_blocks} title={dictionary.studiesPage.tableOfContents} />
+        <StudyTableOfContents
+          blocks={study.content_blocks}
+          title={dictionary.studiesPage.tableOfContents}
+          basePath={basePath}
+          currentPage={currentPage}
+          totalPages={study.total_pages}
+          pageLabel={dictionary.studiesPage.pageLabel}
+        />
       </div>
       </div>
     </div>

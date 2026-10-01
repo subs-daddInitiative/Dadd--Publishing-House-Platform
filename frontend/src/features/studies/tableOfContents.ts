@@ -1,6 +1,6 @@
 import type { StudyContentBlock } from "@/lib/serverApi";
 
-export type TableOfContentsEntry = { id: string; label: string };
+export type TableOfContentsEntry = { id: string; label: string; page: number };
 
 function stripHtml(html: string): string {
   return html
@@ -42,7 +42,7 @@ export function extractTableOfContents(blocks: StudyContentBlock[]): TableOfCont
         continue;
     }
 
-    if (label) entries.push({ id: block.id, label });
+    if (label) entries.push({ id: block.id, label, page: block.page });
   }
 
   return entries;

@@ -307,6 +307,11 @@
     "resetFilters": "Zurücksetzen"
   },
   "studiesPage": {
+    "pageLabel": "Seite",
+    "pageIndicator": "Seite {current} von {total}",
+    "previousPage": "Vorherige Seite",
+    "nextPage": "Nächste Seite",
+    "pagerLabel": "Seiten der Studie",
     "reportNumber": "Berichtsnummer",
     "seriesNumber": "Seriennummer",
     "doi": "DOI",

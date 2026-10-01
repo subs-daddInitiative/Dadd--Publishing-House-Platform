@@ -14,7 +14,8 @@ export type ContentBlock =
   | { id: string; type: "image_text"; url: string; alt: string; html: string; layout: "image-left" | "image-right" }
   | { id: string; type: "quote"; text: string; author: string }
   | { id: string; type: "tags"; tags: string[] }
-  | { id: string; type: "pdf" | "voice" | "video"; url: string; label: string; access: "free" | "premium" };
+  | { id: string; type: "pdf" | "voice" | "video"; url: string; label: string; access: "free" | "premium" }
+  | { id: string; type: "page_break" };
 
 const BLOCK_TYPE_LABELS: Record<ContentBlock["type"], string> = {
   text: "نص",
@@ -25,6 +26,7 @@ const BLOCK_TYPE_LABELS: Record<ContentBlock["type"], string> = {
   pdf: "ملف PDF",
   voice: "تسجيل صوتي",
   video: "فيديو",
+  page_break: "فاصل صفحة",
 };
 
 function createBlock(type: ContentBlock["type"]): ContentBlock {
@@ -44,6 +46,8 @@ function createBlock(type: ContentBlock["type"]): ContentBlock {
     case "voice":
     case "video":
       return { id, type, url: "", label: "", access: "free" };
+    case "page_break":
+      return { id, type };
   }
 }
 
@@ -52,6 +56,8 @@ type BlockEditorProps = {
   onChange: (blocks: ContentBlock[]) => void;
   onUploadingChange: (uploading: boolean) => void;
   uploadUrl: string;
+  // Only studies are paginated, so only their editor offers the "page break" divider.
+  allowPageBreak?: boolean;
 };
 
 async function uploadAsset(file: File, uploadUrl: string): Promise<string> {
@@ -63,7 +69,7 @@ async function uploadAsset(file: File, uploadUrl: string): Promise<string> {
   return result.data.url;
 }
 
-export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: BlockEditorProps) {
+export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl, allowPageBreak = false }: BlockEditorProps) {
   const [addType, setAddType] = useState<ContentBlock["type"]>("text");
   const [previews, setPreviews] = useState<Record<string, string>>({});
   const [cropRequest, setCropRequest] = useState<{ blockId: string; file: File } | null>(null);
@@ -280,16 +286,24 @@ export function BlockEditor({ blocks, onChange, onUploadingChange, uploadUrl }: 
               </label>
             </>
           )}
+
+          {block.type === "page_break" && (
+            <p className={styles.itemMeta}>
+              تنتهي الصفحة هنا وتبدأ الصفحة التالية من القسم الذي يليه. عند وجود فاصل واحد على الأقل يُعتمد تقسيمك اليدوي بدل التقسيم التلقائي.
+            </p>
+          )}
         </div>
       ))}
 
       <div className={styles.addBlockRow}>
         <select className={styles.select} value={addType} onChange={(event) => setAddType(event.target.value as ContentBlock["type"])}>
-          {Object.entries(BLOCK_TYPE_LABELS).map(([type, label]) => (
-            <option key={type} value={type}>
-              {label}
-            </option>
-          ))}
+          {Object.entries(BLOCK_TYPE_LABELS)
+            .filter(([type]) => allowPageBreak || type !== "page_break")
+            .map(([type, label]) => (
+              <option key={type} value={type}>
+                {label}
+              </option>
+            ))}
         </select>
         <button type="button" className={styles.buttonSecondary} onClick={() => onChange([...blocks, createBlock(addType)])}>
           إضافة قسم

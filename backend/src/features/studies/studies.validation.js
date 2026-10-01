@@ -4,7 +4,7 @@ const { validateStats } = require("../../utils/statsValidation");
 
 const STUDY_TYPES = ["analytical_study", "report", "policy_brief", "research_paper"];
 const STATUSES = ["draft", "published"];
-const BLOCK_TYPES = ["text", "image", "image_text", "quote", "tags", "pdf", "voice", "video"];
+const BLOCK_TYPES = ["text", "image", "image_text", "quote", "tags", "pdf", "voice", "video", "page_break"];
 
 function sanitizePlainText(value, maxLength) {
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
@@ -65,6 +65,8 @@ function validateBlock(block, index, errors) {
         text: sanitizePlainText(block.text, 1000),
         author: sanitizePlainText(block.author, 150),
       };
+    case "page_break":
+      return { id, type: "page_break" };
     case "tags":
       return {
         id,

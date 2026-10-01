@@ -1,3 +1,4 @@
+const { paginateBlocks } = require("../../utils/paginateBlocks");
 const {
   listPublicStudies,
   countPublicStudies,
@@ -66,7 +67,8 @@ async function getPublicStudyBySlug(req, res, next) {
     }
     const related = await findRelatedStudies(study.category_id, study.id, locale);
 
-    let blocks = study.content_blocks ? JSON.parse(study.content_blocks) : [];
+    const paginated = paginateBlocks(study.content_blocks ? JSON.parse(study.content_blocks) : []);
+    let blocks = paginated.blocks;
     delete study.content_blocks;
 
     const stats = study.stats ? JSON.parse(study.stats) : [];
@@ -81,23 +83,25 @@ async function getPublicStudyBySlug(req, res, next) {
           (await hasActiveCategoryAccess(req.subscriber.sub, "studies", study.category_id)));
     }
 
+    const lockPremiumFiles = (list) =>
+      list.map((block) =>
+        (block.type === "pdf" || block.type === "voice") && block.access === "premium" && !entitled
+          ? { ...block, url: null, locked: true }
+          : block
+      );
+
     let locked = false;
     if (study.is_premium && !entitled) {
       locked = true;
       study.content_intro = null;
       study.content_body = null;
       study.pdf_file = null;
-      blocks = [];
+      // A multi-page study shows its first page as a free preview; a single-page one stays fully locked.
+      blocks = paginated.totalPages > 1 ? lockPremiumFiles(blocks.filter((block) => block.page === 1)) : [];
     } else {
-      blocks = blocks.map((block) => {
-        if ((block.type === "pdf" || block.type === "voice") && block.access === "premium" && !entitled) {
-          return { ...block, url: null, locked: true };
-        }
-        return block;
-      });
+      blocks = lockPremiumFiles(blocks);
     }
-
-    res.json({ success: true, data: { ...study, content_blocks: blocks, stats, locked, related } });
+    res.json({ success: true, data: { ...study, content_blocks: blocks, total_pages: paginated.totalPages, stats, locked, related } });
   } catch (error) {
     next(error);
   }

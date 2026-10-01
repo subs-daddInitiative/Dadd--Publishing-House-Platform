@@ -151,6 +151,7 @@ export function StudyTranslationForm({
           onChange={setBlocks}
           onUploadingChange={setUploading}
           uploadUrl="/api/admin/studies/upload-asset"
+          allowPageBreak
         />
       </div>
 
