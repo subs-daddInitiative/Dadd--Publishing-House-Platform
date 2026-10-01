@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { absoluteUrl } from "@/lib/siteUrl";
 import Image from "next/image";
 import Link from "next/link";
 import { isLocale, locales, type Locale } from "@/i18n/config";
@@ -116,7 +117,7 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": canonicalPath,
+      "@id": absoluteUrl(canonicalPath),
     },
   };
 
@@ -124,9 +125,9 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: dictionary.studiesPage.breadcrumbHome, item: `/${locale}` },
-      { "@type": "ListItem", position: 2, name: dictionary.studiesPage.breadcrumbStudies, item: `/${locale}/studies` },
-      { "@type": "ListItem", position: 3, name: study.title, item: canonicalPath },
+      { "@type": "ListItem", position: 1, name: dictionary.studiesPage.breadcrumbHome, item: absoluteUrl(`/${locale}`) },
+      { "@type": "ListItem", position: 2, name: dictionary.studiesPage.breadcrumbStudies, item: absoluteUrl(`/${locale}/studies`) },
+      { "@type": "ListItem", position: 3, name: study.title, item: absoluteUrl(canonicalPath) },
     ],
   };
 

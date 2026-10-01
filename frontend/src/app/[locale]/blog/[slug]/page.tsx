@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { absoluteUrl } from "@/lib/siteUrl";
 import Image from "next/image";
 import Link from "next/link";
 import { isLocale, locales, type Locale } from "@/i18n/config";
@@ -108,7 +109,7 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `/${locale}/blog/${blog.slug}`,
+      "@id": absoluteUrl(`/${locale}/blog/${blog.slug}`),
     },
   };
 

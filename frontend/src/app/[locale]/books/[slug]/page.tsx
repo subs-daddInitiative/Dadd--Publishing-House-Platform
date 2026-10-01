@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { absoluteUrl } from "@/lib/siteUrl";
 import Image from "next/image";
 import Link from "next/link";
 import { isLocale, locales, type Locale } from "@/i18n/config";
@@ -104,9 +105,9 @@ export default async function BookDetailPage({ params }: { params: Promise<PageP
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: dictionary.booksPage.breadcrumbHome, item: `/${locale}` },
-      { "@type": "ListItem", position: 2, name: dictionary.booksPage.breadcrumbBooks, item: `/${locale}/books` },
-      { "@type": "ListItem", position: 3, name: book.title, item: canonicalPath },
+      { "@type": "ListItem", position: 1, name: dictionary.booksPage.breadcrumbHome, item: absoluteUrl(`/${locale}`) },
+      { "@type": "ListItem", position: 2, name: dictionary.booksPage.breadcrumbBooks, item: absoluteUrl(`/${locale}/books`) },
+      { "@type": "ListItem", position: 3, name: book.title, item: absoluteUrl(canonicalPath) },
     ],
   };
 
