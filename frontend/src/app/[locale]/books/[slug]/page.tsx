@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { absoluteUrl } from "@/lib/siteUrl";
+import { ORGANIZATION_ID, absoluteUrl } from "@/lib/siteUrl";
 import Image from "next/image";
 import Link from "next/link";
 import { isLocale, locales, type Locale } from "@/i18n/config";
@@ -90,7 +90,7 @@ export default async function BookDetailPage({ params }: { params: Promise<PageP
             price: price.toFixed(2),
             priceCurrency: book.currency,
             availability: "https://schema.org/InStock",
-            url: canonicalPath,
+            url: absoluteUrl(canonicalPath),
           }
         : undefined,
     aggregateRating:
@@ -101,6 +101,20 @@ export default async function BookDetailPage({ params }: { params: Promise<PageP
             reviewCount: book.reviews_count,
           }
         : undefined,
+  };
+
+  // Describes the book itself; the Product block above stays for price and ratings.
+  const bookJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    name: book.title,
+    url: absoluteUrl(canonicalPath),
+    image: coverImageUrl ? [coverImageUrl] : undefined,
+    description: book.description || undefined,
+    author: book.author ? { "@type": "Person", name: book.author } : undefined,
+    inLanguage: locale,
+    datePublished: book.published_at || undefined,
+    publisher: { "@id": ORGANIZATION_ID },
   };
 
   const breadcrumbJsonLd = {
@@ -116,6 +130,7 @@ export default async function BookDetailPage({ params }: { params: Promise<PageP
   return (
     <article className={`container ${styles.page}`}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(bookJsonLd) }} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
