@@ -55,6 +55,8 @@ export async function generateMetadata({
       authors: blog.author_name ? [blog.author_name] : undefined,
       images: imageUrl ? [{ url: imageUrl }] : undefined,
       locale,
+      siteName: siteName || undefined,
+      url: `/${locale}/blog/${blog.slug}`,
     },
     twitter: {
       card: "summary_large_image",

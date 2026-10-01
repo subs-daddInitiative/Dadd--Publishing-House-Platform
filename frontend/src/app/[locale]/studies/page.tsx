@@ -32,6 +32,8 @@ export async function generateMetadata({
       description: dictionary.studiesPage.subtitle,
       locale,
       type: "website",
+      siteName: dictionary.common.siteName,
+      url: `/${locale}/studies`,
     },
   };
 }

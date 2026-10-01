@@ -31,6 +31,8 @@ export async function generateMetadata({
       description: dictionary.booksPage.subtitle,
       locale,
       type: "website",
+      siteName: dictionary.common.siteName,
+      url: `/${locale}/books`,
     },
   };
 }

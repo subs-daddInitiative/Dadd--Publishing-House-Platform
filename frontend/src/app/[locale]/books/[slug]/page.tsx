@@ -44,6 +44,8 @@ export async function generateMetadata({
       type: "website",
       images: imageUrl ? [{ url: imageUrl }] : undefined,
       locale,
+      siteName: siteName || undefined,
+      url: `/${locale}/books/${book.slug}`,
     },
     twitter: {
       card: "summary_large_image",

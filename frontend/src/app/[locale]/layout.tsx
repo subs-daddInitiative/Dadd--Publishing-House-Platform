@@ -44,6 +44,7 @@ export async function generateMetadata({
       title: dictionary.common.siteName,
       description: dictionary.home.heroSubtitle,
       locale,
+      siteName: dictionary.common.siteName,
     },
     twitter: {
       card: "summary_large_image",
