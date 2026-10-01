@@ -19,6 +19,7 @@ import { BlockRenderer } from "@/features/blog/BlockRenderer";
 import { PremiumLock } from "@/features/subscribers/PremiumLock";
 import { Sidebar } from "@/components/Sidebar";
 import { PostStats } from "@/components/PostStats";
+import { ShareBar } from "@/components/ShareBar";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
 import styles from "@/features/blog/blog.module.css";
 
@@ -138,6 +139,12 @@ export default async function BlogPostPage({ params }: { params: Promise<PagePar
         </p>
         {blog.excerpt && <p className={styles.postExcerpt}>{blog.excerpt}</p>}
       </header>
+
+      <ShareBar
+        url={absoluteUrl(`/${locale}/blog/${blog.slug}`)}
+        title={blog.title}
+        labels={dictionary.share}
+      />
 
       <PostStats stats={blog.stats} />
 

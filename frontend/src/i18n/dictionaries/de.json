@@ -358,6 +358,17 @@
     "remove": "Entfernen",
     "continueShopping": "Weiter einkaufen"
   },
+  "share": {
+    "label": "Teilen",
+    "copyLink": "Link kopieren",
+    "copied": "Kopiert ✓",
+    "whatsapp": "WhatsApp",
+    "telegram": "Telegram",
+    "x": "X",
+    "facebook": "Facebook",
+    "linkedin": "LinkedIn",
+    "email": "E-Mail"
+  },
   "newsletterPopup": {
     "title": "Verpassen Sie nichts Neues",
     "descriptionWithCategory": "Hinterlassen Sie Ihre E-Mail für Updates zu: {category}",

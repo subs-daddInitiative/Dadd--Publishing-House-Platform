@@ -358,6 +358,17 @@
     "remove": "إزالة",
     "continueShopping": "متابعة التسوق"
   },
+  "share": {
+    "label": "مشاركة",
+    "copyLink": "نسخ الرابط",
+    "copied": "تم النسخ ✓",
+    "whatsapp": "واتساب",
+    "telegram": "تيليجرام",
+    "x": "إكس",
+    "facebook": "فيسبوك",
+    "linkedin": "لينكدإن",
+    "email": "البريد"
+  },
   "newsletterPopup": {
     "title": "لا تفوّت الجديد",
     "descriptionWithCategory": "اترك بريدك الإلكتروني لتصلك تحديثات جديدة حول: {category}",

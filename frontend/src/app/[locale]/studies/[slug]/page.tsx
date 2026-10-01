@@ -20,6 +20,7 @@ import { StudyCard } from "@/features/studies/StudyCard";
 import { PremiumLock } from "@/features/subscribers/PremiumLock";
 import { Sidebar } from "@/components/Sidebar";
 import { PostStats } from "@/components/PostStats";
+import { ShareBar } from "@/components/ShareBar";
 import { BlockRenderer } from "@/features/blog/BlockRenderer";
 import { StudyTableOfContents } from "@/features/studies/StudyTableOfContents";
 import styles from "@/features/studies/studies.module.css";
@@ -172,6 +173,12 @@ export default async function StudyPostPage({ params }: { params: Promise<PagePa
           </div>
         )}
       </header>
+
+      <ShareBar
+        url={absoluteUrl(`/${locale}/studies/${study.slug}`)}
+        title={study.title}
+        labels={dictionary.share}
+      />
 
       <PostStats stats={study.stats} />
 
